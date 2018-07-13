@@ -1,0 +1,52 @@
+- git:
+      uri: https://github.com/husky/husky.git
+      local-name: Workspace/src/dependencies/husky
+      version: kinetic-devel
+- git:
+      uri: https://github.com/clearpathrobotics/LMS1xx.git
+      local-name: Workspace/src/dependencies/lms1xx
+- git:
+      uri: https://github.com/ros-visualization/interactive_marker_twist_server
+      local-name: Workspace/src/dependencies/interactive_marker_twist_server
+- git: 
+      uri: https://github.com/ros-perception/pointcloud_to_laserscan.git
+      local-name: Workspace/src/dependencies/pointcloud_to_laserscan
+      version: indigo-devel
+- git: 
+      uri: https://github.com/ros-teleop/twist_mux
+      local-name: Workspace/src/dependencies/twist_mux
+      version: kinetic-devel
+- git:
+      uri: https://github.com/duo3d/duo3d_driver.git
+      local-name: Workspace/src/dependencies/duo3d_driver
+- git:
+      uri: https://github.com/ros-drivers/pointgrey_camera_driver.git
+      local-name: Workspace/src/dependencies/pointgrey_camera_driver
+- git:
+      uri: https://github.com/ros/message_generation.git
+      local-name: Workspace/src/dependencies/message_generation
+      version: kinetic-devel
+- git:
+      uri: https://github.com/RethinkRobotics-opensource/gennodejs.git
+      local-name: Workspace/src/dependencies/gennodejs
+      version: kinetic-devel
+- git:
+      uri: https://github.com/ros/geometry.git
+      local-name: Workspace/src/dependencies/geometry
+      version: indigo-devel
+- git:
+      uri: https://github.com/wjwwood/serial
+      local-name: Workspace/src/dependencies/serial
+      version: master
+- git:
+      uri: https://github.com/ros-perception/perception_pcl
+      local-name: Workspace/src/dependencies/perception_pcl
+      version: kinetic-devel
+- git:
+      uri: https://github.com/ros-perception/vision_opencv
+      local-name: Workspace/src/dependencies/vision_opencv
+      version: kinetic
+- git:
+      uri: https://github.com/lebarsfa/razor_imu_9dof
+      local-name: Workspace/src/dependencies/razor_imu_9dof
+      version: indigo-devel
