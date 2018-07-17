@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!-- Go to simulation/launch/simulation_worlds/simple_world.world and
+     change all instances of "model://husky" to the directory of your husky folder -->
+
+<launch>
+  <!-- arg name="world_name" default="$(find simulation)/launch/simulation_worlds/sar_world.world"/ -->
+  <arg name="world_name" default="$(find simulation)/launch/simulation_worlds/rolling_world.world"/>
+  <!-- arg name="world_name" default="/opt/ros/kinetic/share/hector_gazebo_worlds/worlds/rolling_landscape_120m.world"/ -->
+
+  <arg name="laser_enabled" default="false"/>
+  <arg name="kinect_enabled" default="true"/>
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(arg world_name)"/> 
+    <!-- world_name is wrt GAZEBO_RESOURCE_PATH environment variable -->
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+    <arg name="headless" value="false"/>
+    <arg name="debug" value="false"/>
+  </include>
+
+  <!-- <include file="$(find husky_gazebo)/launch/playpen.launch" /> -->
+
+  <include file="$(find husky_gazebo)/launch/spawn_husky.launch">
+    <arg name="laser_enabled" value="$(arg laser_enabled)"/>
+    <arg name="kinect_enabled" value="$(arg kinect_enabled)"/>
+  </include>
+
+  <node pkg="tf" type="static_transform_publisher" name="kinect_transform_broadcaster" args="0 0 0.35 1.571, -0.000, -1.571 base_link kinect_link 100" />
+
+</launch>
