@@ -17,9 +17,6 @@
       local-name: Workspace/src/dependencies/twist_mux
       version: kinetic-devel
 - git:
-      uri: https://github.com/duo3d/duo3d_driver.git
-      local-name: Workspace/src/dependencies/duo3d_driver
-- git:
       uri: https://github.com/ros-drivers/pointgrey_camera_driver.git
       local-name: Workspace/src/dependencies/pointgrey_camera_driver
 - git:
