@@ -163,7 +163,7 @@
           <geometry>
             <mesh>
               <scale>1 1 1</scale>
-              <uri>/home/tom/code/marsrover/MarsRover2018/Workspace/src/dependencies/husky/husky_description/meshes/top_plate.dae</uri>
+              <uri>file://meshes/top_plate.dae</uri>
             </mesh>
           </geometry>
           <max_contacts>10</max_contacts>
@@ -206,7 +206,7 @@
           <geometry>
             <mesh>
               <scale>1 1 1</scale>
-              <uri>/home/tom/code/marsrover/MarsRover2018/Workspace/src/dependencies/husky/husky_description/meshes/base_link.dae</uri>
+              <uri>file://meshes/base_link.dae</uri>
             </mesh>
           </geometry>
         </visual>
@@ -215,7 +215,7 @@
           <geometry>
             <mesh>
               <scale>1 1 1</scale>
-              <uri>/opt/ros/kinetic/share/lms1xx/meshes/sick-lms1xx.dae</uri>
+              <uri>file://meshes/sick-lms1xx.dae</uri>
             </mesh>
           </geometry>
         </visual>
@@ -224,7 +224,7 @@
           <geometry>
             <mesh>
               <scale>1 1 1</scale>
-              <uri>/home/tom/code/marsrover/MarsRover2018/Workspace/src/dependencies/husky/husky_description/meshes/accessories/lms1xx_mount.dae</uri>
+              <uri>file://meshes/accessories/lms1xx_mount.dae</uri>
             </mesh>
           </geometry>
         </visual>
@@ -233,7 +233,7 @@
           <geometry>
             <mesh>
               <scale>1 1 1</scale>
-              <uri>/home/tom/code/marsrover/MarsRover2018/Workspace/src/dependencies/husky/husky_description/meshes/bumper.dae</uri>
+              <uri>file://meshes/bumper.dae</uri>
             </mesh>
           </geometry>
         </visual>
@@ -242,7 +242,7 @@
           <geometry>
             <mesh>
               <scale>1 1 1</scale>
-              <uri>/home/tom/code/marsrover/MarsRover2018/Workspace/src/dependencies/husky/husky_description/meshes/bumper.dae</uri>
+              <uri>file://meshes/bumper.dae</uri>
             </mesh>
           </geometry>
         </visual>
@@ -251,7 +251,7 @@
           <geometry>
             <mesh>
               <scale>1 1 1</scale>
-              <uri>/home/tom/code/marsrover/MarsRover2018/Workspace/src/dependencies/husky/husky_description/meshes/top_chassis.dae</uri>
+              <uri>file://meshes/top_chassis.dae</uri>
             </mesh>
           </geometry>
         </visual>
@@ -260,7 +260,7 @@
           <geometry>
             <mesh>
               <scale>1 1 1</scale>
-              <uri>/home/tom/code/marsrover/MarsRover2018/Workspace/src/dependencies/husky/husky_description/meshes/top_plate.dae</uri>
+              <uri>file://meshes/top_plate.dae</uri>
             </mesh>
           </geometry>
         </visual>
@@ -269,7 +269,7 @@
           <geometry>
             <mesh>
               <scale>1 1 1</scale>
-              <uri>/home/tom/code/marsrover/MarsRover2018/Workspace/src/dependencies/husky/husky_description/meshes/user_rail.dae</uri>
+              <uri>file://meshes/user_rail.dae</uri>
             </mesh>
           </geometry>
         </visual>
@@ -410,7 +410,7 @@
           <geometry>
             <mesh>
               <scale>1 1 1</scale>
-              <uri>/home/tom/code/marsrover/MarsRover2018/Workspace/src/dependencies/husky/husky_description/meshes/wheel.dae</uri>
+              <uri>file://meshes/wheel.dae</uri>
             </mesh>
           </geometry>
         </visual>
@@ -486,7 +486,7 @@
           <geometry>
             <mesh>
               <scale>1 1 1</scale>
-              <uri>/home/tom/code/marsrover/MarsRover2018/Workspace/src/dependencies/husky/husky_description/meshes/wheel.dae</uri>
+              <uri>file://meshes/wheel.dae</uri>
             </mesh>
           </geometry>
         </visual>
@@ -562,7 +562,7 @@
           <geometry>
             <mesh>
               <scale>1 1 1</scale>
-              <uri>/home/tom/code/marsrover/MarsRover2018/Workspace/src/dependencies/husky/husky_description/meshes/wheel.dae</uri>
+              <uri>file://meshes/wheel.dae</uri>
             </mesh>
           </geometry>
         </visual>
@@ -638,7 +638,7 @@
           <geometry>
             <mesh>
               <scale>1 1 1</scale>
-              <uri>/home/tom/code/marsrover/MarsRover2018/Workspace/src/dependencies/husky/husky_description/meshes/wheel.dae</uri>
+              <uri>file://meshes/wheel.dae</uri>
             </mesh>
           </geometry>
         </visual>
