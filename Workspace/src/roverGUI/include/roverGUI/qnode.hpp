@@ -21,11 +21,11 @@
 #ifndef Q_MOC_RUN
 #include <ros/ros.h>
 #endif
-#include <string>
-#include <QThread>
-#include <QStringListModel>
-#include <sensor_msgs/NavSatFix.h>
 #include "gui.h"
+#include <QStringListModel>
+#include <QThread>
+#include <sensor_msgs/NavSatFix.h>
+#include <string>
 
 /*****************************************************************************
 ** Namespaces
@@ -38,40 +38,33 @@ namespace roverGUI {
 *****************************************************************************/
 
 class QNode : public QThread {
-    Q_OBJECT
+  Q_OBJECT
 public:
-        QNode(int argc, char** argv );
-        virtual ~QNode();
-        void init();
-        bool init(const std::string &master_url, const std::string &host_url);
-        void run();
+  QNode(int argc, char **argv);
+  virtual ~QNode();
+  void init();
+  bool init(const std::string &master_url, const std::string &host_url);
+  void run();
 
+  /*********************
+  ** Logging
+  **********************/
+  enum LogLevel { Debug, Info, Warn, Error, Fatal };
 
-        /*********************
-        ** Logging
-        **********************/
-        enum LogLevel {
-                 Debug,
-                 Info,
-                 Warn,
-                 Error,
-                 Fatal
-         };
-
-        QStringListModel* loggingModel() { return &logging_model; }
-        void log( const LogLevel &level, const std::string &msg);
+  QStringListModel *loggingModel() { return &logging_model; }
+  void log(const LogLevel &level, const std::string &msg);
 
 Q_SIGNALS:
-        void loggingUpdated();
-        void rosShutdown();
+  void loggingUpdated();
+  void rosShutdown();
 
 private:
-        int init_argc;
-        char** init_argv;
-        ros::Publisher chatter_publisher;
-    QStringListModel logging_model;
+  int init_argc;
+  char **init_argv;
+  ros::Publisher chatter_publisher;
+  QStringListModel logging_model;
 };
 
-}  // namespace roverGUI
+} // namespace roverGUI
 
 #endif /* roverGUI_QNODE_HPP_ */
