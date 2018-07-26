@@ -12,7 +12,7 @@
 ** Includes
 *****************************************************************************/
 
-#include "qnode.hpp"
+//#include "qnode.hpp"
 #include "ui_main_window.h"
 #include <QtCore>
 #include <QtGui/QMainWindow>
@@ -65,8 +65,8 @@ public Q_SLOTS:
   // void on_pushButton_clicked();
   void on_superButton_clicked();
 
-private:
-  QNode qnode;
+//private:
+  //QNode qnode;
 
 protected:
   void paintEvent(); //(QPaintEvent *e);
