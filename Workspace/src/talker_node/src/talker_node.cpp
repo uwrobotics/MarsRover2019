@@ -24,11 +24,11 @@ int main(int argc, char *argv[]) {
     std_msgs::Int32 msg;
     // set data field of msg
     msg.data = i;
-    ROS_INFO("d%",msg.data);
+    ROS_INFO("d%", msg.data);
     pub.publish(msg);
     loop_rate.sleep();
-    if(i>400){
-        i=0;
+    if (i > 400) {
+      i = 0;
     }
   }
   return 0;

@@ -9,14 +9,14 @@
 ** Includes
 *****************************************************************************/
 
+#include "../include/roverGUI/gui.h"
 #include "../include/roverGUI/main_window.hpp"
 #include <QApplication>
 #include <QtGui>
-#include "../include/roverGUI/gui.h"
 
+#include <ros/callback_queue.h>
 #include <ros/network.h>
 #include <ros/ros.h>
-#include <ros/callback_queue.h>
 #include <sstream>
 #include <std_msgs/Int32.h> //need to include everything you are using form std_msgs!
 #include <std_msgs/String.h>
@@ -37,7 +37,6 @@ int main(int argc, char **argv) {
 
   app.connect(&app, SIGNAL(lastWindowClosed()), &app, SLOT(quit()));
 
-
   ros::init(argc, argv, "roverGUI");
 
   ros::NodeHandle nh;
@@ -46,20 +45,15 @@ int main(int argc, char **argv) {
   ros::Subscriber sub = nh.subscribe(
       TEST_TOPIC, 1, &roverGUI::MainWindow::subscriber_callback, &w);
 
-
-while (ros::ok()){
-    if(! ros::getGlobalCallbackQueue()->empty()){
-ros::getGlobalCallbackQueue()->callOne(ros::WallDuration (0.1));
-ros::getGlobalCallbackQueue()->clear();
+  while (ros::ok()) {
+    if (!ros::getGlobalCallbackQueue()->empty()) {
+      ros::getGlobalCallbackQueue()->callOne(ros::WallDuration(0.1));
+      ros::getGlobalCallbackQueue()->clear();
     }
-QCoreApplication::processEvents();
+    QCoreApplication::processEvents();
+  }
 
-}
-
-
-
-int result = app.exec();
-
+  int result = app.exec();
 
   /*
   QGraphicsView view;
@@ -79,8 +73,6 @@ int result = app.exec();
   QGraphicsTextItem *text=scene->addText("hey there beautiful");
   view.show();
   */
-
-
 
   return result;
 }

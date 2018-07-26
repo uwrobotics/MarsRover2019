@@ -22,15 +22,13 @@ using namespace Qt;
 *****************************************************************************/
 
 MainWindow::MainWindow(int argc, char **argv, QWidget *parent)
-    : QMainWindow(parent){
+    : QMainWindow(parent) {
 
   ui.setupUi(this); // Calling this incidentally connects all ui's triggers to
                     // on_...() callbacks in this class.
   QObject::connect(
       ui.actionAbout_Qt, SIGNAL(triggered(bool)), qApp,
       SLOT(aboutQt())); // qApp is a global variable for the application
-
-
 }
 
 MainWindow::~MainWindow() {}
@@ -45,7 +43,6 @@ void MainWindow::showNoMasterMessage() {
   msgBox.exec();
   close();
 }
-
 
 } // namespace roverGUI
 
@@ -89,7 +86,7 @@ void roverGUI::MainWindow::subscriber_callback(
     const std_msgs::Int32::ConstPtr &receivedMsg) {
 
   int number = 0;
-  if (receivedMsg->data %2==0) {
+  if (receivedMsg->data % 2 == 0) {
     number = receivedMsg->data;
 
     ROS_INFO("%d", receivedMsg->data);
@@ -109,6 +106,7 @@ void roverGUI::MainWindow::subscriber_callback(
     painter.setPen(paintpen);
     painter.drawPoint(p1);
     painter.drawPoint(p2);
-    ui.myLabel->setPixmap(pix); //previous dots remain on screen for some reason
+    ui.myLabel->setPixmap(pix); // previous dots remain on screen for some
+                                // reason
   }
 }

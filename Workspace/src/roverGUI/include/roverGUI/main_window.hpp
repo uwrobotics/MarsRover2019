@@ -65,8 +65,8 @@ public Q_SLOTS:
   // void on_pushButton_clicked();
   void on_superButton_clicked();
 
-//private:
-  //QNode qnode;
+  // private:
+  // QNode qnode;
 
 protected:
   void paintEvent(); //(QPaintEvent *e);
