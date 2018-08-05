@@ -39,14 +39,17 @@ public:
   MainWindow(int argc, char **argv, QWidget *parent = 0);
   ~MainWindow();
 
+
   void subscriber_callback(const std_msgs::Int32::ConstPtr &receivedMsg);
 
 private:
-  QGraphicsScene *scene;
+    QGraphicsScene *scene;
+
 
 public Q_SLOTS:
 
   void on_superButton_clicked();
+
 
 protected:
   void paintEvent(); //(QPaintEvent *e);

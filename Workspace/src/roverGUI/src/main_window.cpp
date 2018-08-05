@@ -6,6 +6,7 @@
 #include "../include/roverGUI/main_window.hpp"
 #include "../include/roverGUI/gui.h"
 #include <QMessageBox>
+#include <QtCore>
 #include <QtGui>
 #include <iostream>
 
@@ -26,6 +27,17 @@ MainWindow::MainWindow(int argc, char **argv, QWidget *parent)
 
   ui.setupUi(this); // Calling this incidentally connects all ui's triggers to
                     // on_...() callbacks in this class.
+
+  scene = new QGraphicsScene(this);
+  ui.myGraphicsView->setScene(scene);
+  /*change "myGraphicsView" obj name from designer view
+    Right now (aug4) the pixMap size and graphics view size is hardcoded.
+    This means that a scoll bar appears when the pixmap is bigger than the
+    graphics view.
+    It would be good to have the pixmap scale dynamically with the
+    graphicsview/window resizing
+*/
+
   QObject::connect(
       ui.actionAbout_Qt, SIGNAL(triggered(bool)), qApp,
       SLOT(aboutQt())); // qApp is a global variable for the application
@@ -37,13 +49,6 @@ MainWindow::~MainWindow() {}
 ** Implementation [Slots]
 *****************************************************************************/
 
-void MainWindow::showNoMasterMessage() {
-  QMessageBox msgBox;
-  msgBox.setText("Couldn't find the ros master.");
-  msgBox.exec();
-  close();
-}
-
 } // namespace roverGUI
 
 void roverGUI::MainWindow::on_superButton_clicked() {
@@ -54,15 +59,8 @@ void roverGUI::MainWindow::on_superButton_clicked() {
   roverGUI::MainWindow::paintEvent(); // update the image whenever you hit the
                                       // button
 }
-void roverGUI::MainWindow::paintEvent() { //(QPaintEvent *e){
-                                          /*
-                                              //QPainter painter(ui.roadMap);
-                                              QPainter painter(this);
-                                              painter.setWindow(QRect(0,0,100,100));
-                                              QPen paintpen(Qt::black);
-                                              painter.setPen(paintpen);
-                                              painter.drawRect(10,10,20,20);
-                                          */
+void roverGUI::MainWindow::paintEvent() { // use slider input to display dots
+                                          // (for testing)
 
   QPixmap pix = QPixmap(300, 300);
 
@@ -81,6 +79,7 @@ void roverGUI::MainWindow::paintEvent() { //(QPaintEvent *e){
   painter.drawPoint(p1);
   painter.drawPoint(p2);
   ui.myLabel->setPixmap(pix); // use label to add images (pixmapo in this case)
+  scene->addPixmap(pix);
 }
 void roverGUI::MainWindow::subscriber_callback(
     const std_msgs::Int32::ConstPtr &receivedMsg) {
@@ -91,6 +90,7 @@ void roverGUI::MainWindow::subscriber_callback(
 
     ROS_INFO("%d", receivedMsg->data);
     QPixmap pix = QPixmap(300, 300);
+    // QPixmap blankPix = QPixmap(300, 300); //didn't work, still lagging
 
     QPoint p1;
     p1.setX(receivedMsg->data);
@@ -106,7 +106,10 @@ void roverGUI::MainWindow::subscriber_callback(
     painter.setPen(paintpen);
     painter.drawPoint(p1);
     painter.drawPoint(p2);
-    ui.myLabel->setPixmap(pix); // previous dots remain on screen for some
-                                // reason
+    // ui.myLabel->setPixmap(pix);
+    // scene->addPixmap(blankPix);
+    scene->clear();        // didnt work still lagging
+    scene->addPixmap(pix); // previous dots remain on screen for some reason.
+                           // Need to erase everytime the position is updated
   }
 }
