@@ -1,18 +1,11 @@
-/**
- * @file /src/main.cpp
- *
- * @brief Qt based gui.
- *
- * @date November 2010
- **/
-/*****************************************************************************
-** Includes
-*****************************************************************************/
 
+// TEST
+#include "../include/roverGUI/gui.h"
 #include "../include/roverGUI/main_window.hpp"
 #include <QApplication>
 #include <QtGui>
 
+#include <ros/callback_queue.h>
 #include <ros/network.h>
 #include <ros/ros.h>
 #include <sstream>
@@ -36,41 +29,25 @@ int main(int argc, char **argv) {
   app.connect(&app, SIGNAL(lastWindowClosed()), &app, SLOT(quit()));
 
   ros::init(argc, argv, "roverGUI");
-  // ros::start();
-  // start();
 
   ros::NodeHandle nh;
 
-  // ros::Duration(2).sleep();
   ros::Subscriber sub = nh.subscribe(
-      TEST_TOPIC, 1, &roverGUI::MainWindow::subscriber_callback, &w);
-  ros::spin();
-
-  /* ros::AsyncSpinner spinner(4);
-  spinner.start();
-  ros::waitForShutdown();
-*/
-
-  /*
-  QGraphicsView view;
-  QGraphicsScene *scene =new QGraphicsScene(&view);
-  view.setScene(scene);
-  view.resize(200,200);
-
-  QPixmap pix= QPixmap(100,200);
-
-  QPainter painter(&pix);
-  QPen paintpen(Qt::red);
-  paintpen.setWidth(5);
-  painter.setPen(paintpen);
-  painter.drawRect(10,10,100,100);
-
-  scene->addPixmap(pix);
-  QGraphicsTextItem *text=scene->addText("hey there beautiful");
-  view.show();
-  */
+      ODOMETRY_TOPIC, 1, &roverGUI::MainWindow::subscriber_callback, &w);
+  // ros::Rate r(0.5);
+  while (ros::ok()) {
+    if (!ros::getGlobalCallbackQueue()->empty()) {
+      ros::getGlobalCallbackQueue()->callOne(ros::WallDuration(0.1));
+      ros::getGlobalCallbackQueue()->clear();
+    }
+    ros::Duration(1.5).sleep();
+    // r.sleep();
+    QCoreApplication::processEvents();
+  }
 
   int result = app.exec();
+
+
 
   return result;
 }
