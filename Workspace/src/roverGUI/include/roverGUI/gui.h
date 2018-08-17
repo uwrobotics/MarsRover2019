@@ -3,6 +3,7 @@
 #define GUI_H
 
 #define ODOMETRY_TOPIC "/odometry/filtered"
+#define GPS_TOPIC "/navsat/fix"
 #define TEST_TOPIC "chatter"
 #include <ros/callback_queue.h>
 #include <ros/network.h>

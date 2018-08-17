@@ -60,22 +60,37 @@ MainWindow::~MainWindow() {}
 } // namespace roverGUI
 
 void roverGUI::MainWindow::subscriber_callback(
-    const nav_msgs::Odometry::ConstPtr &receivedMsg) {
+    const sensor_msgs::NavSatFix::ConstPtr &receivedMsg) {
 
-  float xval = receivedMsg->pose.pose.position.x;
-  float yval = receivedMsg->pose.pose.position.y;
+  //float xval = receivedMsg->pose.pose.position.x;
+  //float yval = receivedMsg->pose.pose.position.y;
+  double rover_lat = receivedMsg->latitude;
+  double rover_long = receivedMsg->longitude;
+  double rover_easting, rover_northing;
 
-  QPixmap pix = QPixmap(300, 300);
-  // QPixmap blankPix = QPixmap(300, 300); //didn't work, still lagging
+  RobotLocalization::NavsatConversions::LLtoUTM(
+      rover_lat, rover_long, rover_northing, rover_easting, rover_utm_zone);
+
+
+  int pixmap_x=400;
+  int pixmap_y=400;
+  QPixmap pix = QPixmap(pixmap_x, pixmap_y);
+
+
+  QPoint centre; //this is the rover. Reference to mid of pixmap
+  centre.setX(pixmap_x/2);
+  centre.setY(pixmap_y/2);
+  int x_dist=easting_utm - rover_easting ;
+  int y_dist=northing_utm - rover_northing;
+
 
   QPoint p1;
-  p1.setX(xval * 40 + 100);
-  p1.setY(yval * 40 + 100);
-  ROS_INFO(" x value %d", p1.x());
-  ROS_INFO(" y value %d", p1.y());
-  QPoint p2;
-  p2.setX(100);
-  p2.setY(100);
+  p1.setX(centre.x()+ x_dist);
+  p1.setY(centre.y()+y_dist);
+  ROS_INFO(" x distandce to target %d", x_dist);
+  ROS_INFO(" y distance to target %d", y_dist);
+
+
 
   QPainter painter(&pix);
 
@@ -87,7 +102,8 @@ void roverGUI::MainWindow::subscriber_callback(
   painter.setPen(redPen);
   painter.drawPoint(p1);
   painter.setPen(bluePen);
-  painter.drawPoint(p2);
+  painter.drawPoint(centre);
+
   // ui.myLabel->setPixmap(pix);
   // scene->addPixmap(blankPix);
   scene->clear();        // didnt work still lagging
@@ -102,8 +118,10 @@ void roverGUI::MainWindow::on_longitudeLineEdit_returnPressed() {
 void roverGUI::MainWindow::on_latitudeLineEdit_returnPressed() {
   longitude = (ui.longitudeLineEdit->text()).toDouble(); // reads as a QString
   latitude = (ui.latitudeLineEdit->text()).toDouble();
+
   RobotLocalization::NavsatConversions::LLtoUTM(
       latitude, longitude, northing_utm, easting_utm, utm_zone);
+
   ROS_INFO(" you input latitude %f", latitude);
   ROS_INFO(" you input longitude %f", longitude);
   ROS_INFO(" easting %f northing %f", easting_utm, northing_utm);

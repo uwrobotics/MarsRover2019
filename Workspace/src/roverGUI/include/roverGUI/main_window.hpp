@@ -17,6 +17,7 @@
 #include <QtCore>
 #include <QtGui/QMainWindow>
 #include <nav_msgs/Odometry.h>
+#include <sensor_msgs/NavSatFix.h>
 #include <std_msgs/Int32.h> //need to include everything you are using form std_msgs!
 #include <std_msgs/String.h>
 
@@ -40,7 +41,7 @@ public:
   MainWindow(int argc, char **argv, QWidget *parent = 0);
   ~MainWindow();
 
-  void subscriber_callback(const nav_msgs::Odometry::ConstPtr &receivedMsg);
+  void subscriber_callback(const sensor_msgs::NavSatFix::ConstPtr &receivedMsg);
 
 private:
   QGraphicsScene *scene;
@@ -48,7 +49,7 @@ private:
   double latitude;
   double easting_utm;
   double northing_utm;
-  std::string utm_zone;
+  std::string utm_zone,rover_utm_zone;
 
 public Q_SLOTS:
   void on_longitudeLineEdit_returnPressed();

@@ -33,7 +33,7 @@ int main(int argc, char **argv) {
   ros::NodeHandle nh;
 
   ros::Subscriber sub = nh.subscribe(
-      ODOMETRY_TOPIC, 1, &roverGUI::MainWindow::subscriber_callback, &w);
+      GPS_TOPIC, 1, &roverGUI::MainWindow::subscriber_callback, &w);
 
   ros::Time last_update = ros::Time::now(); // control update frequency
 
@@ -42,6 +42,7 @@ int main(int argc, char **argv) {
     if (!ros::getGlobalCallbackQueue()->empty() &&
         (ros::Time::now() - last_update > ros::Duration(1.5))) {
       last_update = ros::Time::now();
+
       ros::getGlobalCallbackQueue()->callOne(ros::WallDuration(0.1));
       ros::getGlobalCallbackQueue()->clear();
     }
