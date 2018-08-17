@@ -36,6 +36,7 @@ MainWindow::MainWindow(int argc, char **argv, QWidget *parent)
                     // on_...() callbacks in this class.
 
   scene = new QGraphicsScene(this);
+  scale_factor= 2 ; //# pixels/ 1 meter
 
   ui.myGraphicsView->setScene(scene);
   /*change "myGraphicsView" obj name from designer view
@@ -80,8 +81,8 @@ void roverGUI::MainWindow::subscriber_callback(
   QPoint centre; //this is the rover. Reference to mid of pixmap
   centre.setX(pixmap_x/2);
   centre.setY(pixmap_y/2);
-  int x_dist=easting_utm - rover_easting ;
-  int y_dist=northing_utm - rover_northing;
+  int x_dist=(easting_utm - rover_easting)*scale_factor ;
+  int y_dist=(northing_utm - rover_northing)*scale_factor;
 
 
   QPoint p1;
