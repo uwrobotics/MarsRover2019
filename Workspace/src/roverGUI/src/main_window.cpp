@@ -6,11 +6,11 @@
 #include "../include/roverGUI/main_window.hpp"
 #include "../include/roverGUI/gui.h"
 #include <QMessageBox>
+#include <QString>
 #include <QtCore>
 #include <QtGui>
 #include <iostream>
 #include <robot_localization/navsat_conversions.h>
-#include <QString>
 
 /*****************************************************************************
 ** Namespaces
@@ -27,10 +27,10 @@ using namespace Qt;
 MainWindow::MainWindow(int argc, char **argv, QWidget *parent)
     : QMainWindow(parent) {
 
-    longitude=0;
-    latitude=0;
-    easting_utm=0;
-    northing_utm=0;
+  longitude = 0;
+  latitude = 0;
+  easting_utm = 0;
+  northing_utm = 0;
 
   ui.setupUi(this); // Calling this incidentally connects all ui's triggers to
                     // on_...() callbacks in this class.
@@ -58,8 +58,6 @@ MainWindow::~MainWindow() {}
 *****************************************************************************/
 
 } // namespace roverGUI
-
-
 
 void roverGUI::MainWindow::subscriber_callback(
     const nav_msgs::Odometry::ConstPtr &receivedMsg) {
@@ -97,16 +95,16 @@ void roverGUI::MainWindow::subscriber_callback(
                          // Need to erase everytime the position is updated
 }
 
-void roverGUI::MainWindow::on_longitudeLineEdit_returnPressed()
-{
-on_latitudeLineEdit_returnPressed();
+void roverGUI::MainWindow::on_longitudeLineEdit_returnPressed() {
+  on_latitudeLineEdit_returnPressed();
 }
 
-void roverGUI::MainWindow::on_latitudeLineEdit_returnPressed()
-{   longitude = (ui.longitudeLineEdit->text()).toDouble(); //reads as a QString
-    latitude = (ui.latitudeLineEdit->text()).toDouble();
-    RobotLocalization::NavsatConversions::LLtoUTM(latitude, longitude, northing_utm, easting_utm, utm_zone);
-    ROS_INFO(" you input latitude %f", latitude);
-    ROS_INFO(" you input longitude %f", longitude);
-    ROS_INFO(" easting %f northing %f", easting_utm, northing_utm);
+void roverGUI::MainWindow::on_latitudeLineEdit_returnPressed() {
+  longitude = (ui.longitudeLineEdit->text()).toDouble(); // reads as a QString
+  latitude = (ui.latitudeLineEdit->text()).toDouble();
+  RobotLocalization::NavsatConversions::LLtoUTM(
+      latitude, longitude, northing_utm, easting_utm, utm_zone);
+  ROS_INFO(" you input latitude %f", latitude);
+  ROS_INFO(" you input longitude %f", longitude);
+  ROS_INFO(" easting %f northing %f", easting_utm, northing_utm);
 }

@@ -40,9 +40,7 @@ public:
   MainWindow(int argc, char **argv, QWidget *parent = 0);
   ~MainWindow();
 
-
   void subscriber_callback(const nav_msgs::Odometry::ConstPtr &receivedMsg);
-
 
 private:
   QGraphicsScene *scene;
@@ -55,10 +53,6 @@ private:
 public Q_SLOTS:
   void on_longitudeLineEdit_returnPressed();
   void on_latitudeLineEdit_returnPressed();
-
-
-
-
 };
 
 } // namespace roverGUI
