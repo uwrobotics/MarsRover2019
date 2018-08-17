@@ -34,14 +34,18 @@ int main(int argc, char **argv) {
 
   ros::Subscriber sub = nh.subscribe(
       ODOMETRY_TOPIC, 1, &roverGUI::MainWindow::subscriber_callback, &w);
-  // ros::Rate r(0.5);
+
+
+  ros::Time last_update=ros::Time::now(); //control update frequency
+
   while (ros::ok()) {
-    if (!ros::getGlobalCallbackQueue()->empty()) {
+
+    if (!ros::getGlobalCallbackQueue()->empty() && (ros::Time::now()- last_update >ros::Duration(1.5))) {
+      last_update=ros::Time::now();
       ros::getGlobalCallbackQueue()->callOne(ros::WallDuration(0.1));
       ros::getGlobalCallbackQueue()->clear();
     }
-    ros::Duration(1.5).sleep();
-    // r.sleep();
+    //continually check for Qt user input etc.
     QCoreApplication::processEvents();
   }
 

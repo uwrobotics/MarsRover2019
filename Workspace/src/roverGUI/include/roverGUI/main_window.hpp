@@ -48,10 +48,13 @@ private:
   QGraphicsScene *scene;
   double longitude;
   double latitude;
+  double easting_utm;
+  double northing_utm;
+  std::string utm_zone;
 
 public Q_SLOTS:
-  void on_longitudeLineEdit_editingFinished();
-  void on_latitudeLineEdit_editingFinished();
+  void on_longitudeLineEdit_returnPressed();
+  void on_latitudeLineEdit_returnPressed();
 
 
 
