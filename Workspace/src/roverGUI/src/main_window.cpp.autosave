@@ -9,7 +9,7 @@
 #include <QtCore>
 #include <QtGui>
 #include <iostream>
-#include <robot_localization/navsat_conversions.h>
+#include <robot_localization/navsat_converstions.h>
 #include <QString>
 
 /*****************************************************************************
@@ -53,7 +53,10 @@ MainWindow::~MainWindow() {}
 
 } // namespace roverGUI
 
-
+void roverGUI::MainWindow::latitude_edit(){
+    longitude = QString::toDouble(longitudeLineEdit.text()); //reads as a QString
+    latitude = QString::toDouble(longitudeLineEdit.text());
+}
 
 void roverGUI::MainWindow::subscriber_callback(
     const nav_msgs::Odometry::ConstPtr &receivedMsg) {
@@ -93,11 +96,5 @@ void roverGUI::MainWindow::subscriber_callback(
 
 void roverGUI::MainWindow::on_longitudeLineEdit_editingFinished()
 {
-    longitude = (ui.longitudeLineEdit->text()).toDouble(); //reads as a QString
-
-}
-
-void roverGUI::MainWindow::on_latitudeLineEdit_editingFinished()
-{
-    latitude = (ui.latitudeLineEdit->text()).toDouble();
+    
 }

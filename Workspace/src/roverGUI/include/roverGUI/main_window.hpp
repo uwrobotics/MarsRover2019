@@ -46,8 +46,12 @@ public:
 
 private:
   QGraphicsScene *scene;
+  double longitude;
+  double latitude;
 
 public Q_SLOTS:
+  void on_longitudeLineEdit_editingFinished();
+  void on_latitudeLineEdit_editingFinished();
 
 
 
