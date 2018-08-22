@@ -63,8 +63,6 @@ MainWindow::~MainWindow() {}
 void roverGUI::MainWindow::subscriber_callback(
     const sensor_msgs::NavSatFix::ConstPtr &receivedMsg) {
 
-  //float xval = receivedMsg->pose.pose.position.x;
-  //float yval = receivedMsg->pose.pose.position.y;
   double rover_lat = receivedMsg->latitude;
   double rover_long = receivedMsg->longitude;
   double rover_easting, rover_northing;
@@ -73,8 +71,8 @@ void roverGUI::MainWindow::subscriber_callback(
       rover_lat, rover_long, rover_northing, rover_easting, rover_utm_zone);
 
 
-  int pixmap_x=400;
-  int pixmap_y=400;
+  int pixmap_y=ui.myGraphicsView->height();
+  int pixmap_x=ui.myGraphicsView->width();
   QPixmap pix = QPixmap(pixmap_x, pixmap_y);
 
 
@@ -88,17 +86,16 @@ void roverGUI::MainWindow::subscriber_callback(
   QPoint p1;
   p1.setX(centre.x()+ x_dist);
   p1.setY(centre.y()+y_dist);
-  ROS_INFO(" x distandce to target %d", x_dist);
+  ROS_INFO(" x distance to target %d", x_dist);
   ROS_INFO(" y distance to target %d", y_dist);
-
 
 
   QPainter painter(&pix);
 
   QPen redPen(Qt::red);
   QPen bluePen(Qt::blue);
-  redPen.setWidth(5);
-  bluePen.setWidth(5);
+  redPen.setWidth(pixmap_x/80); //scale position markers
+  bluePen.setWidth(pixmap_x/80);
 
   painter.setPen(redPen);
   painter.drawPoint(p1);
@@ -112,9 +109,13 @@ void roverGUI::MainWindow::subscriber_callback(
                          // Need to erase everytime the position is updated
 }
 
+
+
 void roverGUI::MainWindow::on_longitudeLineEdit_returnPressed() {
   on_latitudeLineEdit_returnPressed();
 }
+
+
 
 void roverGUI::MainWindow::on_latitudeLineEdit_returnPressed() {
   longitude = (ui.longitudeLineEdit->text()).toDouble(); // reads as a QString

@@ -46,8 +46,7 @@ int main(int argc, char **argv) {
       ros::getGlobalCallbackQueue()->callOne(ros::WallDuration(0.1));
       ros::getGlobalCallbackQueue()->clear();
     }
-
-    //ROS_INFO(" graphics scene hight %d", w.ui.myGraphicsView->height());
+    ui.myGraphicsView.size()
     // continually check for Qt user input etc.
     QCoreApplication::processEvents();
   }

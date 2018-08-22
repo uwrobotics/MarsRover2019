@@ -27,7 +27,7 @@
       <property name="maximumSize">
        <size>
         <width>16777215</width>
-        <height>400</height>
+        <height>1600</height>
        </size>
       </property>
       <property name="cursor" stdset="0">
@@ -124,4 +124,3 @@
   </connection>
  </connections>
 </ui>
-
