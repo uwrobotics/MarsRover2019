@@ -42,7 +42,7 @@ public:
   ~MainWindow();
 
   void subscriber_callback(const sensor_msgs::NavSatFix::ConstPtr &receivedMsg);
-
+  float scaling_function(float x_dist, float y_dist);
 private:
   QGraphicsScene *scene;
   double longitude;
@@ -50,7 +50,7 @@ private:
   double easting_utm;
   double northing_utm;
   std::string utm_zone,rover_utm_zone;
-  float scale_factor;
+
 
 public Q_SLOTS:
   void on_longitudeLineEdit_returnPressed();
