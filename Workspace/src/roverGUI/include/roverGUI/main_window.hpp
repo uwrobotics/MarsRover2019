@@ -18,7 +18,7 @@
 #include <QtGui/QMainWindow>
 #include <QApplication>
 #include <QtGui>
-
+#include <QString>
 
 #include <sensor_msgs/NavSatFix.h>
 #include <robot_localization/navsat_conversions.h>
