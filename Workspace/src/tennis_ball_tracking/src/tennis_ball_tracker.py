@@ -7,26 +7,33 @@ greenUpper = (64, 255, 255)
 # greenLower = (25, 0, 0)
 # greenUpper = (60, 255, 255)
 
-image = cv2.imread("../img/tennis_ball_4.jpg")
-# cv2.imshow("Original image", image)
+cap = cv2.VideoCapture(0)
 
-hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-mask = cv2.inRange(hsv, greenLower, greenUpper)
-mask = cv2.erode(mask, None, iterations=2)
-mask = cv2.dilate(mask, None, iterations=2)
-# cv2.imshow("HSV", hsv)
+while(True):
+	ret, frame = cap.read()
 
-# gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-# blurred = cv2.GaussianBlur(hsv, (11, 11), 0)
-# edged = cv2.Canny(blurred, 30, 150)
-# cv2.imshow("Edges", edged)
+	hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+	mask = cv2.inRange(hsv, greenLower, greenUpper)
+	mask = cv2.erode(mask, None, iterations=2)
+	mask = cv2.dilate(mask, None, iterations=2)
+	# cv2.imshow("HSV", hsv)
 
-(_, contours, _) = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+	# gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+	# blurred = cv2.GaussianBlur(hsv, (11, 11), 0)
+	# edged = cv2.Canny(blurred, 30, 150)
+	# cv2.imshow("Edges", edged)
 
-print len(contours)
+	(_, contours, _) = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-tennisBalls = image.copy()
-cv2.drawContours(tennisBalls, contours, -1, (0, 255, 0), 2)
-cv2.imshow("Tennis Balls", tennisBalls)
+	print len(contours)
 
-cv2.waitKey(0)
+	tennisBalls = frame.copy()
+	cv2.drawContours(tennisBalls, contours, -1, (0, 255, 0), 2)
+
+	cv2.imshow("Webcam", tennisBalls)
+
+	if cv2.waitKey(1) & 0xFF == ord('q'):
+		break
+
+cap.release()
+cv2.destroyAllWindows()
