@@ -5,13 +5,6 @@
 
 #include "../include/roverGUI/main_window.hpp"
 #include "../include/roverGUI/gui.h"
-#include <QMessageBox>
-#include <QString>
-#include <QtCore>
-#include <QtGui>
-#include <iostream>
-#include <robot_localization/navsat_conversions.h>
-#include <math.h>
 
 /*****************************************************************************
 ** Namespaces
@@ -37,7 +30,6 @@ MainWindow::MainWindow(int argc, char **argv, QWidget *parent)
                     // on_...() callbacks in this class.
 
   scene = new QGraphicsScene(this);
-
 
   ui.myGraphicsView->setScene(scene);
   /*change "myGraphicsView" obj name from designer view
@@ -71,33 +63,30 @@ void roverGUI::MainWindow::subscriber_callback(
   RobotLocalization::NavsatConversions::LLtoUTM(
       rover_lat, rover_long, rover_northing, rover_easting, rover_utm_zone);
 
-
-  int pixmap_y=ui.myGraphicsView->height();
-  int pixmap_x=ui.myGraphicsView->width();
+  int pixmap_y = ui.myGraphicsView->height();
+  int pixmap_x = ui.myGraphicsView->width();
   QPixmap pix = QPixmap(pixmap_x, pixmap_y);
 
-
-  QPoint centre; //this is the rover. Reference to mid of pixmap
-  centre.setX(pixmap_x/2);
-  centre.setY(pixmap_y/2);
-  double x_dist=(easting_utm - rover_easting) ;
-  double y_dist=(northing_utm - rover_northing);
-
+  QPoint centre; // this is the rover. Reference to mid of pixmap
+  centre.setX(pixmap_x / 2);
+  centre.setY(pixmap_y / 2);
+  double x_dist = (easting_utm - rover_easting);
+  double y_dist = (northing_utm - rover_northing);
 
   QPoint p1;
-  p1.setX(centre.x()+ x_dist*scaling_function(x_dist, y_dist));
-  p1.setY(centre.y()+y_dist*scaling_function(x_dist, y_dist));
+  p1.setX(centre.x() + x_dist * scaling_function(x_dist, y_dist));
+  p1.setY(centre.y() + y_dist * scaling_function(x_dist, y_dist));
   ROS_INFO(" x distance to target %f", x_dist);
   ROS_INFO(" y distance to target %f", y_dist);
-  ROS_INFO(" x,y scale factor is (pixels/meter) %f",scaling_function(x_dist, y_dist) );
-
+  ROS_INFO(" x,y scale factor is (pixels/meter) %f",
+           scaling_function(x_dist, y_dist));
 
   QPainter painter(&pix);
 
   QPen redPen(Qt::red);
   QPen bluePen(Qt::blue);
-  redPen.setWidth(pixmap_x/100); //scale position markers
-  bluePen.setWidth(pixmap_x/100);
+  redPen.setWidth(pixmap_x / 100); // scale position markers
+  bluePen.setWidth(pixmap_x / 100);
 
   painter.setPen(redPen);
   painter.drawPoint(p1);
@@ -111,20 +100,19 @@ void roverGUI::MainWindow::subscriber_callback(
                          // Need to erase everytime the position is updated
 }
 
-float roverGUI::MainWindow::scaling_function(float x_dist, float y_dist){
-double euclidean_dist= sqrt(pow(x_dist,2)+pow(y_dist,2));
-if (euclidean_dist<300) { //determine the threshold of 300 by trial and error
-    return 5; //arbitrary
-}else{
-    return 1; //arbitrary
-}
+float roverGUI::MainWindow::scaling_function(float x_dist, float y_dist) {
+  double euclidean_dist = sqrt(pow(x_dist, 2) + pow(y_dist, 2));
+  if (euclidean_dist <
+      300) {  // determine the threshold of 300 by trial and error
+    return 5; // arbitrary
+  } else {
+    return 1; // arbitrary
+  }
 }
 
 void roverGUI::MainWindow::on_longitudeLineEdit_returnPressed() {
   on_latitudeLineEdit_returnPressed();
 }
-
-
 
 void roverGUI::MainWindow::on_latitudeLineEdit_returnPressed() {
   longitude = (ui.longitudeLineEdit->text()).toDouble(); // reads as a QString

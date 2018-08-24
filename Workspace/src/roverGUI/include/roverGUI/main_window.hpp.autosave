@@ -12,22 +12,23 @@
 ** Includes
 *****************************************************************************/
 
-
+//#include "qnode.hpp"
 #include "ui_main_window.h"
 #include <QtCore>
 #include <QtGui/QMainWindow>
-#include <QApplication>
-#include <QtGui>
-
-
 #include <sensor_msgs/NavSatFix.h>
 #include <robot_localization/navsat_conversions.h>
-
+#include <QtCore>
+#include <QtGui>
 #include <iostream>
-#include <math.h>
-#include <sstream>
-#include <string>
 
+
+#include <QApplication>
+
+
+
+
+#include <math.h>
 /*****************************************************************************
 ** Namespace
 *****************************************************************************/
@@ -50,14 +51,14 @@ public:
 
   void subscriber_callback(const sensor_msgs::NavSatFix::ConstPtr &receivedMsg);
   float scaling_function(float x_dist, float y_dist);
-
 private:
   QGraphicsScene *scene;
   double longitude;
   double latitude;
   double easting_utm;
   double northing_utm;
-  std::string utm_zone, rover_utm_zone;
+  std::string utm_zone,rover_utm_zone;
+
 
 public Q_SLOTS:
   void on_longitudeLineEdit_returnPressed();

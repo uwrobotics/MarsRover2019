@@ -2,16 +2,7 @@
 // TEST
 #include "../include/roverGUI/gui.h"
 #include "../include/roverGUI/main_window.hpp"
-#include <QApplication>
-#include <QtGui>
 
-#include <ros/callback_queue.h>
-#include <ros/network.h>
-#include <ros/ros.h>
-#include <sstream>
-#include <std_msgs/Int32.h> //need to include everything you are using form std_msgs!
-#include <std_msgs/String.h>
-#include <string>
 /*****************************************************************************
 ** Main
 *****************************************************************************/
@@ -47,7 +38,7 @@ int main(int argc, char **argv) {
       ros::getGlobalCallbackQueue()->clear();
     }
 
-    //ROS_INFO(" graphics scene hight %d", w.ui.myGraphicsView->height());
+    // ROS_INFO(" graphics scene hight %d", w.ui.myGraphicsView->height());
     // continually check for Qt user input etc.
     QCoreApplication::processEvents();
   }
