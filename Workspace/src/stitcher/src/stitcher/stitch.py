@@ -89,18 +89,10 @@ def equalize_histogram_color(img):
 	img = cv2.cvtColor(img_yuv, cv2.COLOR_YUV2BGR)
 	return img
 
-def main():
-	# Get input set of images
-	img1 = cv2.imread('/home/tibi/catkin_ws/src/stitcher/testImages/pan2.jpeg')
-	img2 = cv2.imread('/home/tibi/catkin_ws/src/stitcher/testImages/pan1.jpeg')
-
+def stitch_two_imgs(img1, img2):
 	# Equalize histogram
 	img1 = equalize_histogram_color(img1)
 	img2 = equalize_histogram_color(img2)
-
-	# Show input images
-	#input_images = np.hstack( (img1, img2) )
-	#cv2.imshow ('Input Images', input_images)
 
 	# Use SIFT to find keypoints and return homography matrix
 	M =  get_sift_homography(img1, img2)
@@ -108,12 +100,59 @@ def main():
 	# Stitch the images together using homography matrix
 	result_image = get_stitched_image(img2, img1, M)
 
+	return result_image
+
+def main(image_list):
+	# find number of images in list
+	num_imgs = len(image_list)
+	
+	# if only 1 image give error message
+	if num_imgs == 1:
+		print("Error, only 1 image was given")
+		return
+	
+	loop_necessary = True
+	# if there are only 2 images, no need to loop, set loop_necessary to false
+	if num_imgs == 2:
+		loop_necessary = False
+
+	#initially create panorama using first 2 images in original list
+	result = stitch_two_imgs(image_list[0], image_list[1])
+
+	# keep stitching onto current panorama until all images are accounted for
+	backIndex = 2
+	while loop_necessary:
+		print("Looping")
+		result = stitch_two_imgs(result, image_list[backIndex])
+		# stop looping if the last image has been reached
+		if backIndex == (num_imgs - 1):
+			loop_necessary = False
+		backIndex += 1
+
+	# Get input set of images
+	#img1 = cv2.imread('/home/tibi/catkin_ws/src/stitcher/testImages/pan2.jpeg')
+	#img2 = cv2.imread('/home/tibi/catkin_ws/src/stitcher/testImages/pan1.jpeg')
+
+	# Equalize histogram
+	#img1 = equalize_histogram_color(img1)
+	#img2 = equalize_histogram_color(img2)
+
+	# Show input images
+	#input_images = np.hstack( (img1, img2) )
+	#cv2.imshow ('Input Images', input_images)
+
+	# Use SIFT to find keypoints and return homography matrix
+	#M =  get_sift_homography(img1, img2)
+
+	# Stitch the images together using homography matrix
+	#result_image = get_stitched_image(img2, img1, M)
+
 	# Write the result to the same directory
 	#result_image_name = 'results/result_'+sys.argv[1]
 	#cv2.imwrite(result_image_name, result_image)
 
 	# Show the resulting image
-	cv2.imshow ('Result', result_image)
+	cv2.imshow ('Result', result)
 	cv2.waitKey(0)
 	cv2.destroyAllWindows()
 
