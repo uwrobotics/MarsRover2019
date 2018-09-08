@@ -5,7 +5,6 @@ project(stitcher)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  rospy
   std_msgs
 )
 
@@ -16,7 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
 ## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
-catkin_python_setup()
+#catkin_python_setup()
 
 ################################################
 ## Declare ROS messages, services and actions ##
@@ -105,6 +104,7 @@ catkin_package(
 #  DEPENDS system_lib
 )
 
+find_package(OpenCV 3.2.0 REQUIRED) 
 ###########
 ## Build ##
 ###########
@@ -114,12 +114,14 @@ catkin_package(
 # include_directories(include)
 include_directories(
   ${catkin_INCLUDE_DIRS}
+  ${OpenCV_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
 # add_library(simontest
 #   src/${PROJECT_NAME}/simontest.cpp
 # )
+#add_library(image_stitching stitcher.cpp)
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -127,16 +129,23 @@ include_directories(
 # add_dependencies(simontest ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
-# add_executable(simontest_node src/simontest_node.cpp)
+add_executable(stitching_in_c src/stitching_c.cpp)
+add_executable(test_Driver src/test_driver.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 # add_dependencies(simontest_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(simontest_node
-#   ${catkin_LIBRARIES}
-# )
+target_link_libraries(stitching_in_c 
+    ${catkin_LIBRARIES} 
+    ${OpenCV_LIBS}
+)
+
+target_link_libraries(test_Driver 
+    ${catkin_LIBRARIES} 
+    ${OpenCV_LIBS}
+)
 
 #############
 ## Install ##
@@ -147,10 +156,9 @@ include_directories(
 
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
-install(PROGRAMS
-   nodes/driver
-   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-)
+#install(PROGRAMS
+#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+#)
 
 ## Mark executables and/or libraries for installation
 # install(TARGETS simontest simontest_node
