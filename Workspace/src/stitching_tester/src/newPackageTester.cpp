@@ -1,5 +1,6 @@
-#include "stitcher_code.cpp"
+#include "stitcher/src/stitcher_code.cpp"
 
+// test function with local images
 int main()
 {
 	Mat img1 = imread("/home/tibi/MarsRover2019/Workspace/src/stitcher/testImages/pic1.jpg", 1);
@@ -18,4 +19,3 @@ int main()
 	waitKey(0);
 	*/
 }
-
