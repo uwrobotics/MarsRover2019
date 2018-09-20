@@ -6,6 +6,10 @@ project(stitcher)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   std_msgs
+  roscpp
+  image_transport
+  cv_bridge
+  sensor_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -124,7 +128,8 @@ add_library(image_stitching src/stitcher_code.cpp)
 # add_dependencies(simontest ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
-add_executable(stitching_in_c src/stitching_c.cpp)
+add_executable(testPublishingNode src/node_driver.cpp)
+add_executable(testSubscribingNode src/node_subscriber.cpp)
 add_executable(test_Driver src/test_driver.cpp)
 
 ## Add cmake target dependencies of the executable
@@ -132,7 +137,12 @@ add_executable(test_Driver src/test_driver.cpp)
 # add_dependencies(simontest_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(stitching_in_c 
+target_link_libraries(testPublishingNode 
+    ${catkin_LIBRARIES} 
+    ${OpenCV_LIBS}
+)
+
+target_link_libraries(testSubscribingNode 
     ${catkin_LIBRARIES} 
     ${OpenCV_LIBS}
 )

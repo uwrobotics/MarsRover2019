@@ -12,7 +12,7 @@ Stitcher::Mode mode = Stitcher::PANORAMA;
 void stitch_images(vector<Mat> imgs, bool try_use_gpu, Mat &pano)
 {
     // check for valid input
-
+    
     // empty vector
     if (imgs.empty())
     {
