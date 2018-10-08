@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <launch>
 
-  <node pkg="robot_localization" type="ekf_localization_node" name="rover_odom_localization">
+  <!--node pkg="robot_localization" type="ekf_localization_node" name="rover_odom_localization">
     <rosparam command="load" file="$(find simulation)/config/rover_odom_localization.yaml" />
     <remap from="/odometry/filtered" to="/odometry/rover_odom" />  
-  </node>
+  </node-->
 
   <node pkg="robot_localization" type="ekf_localization_node" name="rover_gps_odom_localization">
     <rosparam command="load" file="$(find simulation)/config/rover_gps_odom_localization.yaml" />
@@ -16,6 +16,7 @@
     <param name="yaw_offset" value="1.5707963"/>
     <param name="broadcast_utm_transform" value="true"/>
     <param name="publish_filtered_gps" value="true" />
+    <param name="broadcast_utm_as_parent_frame" value="true" />
 
     <param name="frequency" value="5" />
 
