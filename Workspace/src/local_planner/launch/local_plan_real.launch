@@ -1,0 +1,13 @@
+<launch>
+
+    <arg name="roverConfig" default="$(find local_planner)/cfg/local_planner_rover_cfg.yaml"/>
+    <rosparam command="load" file="$(arg roverConfig)"/>
+
+    <include file="$(find simulation)/launch/localization.launch" />
+    <include file="$(find occupancy_grid)/launch/occupancy_grid_sim.launch" />
+
+    <node pkg="local_planner" type="local_planner" name="local_planner" output="screen">
+    </node>
+
+
+</launch>
