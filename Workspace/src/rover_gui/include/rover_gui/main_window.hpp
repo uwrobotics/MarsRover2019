@@ -12,16 +12,16 @@
 ** Includes
 *****************************************************************************/
 
-
 #include "ui_main_window.h"
+#include <QApplication>
+#include <QString>
 #include <QtCore>
 #include <QtGui/QMainWindow>
-#include <QApplication>
 #include <QtGui>
-#include <QString>
 
-#include <sensor_msgs/NavSatFix.h>
+//#include <ros/ros.h>
 #include <robot_localization/navsat_conversions.h>
+#include <sensor_msgs/NavSatFix.h>
 
 #include <iostream>
 #include <math.h>
@@ -45,19 +45,23 @@ class MainWindow : public QMainWindow {
 
 public:
   Ui::MainWindowDesign ui;
-  MainWindow(int argc, char **argv, QWidget *parent = 0);
+  MainWindow(int argc, char **argv, ros::NodeHandle &nh, QWidget *parent = 0);
   ~MainWindow();
 
-  void subscriber_callback(const sensor_msgs::NavSatFix::ConstPtr &receivedMsg);
-  float scaling_function(float x_dist, float y_dist);
+  bool Exiting() { return mQuitting; }
+
+protected:
+  virtual void closeEvent(QCloseEvent *event) {
+    ROS_WARN("quitting window");
+    mQuitting = true;
+    QMainWindow::closeEvent(event);
+  }
 
 private:
-  QGraphicsScene *scene;
-  double longitude;
-  double latitude;
-  double easting_utm;
-  double northing_utm;
-  std::string utm_zone, rover_utm_zone;
+  ros::NodeHandle &mNh;
+
+  // hack to get combined ros/qt event loop to exit
+  bool mQuitting;
 
 public Q_SLOTS:
   void on_longitudeLineEdit_returnPressed();

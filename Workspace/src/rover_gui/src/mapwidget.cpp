@@ -1,37 +1,18 @@
+#include "mapwidget.hpp"
+#include "gui.h"
+#include "ui_mapwidget.h"
 
-/*****************************************************************************
-** Includes
-*****************************************************************************/
-
-#include "../include/roverGUI/main_window.hpp"
-#include "../include/roverGUI/gui.h"
-
-/*****************************************************************************
-** Namespaces
-*****************************************************************************/
-
-namespace roverGUI {
-
-using namespace Qt;
-
-/*****************************************************************************
-** Implementation [MainWindow]
-*****************************************************************************/
-
-MainWindow::MainWindow(int argc, char **argv, QWidget *parent)
-    : QMainWindow(parent) {
+MapWidget::MapWidget(QWidget *parent) : QWidget(parent), ui(new Ui::MapWidget) {
+  ui->setupUi(this);
 
   longitude = 0;
   latitude = 0;
   easting_utm = 0;
   northing_utm = 0;
 
-  ui.setupUi(this); // Calling this incidentally connects all ui's triggers to
-                    // on_...() callbacks in this class.
-
   scene = new QGraphicsScene(this);
 
-  ui.myGraphicsView->setScene(scene);
+  ui->mapGraphicsView->setScene(scene);
   /*change "myGraphicsView" obj name from designer view
     Right now (aug4) the pixMap size and graphics view size is hardcoded.
     This means that a scoll bar appears when the pixmap is bigger than the
@@ -39,21 +20,16 @@ MainWindow::MainWindow(int argc, char **argv, QWidget *parent)
     It would be good to have the pixmap scale dynamically with the
     graphicsview/window resizing
 */
-
-  QObject::connect(
-      ui.actionAbout_Qt, SIGNAL(triggered(bool)), qApp,
-      SLOT(aboutQt())); // qApp is a global variable for the application
 }
 
-MainWindow::~MainWindow() {}
+MapWidget::~MapWidget() { delete ui; }
 
-/*****************************************************************************
-** Implementation [Slots]
-*****************************************************************************/
+bool MapWidget::Init(ros::NodeHandle &nh) {
+  mpNh = &nh;
+  mSub = nh.subscribe(GPS_TOPIC, 1, &MapWidget::subscriber_callback, this);
+}
 
-} // namespace roverGUI
-
-void roverGUI::MainWindow::subscriber_callback(
+void MapWidget::subscriber_callback(
     const sensor_msgs::NavSatFix::ConstPtr &receivedMsg) {
 
   double rover_lat = receivedMsg->latitude;
@@ -63,8 +39,8 @@ void roverGUI::MainWindow::subscriber_callback(
   RobotLocalization::NavsatConversions::LLtoUTM(
       rover_lat, rover_long, rover_northing, rover_easting, rover_utm_zone);
 
-  int pixmap_y = ui.myGraphicsView->height();
-  int pixmap_x = ui.myGraphicsView->width();
+  int pixmap_y = ui->mapGraphicsView->viewport()->height();
+  int pixmap_x = ui->mapGraphicsView->viewport()->width();
   QPixmap pix = QPixmap(pixmap_x, pixmap_y);
 
   QPoint centre; // this is the rover. Reference to mid of pixmap
@@ -93,14 +69,14 @@ void roverGUI::MainWindow::subscriber_callback(
   painter.setPen(bluePen);
   painter.drawPoint(centre);
 
-  // ui.myLabel->setPixmap(pix);
+  // ui->myLabel->setPixmap(pix);
   // scene->addPixmap(blankPix);
   scene->clear();        // didnt work still lagging
   scene->addPixmap(pix); // previous dots remain on screen for some reason.
                          // Need to erase everytime the position is updated
 }
 
-float roverGUI::MainWindow::scaling_function(float x_dist, float y_dist) {
+float MapWidget::scaling_function(float x_dist, float y_dist) {
   double euclidean_dist = sqrt(pow(x_dist, 2) + pow(y_dist, 2));
   if (euclidean_dist <
       300) {  // determine the threshold of 300 by trial and error
@@ -110,13 +86,9 @@ float roverGUI::MainWindow::scaling_function(float x_dist, float y_dist) {
   }
 }
 
-void roverGUI::MainWindow::on_longitudeLineEdit_returnPressed() {
-  on_latitudeLineEdit_returnPressed();
-}
-
-void roverGUI::MainWindow::on_latitudeLineEdit_returnPressed() {
-  longitude = (ui.longitudeLineEdit->text()).toDouble(); // reads as a QString
-  latitude = (ui.latitudeLineEdit->text()).toDouble();
+void MapWidget::SetLatLon(double lat, double lon) {
+  longitude = lon;
+  latitude = lat;
 
   RobotLocalization::NavsatConversions::LLtoUTM(
       latitude, longitude, northing_utm, easting_utm, utm_zone);
