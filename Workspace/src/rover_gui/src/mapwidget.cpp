@@ -26,18 +26,20 @@ MapWidget::~MapWidget() { delete ui; }
 
 bool MapWidget::Init(ros::NodeHandle &nh) {
   mpNh = &nh;
-  mSub = nh.subscribe(GPS_TOPIC, 1, &MapWidget::subscriber_callback, this);
+  mSub = nh.subscribe(UTM_POSE_TOPIC, 1, &MapWidget::subscriber_callback, this);
 }
 
 void MapWidget::subscriber_callback(
-    const sensor_msgs::NavSatFix::ConstPtr &receivedMsg) {
+    const geometry_msgs::Pose2D::ConstPtr &receivedMsg) {
 
-  double rover_lat = receivedMsg->latitude;
-  double rover_long = receivedMsg->longitude;
-  double rover_easting, rover_northing;
+  double rover_northing = receivedMsg->y;
+  double rover_easting = receivedMsg->x;
+  //TODO: incorporate theta
+  double heading = receivedMsg->theta; //radians counter-clockwise from due east
+  //double rover_easting, rover_northing;
 
-  RobotLocalization::NavsatConversions::LLtoUTM(
-      rover_lat, rover_long, rover_northing, rover_easting, rover_utm_zone);
+  //RobotLocalization::NavsatConversions::LLtoUTM(
+  //    rover_lat, rover_long, rover_northing, rover_easting, rover_utm_zone);
 
   int pixmap_y = ui->mapGraphicsView->viewport()->height();
   int pixmap_x = ui->mapGraphicsView->viewport()->width();

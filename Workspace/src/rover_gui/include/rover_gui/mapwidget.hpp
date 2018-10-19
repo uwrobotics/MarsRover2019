@@ -8,7 +8,7 @@
 #ifndef Q_MOC_RUN
 #include <robot_localization/navsat_conversions.h>
 #include <ros/ros.h>
-#include <sensor_msgs/NavSatFix.h>
+#include <geometry_msgs/Pose2D.h>
 #endif
 
 namespace Ui {
@@ -24,7 +24,7 @@ public:
 
   bool Init(ros::NodeHandle &nh);
 
-  void subscriber_callback(const sensor_msgs::NavSatFix::ConstPtr &receivedMsg);
+  void subscriber_callback(const geometry_msgs::Pose2D::ConstPtr &receivedMsg);
   float scaling_function(float x_dist, float y_dist);
   void SetLatLon(double lat, double lon);
 

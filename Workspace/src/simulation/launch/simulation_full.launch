@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<launch>
+    <include file="$(find simulation)/launch/simulation.launch"/>
+    <include file="$(find simulation)/launch/localization.launch"/>
+    <node pkg="localization_converter" type="localization_converter_node" name="localization_converter_node">
+    </node>
+
+</launch>

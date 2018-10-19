@@ -11,7 +11,7 @@ odom0: husky_velocity_controller/odom
 odom0_config: [false, false, false,
                false, false, false,
                true, true, true,
-               false, false, false,
+               false, false, true,
                false, false, false]
 odom0_differential: false
 odom0_queue_size: 10
@@ -25,7 +25,7 @@ odom1_config: [true, true, false,
 odom1_differential: false
 odom1_queue_size: 10
 
-imu0: /imu
+imu0: /imu/data
 imu0_config: [false, false, false,
               false, false, false,
               false, false, false,
