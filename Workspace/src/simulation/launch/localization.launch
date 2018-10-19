@@ -11,14 +11,17 @@
     <remap from="/odometry/filtered" to="/odometry/rover_gps_odom" />
   </node>
 
-  <node pkg="robot_localization" type="navsat_transform_node" name="rover_navsat_transform" respawn="true">
+  <node pkg="robot_localization" type="navsat_transform_node" name="rover_navsat_transform" respawn="true" output="screen">
     <param name="magnetic_declination_radians" value="0"/>
     <param name="yaw_offset" value="1.5707963"/>
     <param name="broadcast_utm_transform" value="true"/>
+    <param name="broadcast_utm_as_parent_frame" value="true"/>
     <param name="publish_filtered_gps" value="true" />
     <param name="broadcast_utm_as_parent_frame" value="true" />
 
     <param name="frequency" value="5" />
+    <param name="wait_for_datum" value="true" />
+    <rosparam param="datum">[49.9, 8.9, 0.0, map, base_link]</rosparam>
 
     <!-- input mapping -->
     <!--remap from="/imu/data" to=""/-->
@@ -27,6 +30,8 @@
     
     <!-- output mapping -->
     <remap from="/odometry/gps" to="/odometry/rover_gps"/>
+
+    <!--remap from="odom" to="map" /-->
 
   </node>
 
