@@ -17,7 +17,7 @@ public:
 
     void calc_velocities(float ee_x, float ee_y, float ee_phi);//updates joint velocities
 
-    Roboarm(float shoulder=0, float elbow=0, float wrist=0, float l_s, float l_e, float l_w);
+    Roboarm(float l_s, float l_e, float l_w,float shoulder=0, float elbow=0, float wrist=0);
 
     ~Roboarm();
 
