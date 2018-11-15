@@ -10,9 +10,16 @@ int main(int argc, char **argv[]) {
 	
 	//Test 1
 	Console_Message msg;
-	msg.sendMessage("Testing!", "NULL");
+	message_t argument;
+	argument.node_sender = "Test_Node";
+	argument.msg = "Testing!";
+	argument.level = "Info";
+	msg.sendMessage(argument);
 
 	//Test 2
-	msg.sendMessage("Testing levels", "Warning");
+	argument.node_sender = "Test_Node";
+	argument.msg = "Test2";
+	argument.level = "Warning";
+	msg.sendMessage(argument);
 
 }
