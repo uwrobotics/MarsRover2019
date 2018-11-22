@@ -17,7 +17,7 @@ class Roboarm {
     Roboarm(
       float l1, float l2, float l3,
       float a1 = 0, float a2 = 0, float a3 = 0,
-      float stepSize = 0.01
+      float stepSize = 0.001
       );
     
     ~Roboarm();

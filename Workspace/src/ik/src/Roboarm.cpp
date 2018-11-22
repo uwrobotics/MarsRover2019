@@ -53,8 +53,8 @@ void Roboarm::calc_velocities(float endEffectorVX, float endEffectorVY, float en
 void Roboarm::calc_pose(bool visualize){
     //calculate the anlges at the next time step
     float nextAngle1 = angleLink1 + velocityLink1 * alpha;
-    float nextAngle2 = angleLink2 + velocityLink1 * alpha;
-    float nextAngle3 = angleLink3 + velocityLink1 * alpha;
+    float nextAngle2 = angleLink2 + velocityLink2 * alpha;
+    float nextAngle3 = angleLink3 + velocityLink3 * alpha;
 
     eeX =
               lengthLink1 * cos(nextAngle1)

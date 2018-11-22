@@ -10,17 +10,17 @@ main(){
     std::cout <<arm.eeX<< " "<<arm.eeY<< " " <<arm.eePhi<<std::endl;
     */
 
-    Roboarm arm(1.7, 1.0, 0.3, 0.0, 1.5, 0.0);
+    Roboarm arm(1.7, 1.0, 0.3, 0.2, -1.5, -0.2);
     std::ofstream myfile;
     myfile.open("src/ik/src/ee_crds.csv");
     myfile << "x_crd,y_crd,phi,\n";
 
     int count = 0;
-    while(count<2500){
+    while(count<2000){
 
         count++;
         //calculate joint velocities
-        arm.calc_velocities(0.10, 0.0, 0.00); //move about 10cm/s
+        arm.calc_velocities(0.15,0.0, 0.000); //move about 10cm/s
 
         //calculate EE pose 0.01s in the future and update joint positions
         arm.calc_pose(true);
