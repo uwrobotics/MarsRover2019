@@ -1,9 +1,10 @@
 #include "Roboarm.cpp"
 #include <iostream>
 main(){
-    Roboarm arm(1.5,2.3,3.5);
-    std::cout<<arm.elbow_len<<" "<<arm.shoulder_pos<<std::endl;
-    arm.calc_velocities(1.4,2.2,5.5);
-    std::cout <<arm.shoulder_vel<< " "<<arm.elbow_vel<< " " <<arm.wrist_vel;
+    Roboarm arm(1.2, 0.9, 0.2, 1.0, 0.5, 0.2);
+    arm.calc_velocities(1.4, 2.2, 0.0);
+    std::cout <<arm.velocityLink1<< " "<<arm.velocityLink2<< " " <<arm.velocityLink3<<std::endl;
+    arm.calc_pose();
+    std::cout <<arm.eeX<< " "<<arm.eeY<< " " <<arm.eePhi<<std::endl;
 
 }
