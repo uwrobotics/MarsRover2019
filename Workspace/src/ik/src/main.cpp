@@ -12,7 +12,7 @@ main(){
 
     Roboarm arm(1.7, 1.0, 0.3, 0.2, -1.5, -0.2);
     std::ofstream myfile;
-    myfile.open("src/ik/src/ee_crds.csv");
+    myfile.open("build/ik/ee_crds.csv");
     myfile << "x_crd,y_crd,phi,\n";
 
     int count = 0;
