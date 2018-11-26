@@ -62,29 +62,16 @@ void Roboarm::calc_pose(bool visualize){
     float nextAngle2 = angleLink2 + velocityLink2 * alpha;
     float nextAngle3 = angleLink3 + velocityLink3 * alpha;
 
-    poseX[0] =
-              lengthLink1 * cos(nextAngle1)
-            + lengthLink2 * (cos(nextAngle1) + cos(nextAngle2))
-            + lengthLink3 * (cos(nextAngle1) + cos(nextAngle2) + cos(nextAngle3));
-    poseX[1] =
-              lengthLink1 * cos(nextAngle1)
-            + lengthLink2 * (cos(nextAngle1) + cos(nextAngle2));
-    poseX[2] =
-              lengthLink1 * cos(nextAngle1);
+    pose[0].x = 0.0;
+    pose[1].x = pose[0].x + lengthLink1 * cos(nextAngle1);
+    pose[2].x = pose[1].x + lengthLink2 * (cos(nextAngle1) + cos(nextAngle2));
+    pose[3].x = pose[2].x + lengthLink3 * (cos(nextAngle1) + cos(nextAngle2) + cos(nextAngle3));
 
-    poseX[3] = 0.0;
+    pose[0].y = 0.0;
+    pose[1].y = pose[0].y + lengthLink1 * sin(nextAngle1);
+    pose[2].y = pose[1].y + lengthLink2 * (sin(nextAngle1) + sin(nextAngle2));
+    pose[3].y = pose[2].y + lengthLink3 * (sin(nextAngle1) + sin(nextAngle2) + sin(nextAngle3));
 
-    poseY[0] =
-              lengthLink1 * sin(nextAngle1)
-            + lengthLink2 * (sin(nextAngle1) + sin(nextAngle2))
-            + lengthLink3 * (sin(nextAngle1) + sin(nextAngle2) + sin(nextAngle3));
-    poseY[1] =
-              lengthLink1 * sin(nextAngle1)
-            + lengthLink2 * (sin(nextAngle1) + sin(nextAngle2));
-    poseY[2] =
-              lengthLink1 * sin(nextAngle1);
-
-    poseY[3] = 0.0;
 
     eePhi = nextAngle1 + nextAngle2 + nextAngle3;
 

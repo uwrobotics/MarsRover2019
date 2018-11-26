@@ -1,6 +1,15 @@
 #ifndef ROBOARM_HEADER
 #define ROBOARM_HEADER
 
+struct Point{
+    float x;
+    float y;
+    Point(const float &inX = 0.0, const float &inY = 0.0){
+        x = inX;
+        y = inY;
+    }
+};
+
 class Roboarm {
   public:
     float velocityLink1;
@@ -11,8 +20,7 @@ class Roboarm {
     float angleLink2;
     float angleLink3;
 
-    float poseX [4];//ee,wrist,elbow//shoulde
-    float poseY [4];
+    Point pose [4];//shoulder, elbox, wrist, ee
     float eePhi;
 
     void calc_velocities(float endEffectorVX, float endEffectorVY, float endEffectorPhi,
@@ -36,5 +44,7 @@ class Roboarm {
     
 
 };
+
+
 
 #endif
