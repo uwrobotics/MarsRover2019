@@ -13,10 +13,15 @@ Roboarm::Roboarm(float l1, float l2, float l3, float a1, float a2, float a3, flo
   velocityLink2 = 0;
   velocityLink3 = 0;
 
-  //calc_pose()
+  calc_pose();
 }
 
-void Roboarm::calc_velocities(float endEffectorVX, float endEffectorVY, float endEffectorPhi) {
+void Roboarm::calc_velocities(float endEffectorVX, float endEffectorVY, float endEffectorPhi,
+                              float a1, float a2, float a3) {
+  angleLink1 =a1;
+  angleLink2 =a2;
+  angleLink3 = a3;
+
   float c1 = cos(angleLink1);
   float s1 = sin(angleLink1);
 
@@ -50,20 +55,36 @@ void Roboarm::calc_velocities(float endEffectorVX, float endEffectorVY, float en
     + (l1 * l2 * (c1 * s12 - s1 * c12) + l1 * l3 * (c1 * s123 - s1 * c123)) * eP;
 }
 
+
 void Roboarm::calc_pose(bool visualize){
     //calculate the anlges at the next time step
     float nextAngle1 = angleLink1 + velocityLink1 * alpha;
     float nextAngle2 = angleLink2 + velocityLink2 * alpha;
     float nextAngle3 = angleLink3 + velocityLink3 * alpha;
 
-    eeX =
+    poseX[0] =
               lengthLink1 * cos(nextAngle1)
             + lengthLink2 * (cos(nextAngle1) + cos(nextAngle2))
             + lengthLink3 * (cos(nextAngle1) + cos(nextAngle2) + cos(nextAngle3));
-    eeY =
+    poseX[1] =
+              lengthLink1 * cos(nextAngle1)
+            + lengthLink2 * (cos(nextAngle1) + cos(nextAngle2));
+    poseX[2] =
+              lengthLink1 * cos(nextAngle1);
+
+    poseX[3] = 0.0;
+
+    poseY[0] =
               lengthLink1 * sin(nextAngle1)
             + lengthLink2 * (sin(nextAngle1) + sin(nextAngle2))
             + lengthLink3 * (sin(nextAngle1) + sin(nextAngle2) + sin(nextAngle3));
+    poseY[1] =
+              lengthLink1 * sin(nextAngle1)
+            + lengthLink2 * (sin(nextAngle1) + sin(nextAngle2));
+    poseY[2] =
+              lengthLink1 * sin(nextAngle1);
+
+    poseY[3] = 0.0;
 
     eePhi = nextAngle1 + nextAngle2 + nextAngle3;
 

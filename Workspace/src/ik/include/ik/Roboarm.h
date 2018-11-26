@@ -7,11 +7,16 @@ class Roboarm {
     float velocityLink2;
     float velocityLink3;
 
-    float eeX;
-    float eeY;
+    float angleLink1;
+    float angleLink2;
+    float angleLink3;
+
+    float poseX [4];//ee,wrist,elbow//shoulde
+    float poseY [4];
     float eePhi;
 
-    void calc_velocities(float endEffectorVX, float endEffectorVY, float endEffectorPhi);
+    void calc_velocities(float endEffectorVX, float endEffectorVY, float endEffectorPhi,
+                         float a1, float a2, float a3);
     void calc_pose(bool visualize = false);
 
     Roboarm(
@@ -29,9 +34,7 @@ class Roboarm {
     const float lengthLink2;
     const float lengthLink3;
     
-    float angleLink1;
-    float angleLink2;
-    float angleLink3;
+
 };
 
 #endif
