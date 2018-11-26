@@ -13,20 +13,24 @@ main(){
     Roboarm arm(1.7, 1.0, 0.3, 0.2, -1.5, -0.2);
     std::ofstream myfile;
     myfile.open("build/ik/ee_crds.csv");
-    myfile << "x_crd,y_crd,phi,\n";
+    myfile << "eePhi,eeX,eeY,wristX,wristY,elbowX,elbowY,shoulderX,shoulderY,\n";
 
     int count = 0;
     while(count<2000){
 
         count++;
         //calculate joint velocities
-        arm.calc_velocities(0.15,0.0, 0.000); //move about 10cm/s
+        arm.calc_velocities(0.15,0.0, 0.000, arm.angleLink1, arm.angleLink2, arm.angleLink3); //move about 10cm/s
 
         //calculate EE pose 0.01s in the future and update joint positions
         arm.calc_pose(true);
 
         //save the coordinates of the EE
-        myfile << arm.eeX << "," << arm.eeY<<","<<arm.eePhi << "\n";
+        myfile <<arm.eePhi<<","<<
+                 arm.poseX[0] << "," << arm.poseY[0] << "," <<
+                 arm.poseX[1] << "," << arm.poseY[1] << "," <<
+                 arm.poseX[2] << "," << arm.poseY[2] << "," <<
+                 arm.poseX[3] << "," << arm.poseY[3] << "\n";
         std::cout<< "saved "<<std::endl;
 
     }
