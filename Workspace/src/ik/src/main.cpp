@@ -13,7 +13,7 @@ main(){
     Roboarm arm(1.7, 1.0, 0.3, 0.2, -1.5, -0.2);
     std::ofstream myfile;
     myfile.open("build/ik/ee_crds.csv");
-    myfile << "eePhi,eeX,eeY,wristX,wristY,elbowX,elbowY,shoulderX,shoulderY,\n";
+    myfile << "eeX eeY,wristX wristY,elbowX elbowY,shoulderX shoulderY,\n";
 
     int count = 0;
     while(count<2000){
@@ -26,11 +26,10 @@ main(){
         arm.calc_pose(true);
 
         //save the coordinates of the EE
-        myfile <<arm.eePhi<<","<<
-                 arm.poseX[0] << "," << arm.poseY[0] << "," <<
-                 arm.poseX[1] << "," << arm.poseY[1] << "," <<
-                 arm.poseX[2] << "," << arm.poseY[2] << "," <<
-                 arm.poseX[3] << "," << arm.poseY[3] << "\n";
+        myfile <<arm.pose[0].x << "," << arm.pose[0].y << " " <<
+                 arm.pose[1].x << "," << arm.pose[1].y << " " <<
+                 arm.pose[2].x << "," << arm.pose[2].y << " " <<
+                 arm.pose[3].x << "," << arm.pose[3].y << "\n";
         std::cout<< "saved "<<std::endl;
 
     }
