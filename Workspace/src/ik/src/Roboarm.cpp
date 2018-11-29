@@ -1,86 +1,77 @@
 #include <iostream>
 #include <cmath>
+
 #include "../include/ik/Roboarm.h"
 
 using namespace std;
 
-Roboarm::Roboarm(float l1, float l2, float l3, float a1, float a2, float a3, float stepSize) :
-  lengthLink1(l1), lengthLink2(l2), lengthLink3(l3),
-  angleLink1(a1), angleLink2(a2), angleLink3(a3),
-  alpha(stepSize){
+Roboarm::Roboarm(float lengths[3], float angles[3], float stepSize) :
+  alpha(stepSize) {
 
-  velocityLink1 = 0;
-  velocityLink2 = 0;
-  velocityLink3 = 0;
-
-  calc_pose();
+	for (int i = 0; i < 3; i++) {
+		linkVelocities[i] = 0;
+		linkLengths[i] = lengths[i];
+		linkAngles[i] = angles[i];
+	}
 }
 
-void Roboarm::calc_velocities(float endEffectorVX, float endEffectorVY, float endEffectorPhi,
-                              float a1, float a2, float a3) {
-  angleLink1 =a1;
-  angleLink2 =a2;
-  angleLink3 = a3;
+void Roboarm::calculateVelocities(float endEffector[3], float angles[3]) {
+	const float eeX = endEffector[0];
+	const float eeY = endEffector[1];
+  const float eePi = endEffector[2];
 
-  float c1 = cos(angleLink1);
-  float s1 = sin(angleLink1);
+  linkAngles[0] = angles[0];
+  linkAngles[1] = angles[1];
+  linkAngles[2] = angles[2];
 
-  float c12 = cos(angleLink1 + angleLink2);
-  float s12 = sin(angleLink1 + angleLink2);
+  float c1 = cos(linkAngles[0]);
+  float s1 = sin(linkAngles[0]);
 
-  float c123 = cos(angleLink1 + angleLink2 + angleLink3);
-  float s123 = sin(angleLink1 + angleLink2 + angleLink3);
+  float c12 = cos(linkAngles[0] + linkAngles[1]);
+  float s12 = sin(linkAngles[0] + linkAngles[1]);
+
+  float c123 = cos(linkAngles[0] + linkAngles[1] + linkAngles[2]);
+  float s123 = sin(linkAngles[0] + linkAngles[1] + linkAngles[2]);
     
-  float l1 = lengthLink1;
-  float l2 = lengthLink2;
-  float l3 = lengthLink3;
+  float l1 = linkLengths[0];
+  float l2 = linkLengths[1];
+  float l3 = linkLengths[2];
 
-  float eX = endEffectorVX;
-  float eY = endEffectorVY;
-  float eP = endEffectorPhi;
-
-  velocityLink1 =
-      (l2 * c12 * eX)
-    + (l2 * s12 * eY)
-    + (l2 * l3 * (c12 * s123 - s12 * c123) * eP);
+  linkVelocities[0] =
+      (l2 * c12 * eeX)
+    + (l2 * s12 * eeY)
+    + (l2 * l3 * (c12 * s123 - s12 * c123) * eePhi);
     
-  velocityLink2 =
-      (-l1 * c1 - l2 * c12) * eX
-    - (l1 * s1 + l2 * s12) * eY
-    - (l1 * l3 * (c1 * s123 - s1 * c123) + l2 * l3 * (c12 * s123 - s12 * c123)) * eP;
+  linkVelocities[1] =
+      (-l1 * c1 - l2 * c12) * eeX
+    - (l1 * s1 + l2 * s12) * eeY
+    - (l1 * l3 * (c1 * s123 - s1 * c123) + l2 * l3 * (c12 * s123 - s12 * c123)) * eePhi;
 
-  velocityLink3 =
-      (l1 * c1 * eX)
-    + (l1 * s1 * eY)
-    + (l1 * l2 * (c1 * s12 - s1 * c12) + l1 * l3 * (c1 * s123 - s1 * c123)) * eP;
+  linkVelocities[2] =
+      (l1 * c1 * eeX)
+    + (l1 * s1 * eeY)
+    + (l1 * l2 * (c1 * s12 - s1 * c12) + l1 * l3 * (c1 * s123 - s1 * c123)) * eePhi;
 }
 
+float* Roboarm::calculatePose() {
+	// calculate the anlges at the next time step
+	float *nextAngles = new float[3];
+	for (int i = 0; i < 3; i++) {
+		nextAngles[i] = linkAngles[i] + linkVelocities[i] * alpha;
+	}
 
-void Roboarm::calc_pose(bool visualize){
-    //calculate the anlges at the next time step
-    float nextAngle1 = angleLink1 + velocityLink1 * alpha;
-    float nextAngle2 = angleLink2 + velocityLink2 * alpha;
-    float nextAngle3 = angleLink3 + velocityLink3 * alpha;
+	// shoulder base
+	pose[0].x = 0.0;
+	pose[0].y = 0.0;
 
-    pose[0].x = 0.0;
-    pose[1].x = pose[0].x + lengthLink1 * cos(nextAngle1);
-    pose[2].x = pose[1].x + lengthLink2 * (cos(nextAngle1) + cos(nextAngle2));
-    pose[3].x = pose[2].x + lengthLink3 * (cos(nextAngle1) + cos(nextAngle2) + cos(nextAngle3));
+	float angleSoFar = 0;
+	for (int i = 1; i < 4; i++) {
+		angleSoFar += nextAngles[i - 1];
+		pose[i].x = pose[i - 1].x + linkLengths[i - 1] * cos(angleSoFar);
+		pose[i].y = pose[i - 1].y + linkLengths[i - 1] * sin(angleSoFar);
+	}
 
-    pose[0].y = 0.0;
-    pose[1].y = pose[0].y + lengthLink1 * sin(nextAngle1);
-    pose[2].y = pose[1].y + lengthLink2 * (sin(nextAngle1) + sin(nextAngle2));
-    pose[3].y = pose[2].y + lengthLink3 * (sin(nextAngle1) + sin(nextAngle2) + sin(nextAngle3));
-
-
-    eePhi = nextAngle1 + nextAngle2 + nextAngle3;
-
-    if (visualize == true){
-        angleLink1 = nextAngle1;
-        angleLink2 = nextAngle2;
-        angleLink3 = nextAngle3;
-    }
+  return nextAngles;
 }
-
 
 Roboarm::~Roboarm() {}
