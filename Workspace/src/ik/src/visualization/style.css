@@ -1,0 +1,42 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: slategrey;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+textarea {
+  padding: 10px;
+}
+
+button {
+  padding: 10px;
+}
+
+#dCanvas {
+  display: none;
+}
+
+#canvas {
+  background-color: tomato;
+}
+
+#error {
+  background-color:tomato;
+  padding: 20px;
+  margin-top: 20px;
+  visibility: hidden;
+}
