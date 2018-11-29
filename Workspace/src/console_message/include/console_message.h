@@ -1,13 +1,16 @@
+#ifndef CONSOLE_MESSAGE
+#define CONSOLE_MESSAGE
+
 #include <string>
 
 class Console_Message{
 
 public:
 
-	struct message_t{
-	  string node_sender;
-	  string msg;
-	  string level;
+	struct Message{
+	  char* node_sender;
+	  char* msg;
+	  char* level;
 	};
 
 	//User notes - there are five error levels (case matters):
@@ -18,6 +21,8 @@ public:
 	//Debug - Info that team members other than the software team could use/would like to know
 	
 	Console_Message();
-	void sendMessage(message_t arg);
+	void sendMessage(struct Message arg);
 
 };
+
+#endif
