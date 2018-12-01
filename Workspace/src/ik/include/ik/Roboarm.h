@@ -1,5 +1,6 @@
 #ifndef ROBOARM_HEADER
 #define ROBOARM_HEADER
+#define PI 3.141592
 
 struct Point{
     float x;
