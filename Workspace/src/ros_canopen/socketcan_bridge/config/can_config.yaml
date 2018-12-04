@@ -9,7 +9,7 @@ transmitter_interface: "can0"
 
 # Topics
 # in ROS, dictionaries must have string keys
-can_ids: [301, 302, 303]
+can_ids: [300, 301, 302, 303]
 ids_to_topics: {"301": "/shoulderEncoder",
                 "302": "/elbowEncoder",
                 "303": "/wristPitchEncoder"}

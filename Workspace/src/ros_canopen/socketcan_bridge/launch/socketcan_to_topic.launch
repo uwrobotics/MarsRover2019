@@ -1,7 +1,7 @@
 <launch>
-    <rosparam file="$(find socketcan_bridge)/config/can_config.yaml"/>
-
     <!-- CAN Receiver -->
-    <node pkg="socketcan_bridge" type="socketcan_to_topic_node" name="socketcan_to_topic_node" respawn="false" output="screen"/>
+    <node pkg="socketcan_bridge" type="socketcan_to_topic_node" name="socketcan_to_topic_node" respawn="false" output="screen">
+        <rosparam file="$(find socketcan_bridge)/config/can_config.yaml"/>
+    </node>
 
 </launch>
