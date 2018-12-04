@@ -1,0 +1,20 @@
+######################
+##    CAN Config    ##
+######################
+
+# Interface
+can_device: "can0"
+receiver_interface:    "can0"
+transmitter_interface: "can0"
+
+# Topics
+# in ROS, dictionaries must have string keys
+can_ids: [301, 302, 303]
+ids_to_topics: {"301": "/shoulderEncoder",
+                "302": "/elbowEncoder",
+                "303": "/wristPitchEncoder"}
+
+#can_ids:          {"301": "shoulderEncoder",
+#                         "302": "elbowEncoder",
+#                         "303": "wristPitchEncoder"}
+#output_topics:         ["/encoders"]
