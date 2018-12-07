@@ -32,6 +32,9 @@
 #include <socketcan_interface/filter.h>
 #include <can_msgs/Frame.h>
 #include <ros/ros.h>
+#include <vector>
+#include <map>
+#include <string>
 
 namespace socketcan_bridge
 {
@@ -45,7 +48,14 @@ class SocketCANToTopic
     void setup(ros::NodeHandle nh);
 
   private:
-    ros::Publisher can_topic_;
+    struct m_publisher{
+      int id_;
+      ros::Publisher publisher_;
+    };
+
+    std::vector<m_publisher> can_topics_;
+    std::map<std::string, std::string> can_ids_to_topics_;
+    //ros::Publisher can_topic_;
     can::DriverInterfaceSharedPtr driver_;
 
     can::FrameListenerConstSharedPtr frame_listener_;

@@ -48,7 +48,17 @@ namespace socketcan_bridge
   SocketCANToTopic::SocketCANToTopic(ros::NodeHandle* nh, ros::NodeHandle* nh_param,
       can::DriverInterfaceSharedPtr driver)
     {
-      can_topic_ = nh->advertise<can_msgs::Frame>("/CAN_receiver", 10);
+      //can_topic_ = nh->advertise<can_msgs::Frame>("/CAN_receiver", 10);
+      nh_param->getParam("ids_to_topics", can_ids_to_topics_);
+      can_topics_.resize(can_ids_to_topics_.size());
+      char counter = 0;
+      for (auto const& x : can_ids_to_topics_){
+        can_topics_[counter].id_ = std::stoi(x.first);
+        can_topics_[counter].publisher_ = nh->advertise<can_msgs::Frame>(x.second, 10);
+        ++counter;
+        ROS_INFO("id: %s, topic_name: %s", x.first.c_str(), x.second.c_str());
+      }
+
       driver_ = driver;
     };
 
@@ -107,7 +117,14 @@ namespace socketcan_bridge
       msg.header.frame_id = "";  // empty frame is the de-facto standard for no frame.
       msg.header.stamp = ros::Time::now();
 
-      can_topic_.publish(msg);
+      for (auto const& x : can_topics_){
+        if(x.id_ == f.id){
+          x.publisher_.publish(msg);
+          break;
+        }
+      }
+
+      //can_topic_.publish(msg);
     };
 
 
