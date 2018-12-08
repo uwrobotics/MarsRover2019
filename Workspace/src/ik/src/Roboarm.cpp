@@ -51,17 +51,20 @@ void Roboarm::calculateVelocities(float endEffector[3], float angles[3]) {
       (l1 * c1 * eeX)
     + (l1 * s1 * eeY)
     + (l1 * l2 * (c1 * s12 - s1 * c12) + l1 * l3 * (c1 * s123 - s1 * c123)) * eePhi;
+
+  /* DEBATABLE IF THIS SHOULD BE DONE IN IK */
   //halt motion if illegal motion attempted
-    for (int i = 0; i < 3; i++) {
-        if ( (linkAngles[i] + linkVelocities[i] * alpha > PI*9/10 ) ||
-             (linkAngles[i] + linkVelocities[i] * alpha < -PI*9/10 )){
-             linkVelocities[0] = 0.0;
-             linkVelocities[1] = 0.0;
-             linkVelocities[2] = 0.0;
-             std::cout<<"illegal motion attempted"<<std::endl;
-             break;
-        }
-    }
+  // for (int i = 0; i < 3; i++) {
+  //   if (
+  //     (linkAngles[i] + linkVelocities[i] * alpha > PI * 0.9 ) ||
+  //     (linkAngles[i] + linkVelocities[i] * alpha < PI * -0.9 )
+  //   ) {
+  //     linkVelocities[0] = 0.0;
+  //     linkVelocities[1] = 0.0;
+  //     linkVelocities[2] = 0.0;
+  //     break;
+  //   }
+  // }
 }
 
 float* Roboarm::calculatePose() {
