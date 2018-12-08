@@ -20,7 +20,7 @@ int main(int argc, char **argv) {
 	int nSteps = atoi(argv[4]);
 
 	float lengths[3] = {0.4, 0.4, 0.4};
-	float angles[3] = {-PI/4, -PI/4, -PI/4};
+        float angles[3] = {-PI/4, PI/4, -PI/4};
 	Roboarm arm(lengths, angles);
 
 	std::ofstream myfile;
@@ -38,7 +38,7 @@ int main(int argc, char **argv) {
 		//calculate joint velocities
 		float velocities[3] = {vx, vy, 0};
 
-		arm.calculateVelocities(velocities, currAngles);
+                arm.calculateVelocities(velocities, currAngles,true);
 		currAngles = arm.calculatePose();
 
 		myfile <<

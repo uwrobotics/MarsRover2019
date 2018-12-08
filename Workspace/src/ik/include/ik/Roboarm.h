@@ -15,7 +15,7 @@ class Roboarm {
     Point pose [4]; // shoulder, elbox, wrist, ee
     float eePhi;
 
-    void calculateVelocities(float endEffector[3], float angles[3]);
+    void calculateVelocities(float endEffector[3], float angles[3],bool limits= false);
     float* calculatePose();
 
     Roboarm(float lengths[3], float angles[3], float stepSize = 0.001);
