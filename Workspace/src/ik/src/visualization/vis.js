@@ -9,17 +9,32 @@ function clear() {
   ctx.fillRect(0, 0, width, height);
 }
 
-function plot(x, y, scale, size = 5, color = 'white') {
-  const originX = width / 2;
-  const originY = height / 2;
-
+function plotPoint(x, y, scale, radius = 8, color = 'white') {
   const plotX = originX + x * scale;
   const plotY = originY - y * scale;
 
   ctx.fillStyle = color;
   ctx.beginPath();
-  ctx.arc(plotX, plotY, size, 0, 2 * Math.PI);
+  ctx.arc(plotX, plotY, radius, 0, 2 * Math.PI);
   ctx.fill();
+}
+
+function plotLine(x1, y1, x2, y2, scale) {
+  const width = 5;
+  const color = 'white';
+
+  const plotX1 = originX + x1 * scale;
+  const plotY1 = originY - y1 * scale;
+
+  const plotX2 = originX + x2 * scale;
+  const plotY2 = originY - y2 * scale;
+
+  ctx.strokeStyle = color;
+  ctx.lineWidth = width;
+  ctx.beginPath();
+  ctx.moveTo(plotX1, plotY1);
+  ctx.lineTo(plotX2, plotY2);
+  ctx.stroke();
 }
 
 function visualize(frames, extrema) {
@@ -33,44 +48,33 @@ function visualize(frames, extrema) {
 
   const scale = availableDistFromOrigin / maxDistFromOrigin;
 
-  let completedOnce = false;
-  let i = 0;
-  const getNextIndex = () => ++i % frames.length;
+  let currentIndex = 0;
+  const getNextIndex = () => ++currentIndex % frames.length;
 
-  // TODO i got this far, nothing tested lmao
-
-  const plotFrame = () => {
+  const plotFrame = frameIndex => {
     clear();
-    eNFrame.innerHTML = i;
+    eNFrame.innerHTML = frameIndex;
 
-    const frame = frames[i];
-    frame.forEach(p => plot(p.x, p.y, scale));
+    const points = frames[frameIndex];
+    
+    let prevPoint;
+    for (let i = 0; i < points.length; i++) {
+      const point = points[i];
+      if (prevPoint) plotLine(prevPoint.x, prevPoint.y, point.x, point.y, scale);
+      prevPoint = point;
+    }
 
-    const dist = (p1, p2) => Math.sqrt(
-      (p2.x - p1.x) ** 2 + (p2.y - p1.y) ** 2
-    );
-
-    console.log(
-      dist(frame[1], frame[0]),
-      dist(frame[2], frame[1]),
-      dist(frame[3], frame[2]),
-      );
-
-    // const toIndex = completedOnce ? frames.length : i;
-    // for (let index = 0; index <= toIndex; index++) {
-    //   const frame = frames[index];
-    //   frame.forEach(p => {
-    //     if (index === toIndex) plot(p.x, p,y, scale);
-    //     else plot(p.x, p.y, scale, 2, 'gray');
-    //   });
-    // }
+    for (let i = 0; i < points.length; i++) {
+      const { x, y } = points[i];
+      plotPoint(x, y, scale, 5 * 1.2, 'white');
+      plotPoint(x, y, scale, 5, 'tomato');
+    }
   };
 
   setInterval(
     () => {
-      i = getNextIndex();
-      if (i == frames.length - 1) completedOnce = true;
-      plotFrame();
+      currentIndex = getNextIndex();
+      plotFrame(currentIndex);
     },
     INTERVAL_MS
   );
@@ -124,6 +128,9 @@ const ctx = eCanvas.getContext('2d');
 
 const width = canvas.width;
 const height = canvas.height;
+
+const originX = width / 2;
+const originY = height / 2;
 
 function switchToGraph() {
   edForm.style.display = 'none';

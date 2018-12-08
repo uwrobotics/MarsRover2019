@@ -3,6 +3,7 @@
 #include <string>
 
 #include "Roboarm.cpp"
+#define PI 3.141592
 
 using namespace std;
 
@@ -13,19 +14,19 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	float pi = 3.14;
-
-	string filename = argv[1];
+	string fileName = argv[1];
 	float vx = atof(argv[2]);
 	float vy = atof(argv[3]);
 	int nSteps = atoi(argv[4]);
 
 	float lengths[3] = {0.4, 0.4, 0.4};
-	float angles[3] = {pi/4, pi/4, pi/4};
+	float angles[3] = {-PI/4, -PI/4, -PI/4};
 	Roboarm arm(lengths, angles);
 
 	std::ofstream myfile;
-	myfile.open(filename + ".csv");
+
+	string fileNameWithExtension = fileName + ".csv";
+	myfile.open(fileNameWithExtension);
 
 	if (!myfile.is_open()) {
 		cout << "Couldn't open file";
@@ -47,7 +48,7 @@ int main(int argc, char **argv) {
 			arm.pose[3].x << "," << arm.pose[3].y << endl;
 	}
 
-	cout << "saved "<< endl;
+	cout << "saved to " << fileNameWithExtension << endl;
 	myfile.close();
 
 	delete[] currAngles;
