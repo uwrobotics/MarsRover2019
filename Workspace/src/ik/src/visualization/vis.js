@@ -94,7 +94,9 @@ function processInput(csv) {
 
       const [x, y] = [parseFloat(xStr), parseFloat(yStr)];
 
-      if (isNaN(x) || isNaN(y)) throw new Error(`Found non-number entry on line ${iLine}`);
+      if (isNaN(x) || isNaN(y)) {
+        throw new Error(`Found non-number entry on line ${iLine}`);
+      }
 
       if (!extrema) {
         extrema = {
@@ -114,48 +116,4 @@ function processInput(csv) {
   });
 
   visualize(frames, extrema);
-}
-
-/* SETUP */
-
-const eNFrame = document.querySelector('#nFrame');
-const eTerxtArea = document.querySelector('#textarea');
-const eError = document.querySelector('#error');
-const eCanvas = document.querySelector('#canvas');
-const edForm = document.querySelector('#dForm');
-const edCanvas = document.querySelector('#dCanvas');
-const ctx = eCanvas.getContext('2d');
-
-const width = canvas.width;
-const height = canvas.height;
-
-const originX = width / 2;
-const originY = height / 2;
-
-function switchToGraph() {
-  edForm.style.display = 'none';
-  edCanvas.style.display = 'block';
-}
-
-function showError(text) {
-  eError.style.visibility = 'visible';
-  eError.innerHTML = text;
-}
-
-function hideError() {
-  eError.style.visibility = 'hidden';
-  eError.innerHTML = '';
-}
-
-function onSubmit(e) {
-  e.preventDefault();
-  hideError();
-
-  try {
-    const input = eTerxtArea.value.trim();
-    if (input !== '') processInput(input);
-  } catch(err) {
-    showError(err);
-    console.error(err);
-  }
 }

@@ -10,10 +10,8 @@
 <body>
 	
 	<div id="dForm">
-		<form onsubmit="onSubmit(event)">
-			<textarea name="csv" id="textarea" cols="60" rows="20" placeholder="paste csv here"></textarea>
-			<button type="submit">Visualize</button>
-		</form>
+		<input type="file" id="fileInput" onchange="handleFiles(this.files)" />
+		<div id="dropbox">Click to choose file (or just drag)</div>
 		<div id="error"></div>
 	</div>
 
@@ -23,5 +21,6 @@
 	</div>
 
 	<script src="vis.js"></script>
+	<script src="setup.js"></script>
 </body>
 </html>
