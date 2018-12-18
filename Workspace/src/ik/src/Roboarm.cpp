@@ -15,9 +15,19 @@ Roboarm::Roboarm(float lengths[3], float angles[3], float stepSize) :
 	}
 }
 
-void Roboarm::calculateVelocities(float endEffector[3], float angles[3]) {
-	const float eeX = endEffector[0];
-	const float eeY = endEffector[1];
+void Roboarm::calculateVelocities(float endEffector[3], float angles[3], bool limits) {
+
+    //prevent elbow from fully extending (0 radian to shoulder link) or determinant will be 0.
+    if (abs(angles[1])<0.0872665){ //5 degree tolerance
+        cout<<"Inverse jacobian unsolved. Halting motion";
+        linkVelocities[0] = 0.0;
+        linkVelocities[1] = 0.0;
+        linkVelocities[2] = 0.0;
+        return;
+    }
+
+  const float eeX = endEffector[0];
+  const float eeY = endEffector[1];
   const float eePi = endEffector[2];
 
   linkAngles[0] = angles[0];
@@ -52,19 +62,17 @@ void Roboarm::calculateVelocities(float endEffector[3], float angles[3]) {
     + (l1 * s1 * eeY)
     + (l1 * l2 * (c1 * s12 - s1 * c12) + l1 * l3 * (c1 * s123 - s1 * c123)) * eePhi;
 
-  /* DEBATABLE IF THIS SHOULD BE DONE IN IK */
-  //halt motion if illegal motion attempted
-  // for (int i = 0; i < 3; i++) {
-  //   if (
-  //     (linkAngles[i] + linkVelocities[i] * alpha > PI * 0.9 ) ||
-  //     (linkAngles[i] + linkVelocities[i] * alpha < PI * -0.9 )
-  //   ) {
-  //     linkVelocities[0] = 0.0;
-  //     linkVelocities[1] = 0.0;
-  //     linkVelocities[2] = 0.0;
-  //     break;
-  //   }
-  // }
+//  halt if illegal motion attempted
+  if (limits==true){
+      for (int i = 0; i < 3; i++) {
+         if (abs(linkAngles[i] + linkVelocities[i] * alpha - PI )<0.174533) {//10 degrees tolerance
+           linkVelocities[0] = 0.0;
+           linkVelocities[1] = 0.0;
+           linkVelocities[2] = 0.0;
+           break;
+         }
+       }
+  }
 }
 
 float* Roboarm::calculatePose() {
