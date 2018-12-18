@@ -65,7 +65,8 @@ void Roboarm::calculateVelocities(float endEffector[3], float angles[3], bool li
 //  halt if illegal motion attempted
   if (limits==true){
       for (int i = 0; i < 3; i++) {
-         if (abs(linkAngles[i] + linkVelocities[i] * alpha - PI )<0.174533) {//10 degrees tolerance
+         if (abs(abs(linkAngles[i] + linkVelocities[i] * alpha) -PI)<0.1174533) {// |(|theta|-pi)|<tolerance
+             cout<<"Joint "<<i<<" over-rotated "<<endl;
            linkVelocities[0] = 0.0;
            linkVelocities[1] = 0.0;
            linkVelocities[2] = 0.0;
