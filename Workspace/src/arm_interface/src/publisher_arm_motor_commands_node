@@ -1,0 +1,28 @@
+#include <ros/ros.h>
+//we need the Inverse Kinematics library as well
+
+int main(int argc, char** argv) {
+  //initializing the node
+  ros::init(argc, argv, "publish_arm_motor_commands");
+  ros::NodeHandle nh;
+  
+  //create a publisher object
+  ros::Publisher pub_user_to_can = nh.advertise<arm_interface::foobar>("CAN", 1000);
+  ros::Rate rate(2)
+  
+  //loop that publishes info until the node is shut down
+  while (ros::ok()) {
+    //create message object
+    arm_interface::foobar msg;
+    
+    //give message object the required values
+    
+    //publish message object and send message to rosout with details
+    publish_arm_motor_commands.publish(msg);  //put in 6 angle from IK, possibly 6 angular motor speeds?
+    
+    //ROS_INFO_STREAM("sending arm motor commands: " <<
+    
+    //wait until the next iteration call
+    rate.sleep();
+    }
+}
