@@ -28,14 +28,19 @@ int main(int argc, char** argv) {
 	}
 }
 
+// messageRecievedFromGUI return the message that is recieved from the Inverse Kinematics library after it passes the message parameter into the library
+// Not sure if this library exists or not yet
 inverse_kinematics::message messageRecievedFromGUI(const arm_interface::commands msg) {
 	return inverseK(msg);
 }
 
+// messageReceieveFromIK has a message passed into it and returrns the message 
 inverse_kinematics::message messageRecievedFromIK(const arm_interface::commands msg) {
 	return msg; 
 }
 
+// subscriberFunction is passed into the necessary parameters required to initiaize the node and a boolean that determines if the message that is recieved from the topic
+// needs to be passed into the Inverse Kinematics library or has it returned from it and needs to be returned as it is 
 inverse_kinematics::message subscriberFunction (ros::NodeHandle nh, int argc, char** argv, std::string topic, std::bool SendToIK) {
 	//initializing the node
 	ros::init(argc, argv, "subscribe_arm_motor_commands");
@@ -53,10 +58,13 @@ inverse_kinematics::message subscriberFunction (ros::NodeHandle nh, int argc, ch
 	return ros::spin();		
 }
 
+// inverseK return the message that is produced after passing the message into the inverse K library
 inverse_kinematics::message inverseK(arm_interface::commands msg) {
 	return inverse_kinematics::message.ik(msg);	//where ik is the method in the library that returns optimal motor speeds and angles
 }
 
+// publisher function consumes the parameters required to create the publisher object, the frequency at which publishing is carried out,
+// and the topic which needs to be published to. 
 void pubisherFunction (ros::NodeHandle nh, inverse_kinematics::message msg, int freq, std::string topic){
 	//create publisher object
 	ros::Publisher pub_user_to_can = nh.advertise<inverse_kinematics::message>(topic, 1000);
