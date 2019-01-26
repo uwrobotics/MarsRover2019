@@ -1,10 +1,14 @@
 <launch>
-  <arg name="port" default="/dev/roboteq" />
+  <arg name="port_left" default="/dev/roboteq_left" />
+  <arg name="port_right" default="/dev/roboteq_right" />
+  <arg name="port_back" default="/dev/roboteq_back" />
   <node pkg="roboteq_driver" type="driver_node" name="roboteq_driver" output="screen">
-    <param name="port" value="$(arg port)" />
+    <param name="port_left" value="$(arg port_left)" />
+    <param name="port_right" value="$(arg port_right)" />
+    <param name="port_back" value="$(arg port_back)" />
     <param name="value" value="115200" />
     <rosparam>
-             channels: ['left', 'right']
+             channels: ['left_front', 'left_middle', 'right_front, 'right_middle', 'left_back' 'right_back']
     </rosparam>
   </node>
 </launch>
