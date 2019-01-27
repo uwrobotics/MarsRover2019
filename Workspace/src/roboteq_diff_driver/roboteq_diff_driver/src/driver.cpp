@@ -79,7 +79,7 @@ public:
   // cmd_vel subscriber
   //
   void cmdvel_callback( const geometry_msgs::Twist& twist_msg);
-  void cmdvel_setup();
+  void cmdvel_setup(serial::Serial& controller);
   void cmdvel_loop();
   void cmdvel_run();
 
@@ -102,7 +102,10 @@ public:
 protected:
   ros::NodeHandle nh;
 
-  serial::Serial controller;
+  serial::Serial controller_back;
+  serial::Serial controller_right;
+  serial::Serial controller_left;
+
 
   uint32_t starttime;
   uint32_t hstimer;
@@ -167,7 +170,9 @@ protected:
   std::string base_frame;
   std::string cmdvel_topic;
   std::string odom_topic;
-  std::string port;
+  std::string port_back;
+  std::string port_right;
+  std::string port_left;
   int baud;
   bool open_loop;
   double wheel_circumference;
@@ -222,8 +227,12 @@ MainNode::MainNode() :
   ROS_INFO_STREAM("cmdvel_topic: " << cmdvel_topic);
   nhLocal.param<std::string>("odom_topic", odom_topic, "odom");
   ROS_INFO_STREAM("odom_topic: " << odom_topic);
-  nhLocal.param<std::string>("port", port, "/dev/ttyACM0");
-  ROS_INFO_STREAM("port: " << port);
+  nhLocal.param<std::string>("port", port_back, "/dev/ttyACM0");
+  ROS_INFO_STREAM("port: " << port_back);
+  nhLocal.param<std::string>("port", port_right, "/dev/ttyACM2");
+  ROS_INFO_STREAM("port: " << port_right);
+  nhLocal.param<std::string>("port", port_left, "/dev/ttyACM3");
+  ROS_INFO_STREAM("port: " << port_left);
   nhLocal.param("baud", baud, 115200);
   ROS_INFO_STREAM("baud: " << baud);
   nhLocal.param("open_loop", open_loop, true);
@@ -254,8 +263,13 @@ void MainNode::cmdvel_callback( const geometry_msgs::Twist& twist_msg)
 ROS_DEBUG_STREAM("cmdvel speed right: " << right_speed << " left: " << left_speed);
 #endif
 
-  std::stringstream right_cmd;
-  std::stringstream left_cmd;
+  std::stringstream f_right_cmd;
+  std::stringstream m_right_cmd;
+  std::stringstream b_right_cmd;
+  std::stringstream f_left_cmd;
+  std::stringstream m_left_cmd;
+  std::stringstream b_left_cmd;
+
 
   if (open_loop)
   {
@@ -263,10 +277,14 @@ ROS_DEBUG_STREAM("cmdvel speed right: " << right_speed << " left: " << left_spee
     int32_t right_power = right_speed / wheel_circumference * 60.0 / 82.0 * 1000.0;
     int32_t left_power = left_speed / wheel_circumference * 60.0 / 82.0 * 1000.0;
 #ifdef _CMDVEL_DEBUG
-ROS_DEBUG_STREAM("cmdvel power right: " << right_power << " left: " << left_power);
+ROS_INFO_STREAM("cmdvel power right: " << right_power << " left: " << left_power);
 #endif
-    right_cmd << "!G 1 " << right_power << "\r";
-    left_cmd << "!G 2 " << left_power << "\r";
+    f_right_cmd << "!G 1 " << right_power << "\r";
+    m_right_cmd << "!G 2 " << right_power << "\r";
+    b_right_cmd << "!G 1 " << right_power << "\r";
+    f_left_cmd << "!G 1 " << left_power << "\r";
+    m_left_cmd << "!G 2 " << left_power << "\r";
+    b_left_cmd << "!G 2 " << left_power << "\r";
   }
   else
   {
@@ -276,16 +294,28 @@ ROS_DEBUG_STREAM("cmdvel power right: " << right_power << " left: " << left_powe
 #ifdef _CMDVEL_DEBUG
 ROS_DEBUG_STREAM("cmdvel rpm right: " << right_rpm << " left: " << left_rpm);
 #endif
-    right_cmd << "!S 1 " << right_rpm << "\r";
-    left_cmd << "!S 2 " << left_rpm << "\r";
+    f_right_cmd << "!S 1 " << right_rpm << "\r";
+    m_right_cmd << "!S 2 " << right_rpm << "\r";
+    b_right_cmd << "!S 1 " << right_rpm << "\r";
+    f_left_cmd << "!S 1 " << left_rpm << "\r";
+    m_left_cmd << "!S 2 " << left_rpm << "\r";
+    b_left_cmd << "!S 2 " << left_rpm << "\r";
   }
-
-  controller.write(right_cmd.str());
-  controller.write(left_cmd.str());
-  controller.flush();
+  ROS_INFO_STREAM("cmd left_f: " << f_left_cmd.str() << " left_m: " << m_left_cmd.str());
+  ROS_INFO_STREAM("cmd right_f: " << f_right_cmd.str() << " rightt_m: " << m_right_cmd.str());
+  ROS_INFO_STREAM("cmd left_b: " << b_left_cmd.str() << " right_b: " << b_right_cmd.str());
+  controller_right.write(f_right_cmd.str());
+  controller_right.write(m_right_cmd.str());
+  controller_right.flush();
+  controller_left.write(f_left_cmd.str());
+  controller_left.write(m_left_cmd.str());
+  controller_left.flush();
+  controller_back.write(b_left_cmd.str());
+  controller_back.write(b_right_cmd.str());
+  controller_back.flush();
 }
 
-void MainNode::cmdvel_setup()
+void MainNode::cmdvel_setup(serial::Serial& controller)
 {
 
   // stop motors
@@ -357,8 +387,7 @@ void MainNode::cmdvel_setup()
 
   controller.flush();
 
-  ROS_INFO_STREAM("Subscribing to topic " << cmdvel_topic);
-  cmdvel_sub = nh.subscribe(cmdvel_topic, 1000, &MainNode::cmdvel_callback, this);
+
 
 }
 
@@ -510,7 +539,7 @@ void MainNode::odom_stream()
 //  controller.write("# C_?CR_?BA_# 17\r");
   // start encoder, current and voltage output (30 hz)
   // tripling frequency since one value is output at each cycle
-  controller.write("# C_?CR_?BA_?V_# 11\r");
+  controller_back.write("# C_?CR_?BA_?V_# 11\r");
 #else
 //  // start encoder output (10 hz)
 //  controller.write("# C_?CR_# 100\r");
@@ -519,7 +548,7 @@ void MainNode::odom_stream()
 //  // start encoder output (50 hz)
 //  controller.write("# C_?CR_# 20\r");
 #endif
-  controller.flush();
+  controller_back.flush();
 
 }
 
@@ -536,10 +565,10 @@ void MainNode::odom_loop()
   }
 
   // read sensor data stream from motor controller
-  if (controller.available())
+  if (controller_back.available())
   {
     char ch = 0;
-    if ( controller.read((uint8_t*)&ch, 1) == 0 )
+    if ( controller_back.read((uint8_t*)&ch, 1) == 0 )
       return;
     if (ch == '\r')
     {
@@ -779,18 +808,26 @@ int MainNode::run()
 	ROS_INFO("Beginning setup...");
 
 	serial::Timeout timeout = serial::Timeout::simpleTimeout(1000);
-	controller.setPort(port);
-	controller.setBaudrate(baud);
-	controller.setTimeout(timeout);
+	controller_right.setPort(port_right);
+  controller_left.setPort(port_left);
+  controller_back.setPort(port_back);
+	controller_right.setBaudrate(baud);
+  controller_left.setBaudrate(baud);
+  controller_back.setBaudrate(baud);
+	controller_right.setTimeout(timeout);
+  controller_left.setTimeout(timeout);
+  controller_back.setTimeout(timeout);
 
 	// TODO: support automatic re-opening of port after disconnection
 	while ( ros::ok() )
 	{
-		ROS_INFO_STREAM("Opening serial port on " << port << " at " << baud << "..." );
+		ROS_INFO_STREAM("Opening serial port on " << port_right << port_left << port_back << " at " << baud << "..." );
 		try
 		{
-			controller.open();
-			if ( controller.isOpen() )
+			controller_right.open();
+      controller_left.open();
+      controller_back.open();
+			if ( controller_right.isOpen() && controller_left.isOpen() && controller_back.isOpen() )
 			{
 				ROS_INFO("Successfully opened serial port");
 				break;
@@ -804,7 +841,12 @@ int MainNode::run()
 		sleep( 5 );
 	}
 
-	cmdvel_setup();
+	cmdvel_setup(controller_right);
+  cmdvel_setup(controller_left);
+  cmdvel_setup(controller_back);
+
+  ROS_INFO_STREAM("Subscribing to topic " << cmdvel_topic);
+  cmdvel_sub = nh.subscribe(cmdvel_topic, 1000, &MainNode::cmdvel_callback, this);
 	odom_setup();
 
   starttime = millis();
@@ -856,8 +898,12 @@ int MainNode::run()
 //    loop_rate.sleep();
   }
 	
-  if ( controller.isOpen() )
-    controller.close();
+  if ( controller_right.isOpen() )
+    controller_right.close();
+  if ( controller_left.isOpen() )
+    controller_left.close();
+  if ( controller_back.isOpen() )
+    controller_back.close();
 
   ROS_INFO("Exiting");
 	
