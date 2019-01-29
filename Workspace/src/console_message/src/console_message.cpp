@@ -1,84 +1,75 @@
-#include "console_message.h"
+#include <console_message.h>
 #include <ros/ros.h>
 #include <std_msgs/String.h>
-#include <cstring>
+#include <string>
 
+class Console_Message
+{
 
-//Questions and future plans:
-//GET THE CODE TO COMPILE
-//Finish test_console_message/make it useful to us
-//Next goal: link this library to other nodes - start with linking a test program/project/node/thing
-//Other goals: see something in Qt console
+	public:
 
+	Console_Message();
+
+	void sendMessage(string message, string level);
+
+	//Questions and future plans:
+	//Compiling and running this (create a main for testing?)
+	//Create a testing procedure
+	//Next goal: link this library to other nodes
+	//Other goals: see something in Qt console
+
+};
 
 Console_Message::Console_Message(void){
 	//initilaize/create the publisher pub
-	ros::NodeHandle node_handle;
 	ros::Publisher info_pub, warn_pub, error_pub, fatal_pub, debug_pub;
 
 	//create topics
-	info_pub = node_handle.advertise<std_msgs::String>("Info", 100);
-	warn_pub = node_handle.advertise<std_msgs::String>("Warning", 100);
-	error_pub = node_handle.advertise<std_msgs::String>("Error", 100);
-	fatal_pub = node_handle.advertise<std_msgs::String>("Fatal", 100);
-	debug_pub = node_handle.advertise<std_msgs::String>("Debug", 100);
+	info_pub = node_handle.advertise<std_msgs::String>("Info", 1);
+	warn_pub = node_handle.advertise<std_msgs::String>("Warning", 1);
+	error_pub = node_handle.advertise<std_msgs::String>("Error", 1);
+	fatal_pub = node_handle.advertise<std_msgs::String>("Fatal", 1);
+	debug_pub = node_handle.advertise<std_msgs::String>("Debug", 1);
 }
 
-void Console_Message::sendMessage(struct Message arg){
+void Console_Message::sendMessage(message_t arg){
 
 	//initialize message instance
 	std_msgs::String msg;
-	char* sender = strcat(arg.node_sender, " - ");
-	char* sender_message = strcat(sender, arg.msg);
-	msg.data = <std_msgs::String>(sender_message);
 
-	int topic = 0;
-	if(strcmp(arg.level, "Info") == 0){
-	  topic = 1;
-	}
-	else if(strcmp(arg.level, "Warning") == 0){
-	  topic = 2;
-	}
-	else if(strcmp(arg.level, "Error") == 0){
-	  topic = 3;
-	}
-	else if(strcmp(arg.level, "Fatal") == 0){
-	  topic = 4;
-	}
-	else if(strcmp(arg.level, "Debug") == 0){
-	  topic = 5;
-	}
-	else{
-	  //warning? set another number?
-	}
+	switch(arg.level){
 
-
-
-
-	switch(topic){
-
-	  case 1 :
-		
+	  case "Info" :
+		string sender_message = arg.node_sender + arg.msg;
+	  	msg.data = <std_msgs::String>(sender_message);
 		//send to Info topic
 		info_pub.publish(msg);
 		break;
 
-	  case 2 :
+	  case "Warning" :
+		string sender_message = arg.node_sender + arg.msg;
+	  	msg.data = <std_msgs::String>(sender_message);
 		//send to Warning topic
 		warn_pub.publish(msg);
 		break;
 
-	  case 3 :
+	  case "Error" :
+		string sender_message = arg.node_sender + arg.msg;
+	  	msg.data = <std_msgs::String>(sender_message);
 		//send to Error topic
 		error_pub.publish(msg);
 		break;
 
-	  case 4 :
+	  case "Fatal" :
+		string sender_message = arg.node_sender + arg.msg;
+	  	msg.data = <std_msgs::String>(sender_message);
 		//send to Fatal topic
 		fatal_pub.publish(msg);
 		break;
 
-	  case 5 :
+	  case "Debug" :
+		string sender_message = arg.node_sender + arg.msg;
+	  	msg.data = <std_msgs::String>(sender_message);
 		//send to Debug topic
 		debug_pub.publish(msg);
 		break;
