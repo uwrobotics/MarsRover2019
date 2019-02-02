@@ -1,27 +1,38 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 #include "sensor_msgs/Image.h"
+#include <opencv2/core.hpp>
 
 /**
  * This tutorial demonstrates simple receipt of messages over the ROS system.
  */
 // %Tag(CALLBACK)%
 //Inspired from: https://stackoverflow.com/a/16083336/8245487
-//And ://github.com/stereolabs/zed-ros-wrapper/blob/master/tutorials/zed_depth_sub_tutorial/src/zed_depth_sub_tutorial.cpp
+//And : https://github.com/stereolabs/zed-ros-wrapper/blob/master/tutorials/zed_depth_sub_tutorial/src/zed_depth_sub_tutorial.cpp
 class DisparityMapReader{
 	public:
-	DisparityMapReader(ros::NodeHandle* node):disparityMap(NULL), n(node){
+	DisparityMapReader(ros::NodeHandle* node):disparityMap(NULL), mapWidth(0), mapHeight(0), n(node){
 		subDisparityMap = n->subscribe("/zed/disparity/disparity_image", 10, disparityCallback);
 	}
 
 	void disparityCallback(const sensor_msgs::Image::ConstPtr& msg)
 	{
 		disparityMap = (float*)(&msg->data[0]);
+		mapWidth = msg->width;
+		mapHeight = msg->height;
 	}
 
 	float* getDisparityMap(){
 		return disparityMap;
 	}		
+
+	int getMapWidth(){
+		return mapWidth;
+	}
+
+	int getMapHeight(){
+		return mapHeight;
+	}
 
 	/*
 	void run(){
@@ -30,9 +41,11 @@ class DisparityMapReader{
 */
 		
 	private:
-	double* disparityMap = NULL;
-	ros::Subscriber subDisparityMap;
+	double* disparityMap;
+	int mapWidth;
+	int mapHeight;
 	ros::NodeHandle* n;
+	ros::Subscriber subDisparityMap;
 }
 // %EndTag(CALLBACK)%
 
@@ -61,7 +74,7 @@ int main(int argc, char **argv)
 	 * on a given topic.  This invokes a call to the ROS
 	 * master node, which keeps a registry of who is publishing and who
 	 * is subscribing.  Messages are passed to a callback function, here
-	 * called chatterCallback.  subscribe() returns a Subscriber object that you
+	 *t called chatterCallback.  subscribe() returns a Subscriber object that you
 	 * must hold on to until you want to unsubscribe.  When all copies of the Subscriber
 	 * object go out of scope, this callback will automatically be unsubscribed from
 	 * this topic.
@@ -78,7 +91,7 @@ int main(int argc, char **argv)
 	DisparityMapReader d(&n);
 	while(1){
 		float* map = d.getDisparityMap();	
-		
+		cv::Mat mat(d.getMapHeight(),d.getMapWidth(),map); 	
 		ros::spinOnce();
 		r.sleep();
 	}
