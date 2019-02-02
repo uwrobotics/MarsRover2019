@@ -91,7 +91,7 @@ int main(int argc, char **argv)
 	DisparityMapReader d(&n);
 	while(1){
 		float* map = d.getDisparityMap();	
-		cv::Mat mat(d.getMapHeight(),d.getMapWidth(),map); 	
+		cv::Mat mat(d.getMapHeight(),d.getMapWidth(), CV_8UC1, map); 	
 		ros::spinOnce();
 		r.sleep();
 	}
