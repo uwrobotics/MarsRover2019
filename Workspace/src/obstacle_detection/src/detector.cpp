@@ -2,28 +2,27 @@
 #include "std_msgs/String.h"
 #include "sensor_msgs/Image.h"
 #include <opencv2/core.hpp>
+#include <opencv2/saliency.hpp>
 
-/**
- * This tutorial demonstrates simple receipt of messages over the ROS system.
- */
-// %Tag(CALLBACK)%
+
+
 //Inspired from: https://stackoverflow.com/a/16083336/8245487
 //And : https://github.com/stereolabs/zed-ros-wrapper/blob/master/tutorials/zed_depth_sub_tutorial/src/zed_depth_sub_tutorial.cpp
-class DisparityMapReader{
+class MapReader{
 	public:
-	DisparityMapReader(ros::NodeHandle* node):disparityMap(NULL), mapWidth(0), mapHeight(0), n(node){
-		subDisparityMap = n->subscribe("/zed/disparity/disparity_image", 10, disparityCallback);
+	MapReader(ros::NodeHandle* node):map(NULL), mapWidth(0), mapHeight(0), n(node){
+		subMap = n->subscribe("/zed/left/image_raw_color", 10, mapCallback);
 	}
 
-	void disparityCallback(const sensor_msgs::Image::ConstPtr& msg)
+	void mapCallback(const sensor_msgs::Image::ConstPtr& msg)
 	{
-		disparityMap = (float*)(&msg->data[0]);
+		map = (float*)(&msg->data[0]);
 		mapWidth = msg->width;
 		mapHeight = msg->height;
 	}
 
-	float* getDisparityMap(){
-		return disparityMap;
+	float* getMap(){
+		return map;
 	}		
 
 	int getMapWidth(){
@@ -41,13 +40,12 @@ class DisparityMapReader{
 */
 		
 	private:
-	double* disparityMap;
+	float* map;
 	int mapWidth;
 	int mapHeight;
 	ros::NodeHandle* n;
-	ros::Subscriber subDisparityMap;
+	ros::Subscriber subMap;
 }
-// %EndTag(CALLBACK)%
 
 int main(int argc, char **argv)
 {
@@ -69,33 +67,39 @@ int main(int argc, char **argv)
 	 * NodeHandle destructed will close down the node.
 	 */
 
-	/**
-	 * The subscribe() call is how you tell ROS that you want to receive messages
-	 * on a given topic.  This invokes a call to the ROS
-	 * master node, which keeps a registry of who is publishing and who
-	 * is subscribing.  Messages are passed to a callback function, here
-	 *t called chatterCallback.  subscribe() returns a Subscriber object that you
-	 * must hold on to until you want to unsubscribe.  When all copies of the Subscriber
-	 * object go out of scope, this callback will automatically be unsubscribed from
-	 * this topic.
-	 *
-	 * The second parameter to the subscribe() function is the size of the message
-	 * queue.  If messages are arriving faster than they are being processed, this
-	 * is the number of messages that will be buffered up before beginning to throw
-	 * away the oldest ones.
-	 */
-	// %Tag(SUBSCRIBER)%
-	// %EndTag(SUBSCRIBER)%
 	ros::NodeHandler n;	
 	ros::Rate r(10);
-	DisparityMapReader d(&n);
+	MapReader d(&n);
+	//SpinOnce Pattern for Callbacks: https://wiki.ros.org/roscpp/Overview/Callbacks%20and%20Spinning
 	while(1){
-		float* map = d.getDisparityMap();	
-		cv::Mat mat(d.getMapHeight(),d.getMapWidth(), CV_8UC1, map); 	
+		float* map = d.getMap();	
+		//float* to cv::Mat conversion: https://stackoverflow.com/questions/39579398/opencv-how-to-create-mat-from-uint8-t-pointer
+		cv::Mat image(d.getMapHeight(),d.getMapWidth(), CV_32UC3, map); //3 channel (RGB) data	
+		//Image to Saliency: https://github.com/fpuja/opencv_contrib/blob/saliencyModuleDevelop/modules/saliency/samples/computeSaliency.cpp	
+		
+			
+		cv::Ptr<Saliency> saliencyAlgorithm = Saliency::create("SPECTRAL_RESIDUAL");
+		if( saliencyAlgorithm == NULL){
+			std::cout << "ERROR in instantiation of saliency algorithm\n";
+			return -1;
+		}
+		
+		Mat saliencyMap;
+		Mat binaryMap;
+		if(saliencyAlgorithm->computeSaliency(image,saliencyMap)){
+			saliency::StaticSaliencySpectralResidual spec;
+			spec.computeBinaryMap(saliencyMap, binaryMap);	
+		}	
+		else{
+			std::cout <<"ERROR in computing saliency map from Left RGB map...\n";
+			return -1;		
+		}
+		
+		//Now we have the binary Saliency map...
+		
 		ros::spinOnce();
 		r.sleep();
 	}
 	
 	return 0;
 }
-// %EndTag(FULLTEXT)%
