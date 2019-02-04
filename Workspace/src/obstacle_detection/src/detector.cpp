@@ -96,7 +96,25 @@ int main(int argc, char **argv)
 		}
 		
 		//Now we have the binary Saliency map...
-		
+		//locate the islands of 1s in the binary Saliency map.
+	/*
+		for(int i = 0; i < binaryMap.rows; i++){
+			for(int j = 0; j < binaryMap.columns; j++){
+				if(binaryMap[i][j] == true){
+					//traverse the "circle" along the top edge left and right to find the diameter and midpoint
+					int minx = 0;
+					int height = 0;	
+					int a,b = 0;
+					do{
+							
+						
+					}while(i - a >= 0 && j - b >= 0 && binaryMap[i - a][j - b] == true);	
+										
+				}	
+			}
+			
+		}	
+	*/	
 		ros::spinOnce();
 		r.sleep();
 	}
