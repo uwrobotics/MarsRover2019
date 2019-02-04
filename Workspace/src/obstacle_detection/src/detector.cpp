@@ -10,41 +10,41 @@
 //And : https://github.com/stereolabs/zed-ros-wrapper/blob/master/tutorials/zed_depth_sub_tutorial/src/zed_depth_sub_tutorial.cpp
 class MapReader{
 	public:
-	MapReader(ros::NodeHandle* node):map(NULL), mapWidth(0), mapHeight(0), n(node){
-		subMap = n->subscribe("/zed/left/image_raw_color", 10, mapCallback);
-	}
+		MapReader(ros::NodeHandle* node):map(NULL), mapWidth(0), mapHeight(0), n(node){
+			subMap = n->subscribe("/zed/left/image_raw_color", 10, mapCallback);
+		}
 
-	void mapCallback(const sensor_msgs::Image::ConstPtr& msg)
-	{
-		map = (float*)(&msg->data[0]);
-		mapWidth = msg->width;
-		mapHeight = msg->height;
-	}
+		void mapCallback(const sensor_msgs::Image::ConstPtr& msg)
+		{
+			map = (float*)(&msg->data[0]);
+			mapWidth = msg->width;
+			mapHeight = msg->height;
+		}
 
-	float* getMap(){
-		return map;
-	}		
+		float* getMap(){
+			return map;
+		}		
 
-	int getMapWidth(){
-		return mapWidth;
-	}
+		int getMapWidth(){
+			return mapWidth;
+		}
 
-	int getMapHeight(){
-		return mapHeight;
-	}
+		int getMapHeight(){
+			return mapHeight;
+		}
 
-	/*
-	void run(){
-		
-	}
-*/
-		
+		/*
+		   void run(){
+
+		   }
+		 */
+
 	private:
-	float* map;
-	int mapWidth;
-	int mapHeight;
-	ros::NodeHandle* n;
-	ros::Subscriber subMap;
+		float* map;
+		int mapWidth;
+		int mapHeight;
+		ros::NodeHandle* n;
+		ros::Subscriber subMap;
 }
 
 int main(int argc, char **argv)
@@ -76,14 +76,14 @@ int main(int argc, char **argv)
 		//float* to cv::Mat conversion: https://stackoverflow.com/questions/39579398/opencv-how-to-create-mat-from-uint8-t-pointer
 		cv::Mat image(d.getMapHeight(),d.getMapWidth(), CV_32UC3, map); //3 channel (RGB) data	
 		//Image to Saliency: https://github.com/fpuja/opencv_contrib/blob/saliencyModuleDevelop/modules/saliency/samples/computeSaliency.cpp	
-		
-			
+
+
 		cv::Ptr<Saliency> saliencyAlgorithm = Saliency::create("SPECTRAL_RESIDUAL");
 		if( saliencyAlgorithm == NULL){
 			std::cout << "ERROR in instantiation of saliency algorithm\n";
 			return -1;
 		}
-		
+
 		Mat saliencyMap;
 		Mat binaryMap;
 		if(saliencyAlgorithm->computeSaliency(image,saliencyMap)){
@@ -94,30 +94,34 @@ int main(int argc, char **argv)
 			std::cout <<"ERROR in computing saliency map from Left RGB map...\n";
 			return -1;		
 		}
-		
+
 		//Now we have the binary Saliency map...
-		//locate the islands of 1s in the binary Saliency map.
-	/*
-		for(int i = 0; i < binaryMap.rows; i++){
-			for(int j = 0; j < binaryMap.columns; j++){
-				if(binaryMap[i][j] == true){
-					//traverse the "circle" along the top edge left and right to find the diameter and midpoint
-					int minx = 0;
-					int height = 0;	
-					int a,b = 0;
-					do{
-							
-						
-					}while(i - a >= 0 && j - b >= 0 && binaryMap[i - a][j - b] == true);	
-										
-				}	
-			}
-			
-		}	
-	*/	
+		//locate the centroids of islands of 1s (contours) in the binary Saliency map.
+		//https://www.learnopencv.com/find-center-of-blob-centroid-using-opencv-cpp-python/
+		Mat canny_output;
+		vector<vector<Point> > contours;
+		vector<Vec4i> hierarchy;
+
+		// detect edges using canny
+		Canny( binaryMap, canny_output, 50, 150, 3 );
+
+		// find contours
+		findContours( canny_output, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0) );
+
+		// get the moments
+		vector<Moments> mu(contours.size());
+		for( int i = 0; i<contours.size(); i++ )
+		{ mu[i] = moments( contours[i], false ); }
+
+		// get the centroid of figures.
+		vector<Point2f> mc(contours.size());
+		for( int i = 0; i<contours.size(); i++)
+		{ mc[i] = Point2f( mu[i].m10/mu[i].m00 , mu[i].m01/mu[i].m00 ); }
+
+
 		ros::spinOnce();
 		r.sleep();
 	}
-	
+
 	return 0;
 }
