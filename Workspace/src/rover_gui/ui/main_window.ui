@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>995</width>
-    <height>758</height>
+    <width>1872</width>
+    <height>1080</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -312,7 +312,7 @@
           </sizepolicy>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>2</number>
          </property>
          <widget class="QWidget" name="tabArm">
           <attribute name="title">
@@ -320,13 +320,13 @@
           </attribute>
           <layout class="QVBoxLayout" name="verticalLayout_12">
            <item>
-            <widget class="QWidget" name="widget_6" native="true"/>
+            <widget class="armvizwidget" name="armviz" native="true"/>
            </item>
           </layout>
          </widget>
          <widget class="QWidget" name="tab_4">
           <attribute name="title">
-           <string>Dril Cam</string>
+           <string>Drill Cam</string>
           </attribute>
           <layout class="QVBoxLayout" name="verticalLayout_13">
            <item>
@@ -338,6 +338,16 @@
               </sizepolicy>
              </property>
             </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="tab_5">
+          <attribute name="title">
+           <string>XBox</string>
+          </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout_25">
+           <item>
+            <widget class="xboxvizwidget" name="xboxviz" native="true"/>
            </item>
           </layout>
          </widget>
@@ -696,6 +706,18 @@
    <class>MapWidget</class>
    <extends>QWidget</extends>
    <header>mapwidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>armvizwidget</class>
+   <extends>QWidget</extends>
+   <header>armvizwidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>xboxvizwidget</class>
+   <extends>QWidget</extends>
+   <header>xboxvizwidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
