@@ -3,7 +3,7 @@
 #include "sensor_msgs/Image.h"
 #include <opencv2/core.hpp>
 #include <opencv2/saliency.hpp>
-
+#include <opencv2/imgproc/imgproc.hpp>
 
 
 //Inspired from: https://stackoverflow.com/a/16083336/8245487
@@ -72,6 +72,8 @@ int main(int argc, char **argv)
 	MapReader d(&n);
 	//SpinOnce Pattern for Callbacks: https://wiki.ros.org/roscpp/Overview/Callbacks%20and%20Spinning
 	while(1){
+		ros::spinOnce();
+
 		float* map = d.getMap();	
 		//float* to cv::Mat conversion: https://stackoverflow.com/questions/39579398/opencv-how-to-create-mat-from-uint8-t-pointer
 		cv::Mat image(d.getMapHeight(),d.getMapWidth(), CV_32UC3, map); //3 channel (RGB) data	
@@ -84,8 +86,8 @@ int main(int argc, char **argv)
 			return -1;
 		}
 
-		Mat saliencyMap;
-		Mat binaryMap;
+		cv::Mat saliencyMap;
+		cv::Mat binaryMap;
 		if(saliencyAlgorithm->computeSaliency(image,saliencyMap)){
 			saliency::StaticSaliencySpectralResidual spec;
 			spec.computeBinaryMap(saliencyMap, binaryMap);	
@@ -98,28 +100,36 @@ int main(int argc, char **argv)
 		//Now we have the binary Saliency map...
 		//locate the centroids of islands of 1s (contours) in the binary Saliency map.
 		//https://www.learnopencv.com/find-center-of-blob-centroid-using-opencv-cpp-python/
-		Mat canny_output;
-		vector<vector<Point> > contours;
-		vector<Vec4i> hierarchy;
+		cv::Mat canny_output;
+		std::vector<vector<Point> > contours;
+		std::vector<Vec4i> hierarchy;
 
 		// detect edges using canny
-		Canny( binaryMap, canny_output, 50, 150, 3 );
+		cv::Canny( binaryMap, canny_output, 50, 150, 3 );
 
 		// find contours
-		findContours( canny_output, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0) );
+		cv::findContours( canny_output, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0) );
 
 		// get the moments
-		vector<Moments> mu(contours.size());
-		for( int i = 0; i<contours.size(); i++ )
-		{ mu[i] = moments( contours[i], false ); }
-
+		std::vector<Moments> mu(contours.size());
+		for( int i = 0; i<contours.size(); i++ ){ 
+			mu[i] = cv::moments( contours[i], false ); 
+		}
+		
+		//get the diameters
+		std::vector<unsigned int> diameters(contours.size());
+		for( int i = 0; i<contours.size(); i++){
+			int area = cv::contourArea(contours[i], false);
+			diameters[i] = sqrt(4 * area/3.14159265358979323846); //equivalent diameter of circle of same area as contour
+		}
+		
 		// get the centroid of figures.
-		vector<Point2f> mc(contours.size());
-		for( int i = 0; i<contours.size(); i++)
-		{ mc[i] = Point2f( mu[i].m10/mu[i].m00 , mu[i].m01/mu[i].m00 ); }
+		std::vector<Point2f> mc(contours.size());
+		for( int i = 0; i<contours.size(); i++){ 
+			mc[i] = cv::Point2f( mu[i].m10/mu[i].m00 , mu[i].m01/mu[i].m00 ); 
+		}
 
 
-		ros::spinOnce();
 		r.sleep();
 	}
 
