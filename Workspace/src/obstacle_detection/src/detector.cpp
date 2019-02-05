@@ -10,20 +10,30 @@
 //And : https://github.com/stereolabs/zed-ros-wrapper/blob/master/tutorials/zed_depth_sub_tutorial/src/zed_depth_sub_tutorial.cpp
 class MapReader{
 	public:
-		MapReader(ros::NodeHandle* node):map(NULL), mapWidth(0), mapHeight(0), n(node){
-			subMap = n->subscribe("/zed/left/image_raw_color", 10, mapCallback);
+		MapReader(ros::NodeHandle* node):leftImage(NULL), depthMap(NULL), mapWidth(0), mapHeight(0), n(node){
+			subLeftImage = n->subscribe("/zed/left/image_raw_color", 10, leftImageCallback);
+			subDepthMap = n->subscribe("/zed/depth/depth_registered", 10, depthMapCallback);
 		}
 
-		void mapCallback(const sensor_msgs::Image::ConstPtr& msg)
+		void leftImageCallback(const sensor_msgs::Image::ConstPtr& msg)
 		{
-			map = (float*)(&msg->data[0]);
+			leftImage = (float*)(&msg->data[0]);
 			mapWidth = msg->width;
 			mapHeight = msg->height;
 		}
+		
+		void depthMapCallback(const sensor_msgs::Image::ConstPtr& msg)
+		{
+			depthMap = (float*)(&msg->data[0]);
+		}
 
-		float* getMap(){
-			return map;
+		float* getLeftImage(){
+			return leftImage;
 		}		
+	
+		float* getDepthMap(){
+			return depthMap;
+		}
 
 		int getMapWidth(){
 			return mapWidth;
@@ -33,18 +43,14 @@ class MapReader{
 			return mapHeight;
 		}
 
-		/*
-		   void run(){
-
-		   }
-		 */
-
 	private:
-		float* map;
+		float* leftImage;
+		float* depthMap; 
 		int mapWidth;
 		int mapHeight;
 		ros::NodeHandle* n;
-		ros::Subscriber subMap;
+		ros::Subscriber subLeftImage;
+		ros::Subscriber subDepthMap;
 }
 
 int main(int argc, char **argv)
@@ -74,9 +80,9 @@ int main(int argc, char **argv)
 	while(1){
 		ros::spinOnce();
 
-		float* map = d.getMap();	
+		float* leftImage = d.getLeftImage();	
 		//float* to cv::Mat conversion: https://stackoverflow.com/questions/39579398/opencv-how-to-create-mat-from-uint8-t-pointer
-		cv::Mat image(d.getMapHeight(),d.getMapWidth(), CV_32UC3, map); //3 channel (RGB) data	
+		cv::Mat leftImage(d.getMapHeight(),d.getMapWidth(), CV_32UC3, leftImage); //3 channel (RGB) data	
 		//Image to Saliency: https://github.com/fpuja/opencv_contrib/blob/saliencyModuleDevelop/modules/saliency/samples/computeSaliency.cpp	
 
 
