@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #ifndef Q_MOC_RUN
+#include <geometry_msgs/Pose2D.h>
 #include <ros/ros.h>
 #endif
 
@@ -20,11 +21,15 @@ public:
   void Init(ros::NodeHandle &nh);
 
 private:
+  void PoseCallback(geometry_msgs::Pose2DConstPtr receivedMsg);
   Ui::AutonomyControlsWidget *ui;
-  ros::Publisher *mpPub;
+  ros::Publisher mPub;
+  ros::Subscriber mPoseSub;
+  geometry_msgs::Pose2D mLastPoseUtm;
 
 public Q_SLOTS:
-  void on_enterButton_pressed();
+  void on_latLonButton_pressed();
+  void on_distHeadingButton_pressed();
 };
 
 #endif // AUTONOMYCONTROLSWIDGET_HPP

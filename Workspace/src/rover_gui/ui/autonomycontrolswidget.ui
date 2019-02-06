@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>438</width>
-    <height>186</height>
+    <width>479</width>
+    <height>332</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -20,10 +20,20 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
-    <widget class="QLabel" name="latitudeLabel">
+   <item row="2" column="0" colspan="2">
+    <widget class="QPushButton" name="latLonButton">
      <property name="text">
-      <string>Latitude:</string>
+      <string>Enter Lat/Lon</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QLineEdit" name="longitudeEdit"/>
+   </item>
+   <item row="5" column="0" colspan="2">
+    <widget class="QPushButton" name="distHeadingButton">
+     <property name="text">
+      <string>Enter Dist/Heading</string>
      </property>
     </widget>
    </item>
@@ -37,15 +47,32 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="1">
-    <widget class="QLineEdit" name="longitudeEdit"/>
-   </item>
-   <item row="2" column="0" colspan="2">
-    <widget class="QPushButton" name="enterButton">
+   <item row="4" column="0">
+    <widget class="QLabel" name="label_2">
      <property name="text">
-      <string>Enter</string>
+      <string>Heading(deg):</string>
      </property>
     </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QLabel" name="latitudeLabel">
+     <property name="text">
+      <string>Latitude:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Distance(m):</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QLineEdit" name="distEdit"/>
+   </item>
+   <item row="4" column="1">
+    <widget class="QLineEdit" name="headingEdit"/>
    </item>
   </layout>
  </widget>

@@ -7,10 +7,8 @@
 #include <QtGui>
 #ifndef Q_MOC_RUN
 #include <geometry_msgs/Pose2D.h>
-#include <robot_localization/navsat_conversions.h>
 #include <ros/ros.h>
 #include <sensor_msgs/NavSatFix.h>
-
 #endif
 
 namespace Ui {
@@ -32,7 +30,7 @@ public:
 
 private:
   void PoseCallback(geometry_msgs::Pose2DConstPtr receivedMsg);
-  void GoalCallback(sensor_msgs::NavSatFixConstPtr receivedMsg);
+  void GoalCallback(geometry_msgs::Pose2DConstPtr receivedMsg);
 
   Ui::MapWidget *ui;
 

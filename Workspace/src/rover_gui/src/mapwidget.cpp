@@ -3,7 +3,7 @@
 #include "ui_mapwidget.h"
 #include <QBrush>
 #include <QGraphicsLineItem>
-
+#include <robot_localization/navsat_conversions.h>
 /****
  * Helper arrow class
  */
@@ -92,7 +92,7 @@ MapWidget::~MapWidget() { delete ui; }
 bool MapWidget::Init(ros::NodeHandle &nh) {
   mpNh = &nh;
   mPoseSub = nh.subscribe(UTM_POSE_TOPIC, 1, &MapWidget::PoseCallback, this);
-  mGoalSub = nh.subscribe("/goal/gps", 1, &MapWidget::GoalCallback, this);
+  mGoalSub = nh.subscribe("/goal/utm", 1, &MapWidget::GoalCallback, this);
 }
 
 void MapWidget::PoseCallback(geometry_msgs::Pose2DConstPtr receivedMsg) {
@@ -115,8 +115,12 @@ void MapWidget::PoseCallback(geometry_msgs::Pose2DConstPtr receivedMsg) {
                                  Qt::KeepAspectRatio);
 }
 
-void MapWidget::GoalCallback(sensor_msgs::NavSatFixConstPtr receivedMsg) {
-  SetLatLon(receivedMsg->latitude, receivedMsg->longitude);
+void MapWidget::GoalCallback(geometry_msgs::Pose2DConstPtr receivedMsg) {
+  if (!mGoalItem) {
+    mGoalItem = mScene->addEllipse(-1, -1, 2, 2, QPen(), QBrush(Qt::blue));
+  }
+
+  mGoalItem->setPos(receivedMsg->x, -receivedMsg->y);
 }
 
 void MapWidget::SetLatLon(double lat, double lon) {
