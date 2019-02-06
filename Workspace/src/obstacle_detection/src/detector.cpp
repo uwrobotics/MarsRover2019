@@ -21,7 +21,7 @@ class MapReader{
 			mapWidth = msg->width;
 			mapHeight = msg->height;
 		}
-		
+
 		void depthMapCallback(const sensor_msgs::Image::ConstPtr& msg)
 		{
 			depthMap = (float*)(&msg->data[0]);
@@ -30,7 +30,7 @@ class MapReader{
 		float* getLeftImage(){
 			return leftImage;
 		}		
-	
+
 		float* getDepthMap(){
 			return depthMap;
 		}
@@ -76,13 +76,16 @@ int main(int argc, char **argv)
 	ros::NodeHandler n;	
 	ros::Rate r(10);
 	MapReader d(&n);
+	ros::Publisher obstaclePub = n.advertise<std::vector<std::tuple<Point2f,float,float,float>> >("obstacles", 100);
 	//SpinOnce Pattern for Callbacks: https://wiki.ros.org/roscpp/Overview/Callbacks%20and%20Spinning
-	while(1){
+	while(ros::ok()){
 		ros::spinOnce();
 
-		float* leftImage = d.getLeftImage();	
+		float* leftImagePointer = d.getLeftImage();	
+		float* depthMapPointer = d.getDepthMap();
 		//float* to cv::Mat conversion: https://stackoverflow.com/questions/39579398/opencv-how-to-create-mat-from-uint8-t-pointer
-		cv::Mat leftImage(d.getMapHeight(),d.getMapWidth(), CV_32UC3, leftImage); //3 channel (RGB) data	
+		cv::Mat leftImage(d.getMapHeight(),d.getMapWidth(), CV_8UC3, leftImagePointer); //3 channel (RGB) data	
+		cv::Mat depthMap(d.getMapHeight(),d.getMapWidth(), CV8UC1, depthMapPointer); //1-channel data
 		//Image to Saliency: https://github.com/fpuja/opencv_contrib/blob/saliencyModuleDevelop/modules/saliency/samples/computeSaliency.cpp	
 
 
@@ -121,19 +124,29 @@ int main(int argc, char **argv)
 		for( int i = 0; i<contours.size(); i++ ){ 
 			mu[i] = cv::moments( contours[i], false ); 
 		}
-		
+
 		//get the diameters
 		std::vector<unsigned int> diameters(contours.size());
 		for( int i = 0; i<contours.size(); i++){
 			int area = cv::contourArea(contours[i], false);
 			diameters[i] = sqrt(4 * area/3.14159265358979323846); //equivalent diameter of circle of same area as contour
 		}
-		
+
 		// get the centroid of figures.
 		std::vector<Point2f> mc(contours.size());
 		for( int i = 0; i<contours.size(); i++){ 
 			mc[i] = cv::Point2f( mu[i].m10/mu[i].m00 , mu[i].m01/mu[i].m00 ); 
 		}
+
+		//vector of obstacle centroids, x-offset(left-right), depth(z), and diameter
+		std::vector<std::tuple<Point2f,float,float,float>> obstacles(mc.size());
+		for(int i = 0; i < mc.size(); i++){
+			int depth = depthMap.at<double>(mc[i].x,mc[i].y);//get the depth of each centroid	
+			obstacles[i] = std::tuple<Point2f,float,float,float>({mc[i],420, depth, diameters[i]});				
+		}		
+
+
+		obstaclePub.publish(obstacles);
 
 
 		r.sleep();
