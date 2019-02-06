@@ -3,7 +3,7 @@
 #include "ui_mapwidget.h"
 #include <QBrush>
 #include <QGraphicsLineItem>
-
+#include <robot_localization/navsat_conversions.h>
 /****
  * Helper arrow class
  */
@@ -84,7 +84,7 @@ MapWidget::MapWidget(QWidget *parent)
   mScale = 5.0;
   ui->mapGraphicsView->scale(mScale, mScale);
 
-  connect(ui->zoomInButton, SIGNAL(clicked()), this, SLOT(ZoomIn()));
+  // connect(ui->zoomInButton, SIGNAL(clicked()), this, SLOT(ZoomIn()));
 }
 
 MapWidget::~MapWidget() { delete ui; }
@@ -92,10 +92,10 @@ MapWidget::~MapWidget() { delete ui; }
 bool MapWidget::Init(ros::NodeHandle &nh) {
   mpNh = &nh;
   mPoseSub = nh.subscribe(UTM_POSE_TOPIC, 1, &MapWidget::PoseCallback, this);
+  mGoalSub = nh.subscribe("/goal/utm", 1, &MapWidget::GoalCallback, this);
 }
 
-void MapWidget::PoseCallback(
-    const geometry_msgs::Pose2D::ConstPtr &receivedMsg) {
+void MapWidget::PoseCallback(geometry_msgs::Pose2DConstPtr receivedMsg) {
 
   double rover_utm_north = receivedMsg->y;
   double rover_utm_east = receivedMsg->x;
@@ -115,6 +115,14 @@ void MapWidget::PoseCallback(
                                  Qt::KeepAspectRatio);
 }
 
+void MapWidget::GoalCallback(geometry_msgs::Pose2DConstPtr receivedMsg) {
+  if (!mGoalItem) {
+    mGoalItem = mScene->addEllipse(-1, -1, 2, 2, QPen(), QBrush(Qt::blue));
+  }
+
+  mGoalItem->setPos(receivedMsg->x, -receivedMsg->y);
+}
+
 void MapWidget::SetLatLon(double lat, double lon) {
   longitude = lon;
   latitude = lat;
@@ -128,9 +136,9 @@ void MapWidget::SetLatLon(double lat, double lon) {
 
   mGoalItem->setPos(easting_utm, -northing_utm);
 
-  ROS_INFO(" you input latitude %f", latitude);
-  ROS_INFO(" you input longitude %f", longitude);
-  ROS_INFO(" easting %f northing %f", easting_utm, northing_utm);
+  // ROS_INFO(" you input latitude %f", latitude);
+  // ROS_INFO(" you input longitude %f", longitude);
+  // ROS_INFO(" easting %f northing %f", easting_utm, northing_utm);
 }
 
 void MapWidget::ZoomIn() {

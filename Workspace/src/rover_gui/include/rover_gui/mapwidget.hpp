@@ -7,8 +7,8 @@
 #include <QtGui>
 #ifndef Q_MOC_RUN
 #include <geometry_msgs/Pose2D.h>
-#include <robot_localization/navsat_conversions.h>
 #include <ros/ros.h>
+#include <sensor_msgs/NavSatFix.h>
 #endif
 
 namespace Ui {
@@ -26,10 +26,12 @@ public:
 
   bool Init(ros::NodeHandle &nh);
 
-  void PoseCallback(const geometry_msgs::Pose2D::ConstPtr &receivedMsg);
   void SetLatLon(double lat, double lon);
 
 private:
+  void PoseCallback(geometry_msgs::Pose2DConstPtr receivedMsg);
+  void GoalCallback(geometry_msgs::Pose2DConstPtr receivedMsg);
+
   Ui::MapWidget *ui;
 
   ros::NodeHandle *mpNh;
@@ -48,6 +50,7 @@ private:
 
   // subscribers
   ros::Subscriber mPoseSub;
+  ros::Subscriber mGoalSub;
 
 private Q_SLOTS:
   void ZoomOut();

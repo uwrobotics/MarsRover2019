@@ -62,10 +62,6 @@ private:
 
   // hack to get combined ros/qt event loop to exit
   bool mQuitting;
-
-public Q_SLOTS:
-  void on_longitudeLineEdit_returnPressed();
-  void on_latitudeLineEdit_returnPressed();
 };
 
 } // namespace roverGUI
