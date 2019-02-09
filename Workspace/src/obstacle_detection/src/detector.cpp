@@ -1,18 +1,20 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 #include "sensor_msgs/Image.h"
+#include "sensor_msgs/CameraInfo.h"
 #include <opencv2/core.hpp>
 #include <opencv2/saliency.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
-
+#include "../include/detector.h"
 
 //Inspired from: https://stackoverflow.com/a/16083336/8245487
 //And : https://github.com/stereolabs/zed-ros-wrapper/blob/master/tutorials/zed_depth_sub_tutorial/src/zed_depth_sub_tutorial.cpp
 class MapReader{
 	public:
-		MapReader(ros::NodeHandle* node):leftImage(NULL), depthMap(NULL), mapWidth(0), mapHeight(0), n(node){
+		MapReader(ros::NodeHandle* node):leftImage(NULL), depthMap(NULL), focalLength(0), mapWidth(0), mapHeight(0), n(node){
 			subLeftImage = n->subscribe("/zed/left/image_raw_color", 10, leftImageCallback);
 			subDepthMap = n->subscribe("/zed/depth/depth_registered", 10, depthMapCallback);
+			subCameraInfo = n->subscribe("/zed/rgb/camera_info", 10, cameraInfoCallback);
 		}
 
 		void leftImageCallback(const sensor_msgs::Image::ConstPtr& msg)
@@ -27,12 +29,20 @@ class MapReader{
 			depthMap = (float*)(&msg->data[0]);
 		}
 
+		void cameraInfoCallback(const sensor_msgs::CameraInfoPtr& msg){
+			focalLength = msg->K[0];	
+		}
+
 		float* getLeftImage(){
 			return leftImage;
 		}		
 
 		float* getDepthMap(){
 			return depthMap;
+		}
+		
+		float getFocalLength(){
+			return focalLength;
 		}
 
 		int getMapWidth(){
@@ -46,11 +56,13 @@ class MapReader{
 	private:
 		float* leftImage;
 		float* depthMap; 
+		float focalLength;
 		int mapWidth;
 		int mapHeight;
 		ros::NodeHandle* n;
 		ros::Subscriber subLeftImage;
 		ros::Subscriber subDepthMap;
+		ros::Subscriber subCameraInfo;
 }
 
 int main(int argc, char **argv)
@@ -76,13 +88,14 @@ int main(int argc, char **argv)
 	ros::NodeHandler n;	
 	ros::Rate r(10);
 	MapReader d(&n);
-	ros::Publisher obstaclePub = n.advertise<std::vector<std::tuple<Point2f,float,float,float>> >("obstacles", 100);
+	ros::Publisher obstaclePub = n.advertise<std::vector<Obstacle> >("obstacles", 100);
 	//SpinOnce Pattern for Callbacks: https://wiki.ros.org/roscpp/Overview/Callbacks%20and%20Spinning
 	while(ros::ok()){
 		ros::spinOnce();
 
 		float* leftImagePointer = d.getLeftImage();	
 		float* depthMapPointer = d.getDepthMap();
+		float focalLength = d.getFocalLength();
 		//float* to cv::Mat conversion: https://stackoverflow.com/questions/39579398/opencv-how-to-create-mat-from-uint8-t-pointer
 		cv::Mat leftImage(d.getMapHeight(),d.getMapWidth(), CV_8UC3, leftImagePointer); //3 channel (RGB) data	
 		cv::Mat depthMap(d.getMapHeight(),d.getMapWidth(), CV8UC1, depthMapPointer); //1-channel data
@@ -139,10 +152,12 @@ int main(int argc, char **argv)
 		}
 
 		//vector of obstacle centroids, x-offset(left-right), depth(z), and diameter
-		std::vector<std::tuple<Point2f,float,float,float>> obstacles(mc.size());
+		std::vector<Obstacle> obstacles(mc.size());
 		for(int i = 0; i < mc.size(); i++){
-			int depth = depthMap.at<double>(mc[i].x,mc[i].y);//get the depth of each centroid	
-			obstacles[i] = std::tuple<Point2f,float,float,float>({mc[i],420, depth, diameters[i]});				
+			double depth = depthMap.at<double>(mc[i].x,mc[i].y);//get the depth of each centroid	
+			double xdisplacement = (mc[i].x - d.getMapWidth()/2)*depth/focalLength; 
+			obstacles[i] = Obstacle(xdisplacement, depth, diameters[i]);				
+
 		}		
 
 
