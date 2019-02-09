@@ -11,25 +11,30 @@
 //And : https://github.com/stereolabs/zed-ros-wrapper/blob/master/tutorials/zed_depth_sub_tutorial/src/zed_depth_sub_tutorial.cpp
 class MapReader{
 	public:
-		MapReader(ros::NodeHandle* node):leftImage(NULL), depthMap(NULL), focalLength(0), mapWidth(0), mapHeight(0), n(node){
-			subLeftImage = n->subscribe("/zed/left/image_raw_color", 10, leftImageCallback);
-			subDepthMap = n->subscribe("/zed/depth/depth_registered", 10, depthMapCallback);
-			subCameraInfo = n->subscribe("/zed/rgb/camera_info", 10, cameraInfoCallback);
+		MapReader(ros::NodeHandle* node): n(node){
+			subLeftImage = n->subscribe("/zed/left/image_raw_color", 10, MapReader::leftImageCallback);
+			subDepthMap = n->subscribe("/zed/depth/depth_registered", 10, MapReader::depthMapCallback);
+			subCameraInfo = n->subscribe("/zed/rgb/camera_info", 10, MapReader::cameraInfoCallback);
+			leftImage = NULL;
+			mapWidth = 0;
+			mapHeight = 0;
+			depthMap = NULL;
+			focalLength = 0.0;
 		}
 
-		void leftImageCallback(const sensor_msgs::Image::ConstPtr& msg)
+		static void leftImageCallback(const sensor_msgs::Image::ConstPtr& msg)
 		{
 			leftImage = (float*)(&msg->data[0]);
 			mapWidth = msg->width;
 			mapHeight = msg->height;
 		}
 
-		void depthMapCallback(const sensor_msgs::Image::ConstPtr& msg)
+		static void depthMapCallback(const sensor_msgs::Image::ConstPtr& msg)
 		{
 			depthMap = (float*)(&msg->data[0]);
 		}
 
-		void cameraInfoCallback(const sensor_msgs::CameraInfoPtr& msg){
+		static void cameraInfoCallback(const sensor_msgs::CameraInfoPtr& msg){
 			focalLength = msg->K[0];	
 		}
 
@@ -54,16 +59,16 @@ class MapReader{
 		}
 
 	private:
-		float* leftImage;
-		float* depthMap; 
-		float focalLength;
-		int mapWidth;
-		int mapHeight;
+		static float* leftImage;
+		static float* depthMap; 
+		static float focalLength ;
+		static int mapWidth ;
+		static int mapHeight;
 		ros::NodeHandle* n;
 		ros::Subscriber subLeftImage;
 		ros::Subscriber subDepthMap;
 		ros::Subscriber subCameraInfo;
-}
+};
 
 int main(int argc, char **argv)
 {
@@ -85,7 +90,7 @@ int main(int argc, char **argv)
 	 * NodeHandle destructed will close down the node.
 	 */
 
-	ros::NodeHandler n;	
+	ros::NodeHandle n;	
 	ros::Rate r(10);
 	MapReader d(&n);
 	ros::Publisher obstaclePub = n.advertise<std::vector<Obstacle> >("obstacles", 100);
@@ -98,11 +103,11 @@ int main(int argc, char **argv)
 		float focalLength = d.getFocalLength();
 		//float* to cv::Mat conversion: https://stackoverflow.com/questions/39579398/opencv-how-to-create-mat-from-uint8-t-pointer
 		cv::Mat leftImage(d.getMapHeight(),d.getMapWidth(), CV_8UC3, leftImagePointer); //3 channel (RGB) data	
-		cv::Mat depthMap(d.getMapHeight(),d.getMapWidth(), CV8UC1, depthMapPointer); //1-channel data
+		cv::Mat depthMap(d.getMapHeight(),d.getMapWidth(), CV_8UC1, depthMapPointer); //1-channel data
 		//Image to Saliency: https://github.com/fpuja/opencv_contrib/blob/saliencyModuleDevelop/modules/saliency/samples/computeSaliency.cpp	
 
 
-		cv::Ptr<Saliency> saliencyAlgorithm = Saliency::create("SPECTRAL_RESIDUAL");
+		cv::Ptr<cv::saliency::Saliency> saliencyAlgorithm = cv::saliency::StaticSaliencySpectralResidual::create(/*"SPECTRAL_RESIDUAL"*/);
 		if( saliencyAlgorithm == NULL){
 			std::cout << "ERROR in instantiation of saliency algorithm\n";
 			return -1;
@@ -110,8 +115,8 @@ int main(int argc, char **argv)
 
 		cv::Mat saliencyMap;
 		cv::Mat binaryMap;
-		if(saliencyAlgorithm->computeSaliency(image,saliencyMap)){
-			saliency::StaticSaliencySpectralResidual spec;
+		if(saliencyAlgorithm->computeSaliency(leftImage,saliencyMap)){
+			cv::saliency::StaticSaliencySpectralResidual spec;
 			spec.computeBinaryMap(saliencyMap, binaryMap);	
 		}	
 		else{
@@ -123,17 +128,17 @@ int main(int argc, char **argv)
 		//locate the centroids of islands of 1s (contours) in the binary Saliency map.
 		//https://www.learnopencv.com/find-center-of-blob-centroid-using-opencv-cpp-python/
 		cv::Mat canny_output;
-		std::vector<vector<Point> > contours;
-		std::vector<Vec4i> hierarchy;
+		std::vector<std::vector<cv::Point> > contours;
+		std::vector<cv::Vec4i> hierarchy;
 
 		// detect edges using canny
 		cv::Canny( binaryMap, canny_output, 50, 150, 3 );
 
 		// find contours
-		cv::findContours( canny_output, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0) );
+		cv::findContours( canny_output, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE,cv::Point(0, 0) );
 
 		// get the moments
-		std::vector<Moments> mu(contours.size());
+		std::vector<cv::Moments> mu(contours.size());
 		for( int i = 0; i<contours.size(); i++ ){ 
 			mu[i] = cv::moments( contours[i], false ); 
 		}
@@ -146,13 +151,13 @@ int main(int argc, char **argv)
 		}
 
 		// get the centroid of figures.
-		std::vector<Point2f> mc(contours.size());
+		std::vector<cv::Point2f> mc(contours.size());
 		for( int i = 0; i<contours.size(); i++){ 
 			mc[i] = cv::Point2f( mu[i].m10/mu[i].m00 , mu[i].m01/mu[i].m00 ); 
 		}
 
 		//vector of obstacle centroids, x-offset(left-right), depth(z), and diameter
-		std::vector<Obstacle> obstacles(mc.size());
+		std::vector<struct Obstacle> obstacles(mc.size(), {0,0,0});
 		for(int i = 0; i < mc.size(); i++){
 			double depth = depthMap.at<double>(mc[i].x,mc[i].y);//get the depth of each centroid	
 			double xdisplacement = (mc[i].x - d.getMapWidth()/2)*depth/focalLength; 
@@ -164,7 +169,7 @@ int main(int argc, char **argv)
 		obstaclePub.publish(obstacles);
 
 
-		r.sleep();
+		//r.sleep();
 	}
 
 	return 0;
