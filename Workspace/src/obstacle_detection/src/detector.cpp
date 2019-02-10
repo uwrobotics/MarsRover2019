@@ -6,6 +6,8 @@
 #include <opencv2/saliency.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include "../include/detector.h"
+#include "../msg/obstacleDataArray.msg"
+#include "../msg/obstacleData.msg"
 
 //Inspired from: https://stackoverflow.com/a/16083336/8245487
 //And : https://github.com/stereolabs/zed-ros-wrapper/blob/master/tutorials/zed_depth_sub_tutorial/src/zed_depth_sub_tutorial.cpp
@@ -93,7 +95,7 @@ int main(int argc, char **argv)
 	ros::NodeHandle n;	
 	ros::Rate r(10);
 	MapReader d(&n);
-	ros::Publisher obstaclePub = n.advertise<std::vector<Obstacle> >("obstacles", 100);
+	ros::Publisher obstaclePub = n.advertise<obstacle_detection::obstacleDataArray>("obstacles", 100);
 	//SpinOnce Pattern for Callbacks: https://wiki.ros.org/roscpp/Overview/Callbacks%20and%20Spinning
 	while(ros::ok()){
 		ros::spinOnce();
@@ -156,17 +158,21 @@ int main(int argc, char **argv)
 			mc[i] = cv::Point2f( mu[i].m10/mu[i].m00 , mu[i].m01/mu[i].m00 ); 
 		}
 
-		//vector of obstacle centroids, x-offset(left-right), depth(z), and diameter
-		std::vector<struct Obstacle> obstacles(mc.size(), {0,0,0});
-		for(int i = 0; i < mc.size(); i++){
+		//vector of msgs pattern: https://answers.ros.org/question/60614/how-to-publish-a-vector-of-unknown-length-of-structs-in-ros/	
+		obstacle_detection::obstacleDataArray;
+ 		for(int i = 0; i < mc.size(); i++){
 			double depth = depthMap.at<double>(mc[i].x,mc[i].y);//get the depth of each centroid	
 			double xdisplacement = (mc[i].x - d.getMapWidth()/2)*depth/focalLength; 
-			obstacles[i] = Obstacle(xdisplacement, depth, diameters[i]);				
+			obstacle_detection::obstacleData obstacle;
+			obstacle.x = xdisplacement;
+			obstacle.z = depth;
+			obstacle.diameter = diameters[i];
+ 			obstacleDataArray.obstacles.push_back(obstacle);				
 
 		}		
 
 
-		obstaclePub.publish(obstacles);
+		obstaclePub.publish(obstacleDataArray);
 
 
 		//r.sleep();
