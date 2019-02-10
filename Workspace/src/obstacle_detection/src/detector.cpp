@@ -13,11 +13,6 @@
 //And : https://github.com/stereolabs/zed-ros-wrapper/blob/master/tutorials/zed_depth_sub_tutorial/src/zed_depth_sub_tutorial.cpp
 class MapReader{
 	public:
-		static float* leftImage;
-		static float* depthMap; 
-		static float focalLength ;
-		static int mapWidth ;
-		static int mapHeight;
 		
 		MapReader(ros::NodeHandle* node): n(node){
 			subLeftImage = n->subscribe("/zed/left/image_raw_color", 10, MapReader::leftImageCallback);
@@ -67,6 +62,11 @@ class MapReader{
 		}
 
 	private:	
+		static float* leftImage;
+		static float* depthMap; 
+		static float focalLength ;
+		static int mapWidth ;
+		static int mapHeight;
 		ros::NodeHandle* n;
 		ros::Subscriber subLeftImage;
 		ros::Subscriber subDepthMap;
@@ -111,6 +111,8 @@ int main(int argc, char **argv)
 		float* leftImagePointer = d.getLeftImage();	
 		float* depthMapPointer = d.getDepthMap();
 		float focalLength = d.getFocalLength();
+		ROS_INFO("Focal length: %9.6f", focalLength);
+		ROS_INFO("LeftImageHeight: %d", d.getMapHeight());
 		//float* to cv::Mat conversion: https://stackoverflow.com/questions/39579398/opencv-how-to-create-mat-from-uint8-t-pointer
 		cv::Mat leftImage(d.getMapHeight(),d.getMapWidth(), CV_8UC3, leftImagePointer); //3 channel (RGB) data	
 		cv::Mat depthMap(d.getMapHeight(),d.getMapWidth(), CV_8UC1, depthMapPointer); //1-channel data
@@ -175,10 +177,12 @@ int main(int argc, char **argv)
 			obstacle.x = xdisplacement;
 			obstacle.z = depth;
 			obstacle.diameter = diameters[i];
- 			dataArray.obstacles.push_back(obstacle);				
-
+ 			dataArray.obstacles.push_back(obstacle);	
+			ROS_INFO("num: %d", i);			
+			ROS_INFO("X: %9.6f", xdisplacement);
+			ROS_INFO("Z: %9.6f", depth);
+			ROS_INFO("D: %9.6f", diameters[i]);
 		}		
-
 
 		obstaclePub.publish(dataArray);
 
