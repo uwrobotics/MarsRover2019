@@ -1,3 +1,6 @@
+##OpenCV modifications: https://github.com/Chinmoy07/Using-OpenCV-with-ROS/blob/master/CMakeLists.txt#
+
+
 cmake_minimum_required(VERSION 2.8.3)
 project(obstacle_detection)
 
@@ -12,6 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   cv_bridge 
+  image_geometry
   message_generation
 )
 
@@ -109,7 +113,7 @@ catkin_package(
 #  LIBRARIES obstacle_detection
 #  CATKIN_DEPENDS roscpp rospy std_msgs
 #  DEPENDS system_lib
-  CATKIN_DEPENDS message_runtime
+  CATKIN_DEPENDS message_runtime cv_bridge image_geometry
 )
 
 ###########
@@ -121,6 +125,7 @@ catkin_package(
 include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
+  ${OpenCV_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
@@ -150,7 +155,7 @@ include_directories(
 
 ## Specify libraries to link a library or executable target against
  target_link_libraries(${PROJECT_NAME}_node
-   ${catkin_LIBRARIES}
+   ${catkin_LIBRARIES} ${OpenCV_LIBRARIES}
  )
 
 #############

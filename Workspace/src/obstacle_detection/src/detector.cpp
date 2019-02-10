@@ -6,13 +6,19 @@
 #include <opencv2/saliency.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include "../include/detector.h"
-#include "../msg/obstacleDataArray.msg"
-#include "../msg/obstacleData.msg"
+#include "obstacle_detection/obstacleDataArray.h"
+#include "obstacle_detection/obstacleData.h"
 
 //Inspired from: https://stackoverflow.com/a/16083336/8245487
 //And : https://github.com/stereolabs/zed-ros-wrapper/blob/master/tutorials/zed_depth_sub_tutorial/src/zed_depth_sub_tutorial.cpp
 class MapReader{
 	public:
+		static float* leftImage;
+		static float* depthMap; 
+		static float focalLength ;
+		static int mapWidth ;
+		static int mapHeight;
+		
 		MapReader(ros::NodeHandle* node): n(node){
 			subLeftImage = n->subscribe("/zed/left/image_raw_color", 10, MapReader::leftImageCallback);
 			subDepthMap = n->subscribe("/zed/depth/depth_registered", 10, MapReader::depthMapCallback);
@@ -60,17 +66,19 @@ class MapReader{
 			return mapHeight;
 		}
 
-	private:
-		static float* leftImage;
-		static float* depthMap; 
-		static float focalLength ;
-		static int mapWidth ;
-		static int mapHeight;
+	private:	
 		ros::NodeHandle* n;
 		ros::Subscriber subLeftImage;
 		ros::Subscriber subDepthMap;
 		ros::Subscriber subCameraInfo;
 };
+
+
+float* MapReader::leftImage;
+float* MapReader::depthMap; 
+float MapReader::focalLength;
+int MapReader::mapWidth;
+int MapReader::mapHeight;
 
 int main(int argc, char **argv)
 {
@@ -159,7 +167,7 @@ int main(int argc, char **argv)
 		}
 
 		//vector of msgs pattern: https://answers.ros.org/question/60614/how-to-publish-a-vector-of-unknown-length-of-structs-in-ros/	
-		obstacle_detection::obstacleDataArray;
+		obstacle_detection::obstacleDataArray dataArray;
  		for(int i = 0; i < mc.size(); i++){
 			double depth = depthMap.at<double>(mc[i].x,mc[i].y);//get the depth of each centroid	
 			double xdisplacement = (mc[i].x - d.getMapWidth()/2)*depth/focalLength; 
@@ -167,12 +175,12 @@ int main(int argc, char **argv)
 			obstacle.x = xdisplacement;
 			obstacle.z = depth;
 			obstacle.diameter = diameters[i];
- 			obstacleDataArray.obstacles.push_back(obstacle);				
+ 			dataArray.obstacles.push_back(obstacle);				
 
 		}		
 
 
-		obstaclePub.publish(obstacleDataArray);
+		obstaclePub.publish(dataArray);
 
 
 		//r.sleep();
