@@ -15,9 +15,9 @@ class MapReader{
 	public:
 		
 		MapReader(ros::NodeHandle* node): n(node){
-			subLeftImage = n->subscribe("/zed/left/image_raw_color", 10, MapReader::leftImageCallback);
+			subLeftImage = n->subscribe("/zed/rgb/image_raw_color", 10, MapReader::leftImageCallback);
 			subDepthMap = n->subscribe("/zed/depth/depth_registered", 10, MapReader::depthMapCallback);
-			subCameraInfo = n->subscribe("/zed/rgb/camera_info", 10, MapReader::cameraInfoCallback);
+			subCameraInfo = n->subscribe("/zed/left/camera_info", 10, MapReader::cameraInfoCallback);
 			leftImage = NULL;
 			mapWidth = 0;
 			mapHeight = 0;
