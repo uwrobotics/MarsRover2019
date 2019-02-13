@@ -35,11 +35,10 @@ class armvizwidget : public QWidget{
 	    QGraphicsScene *topScene;
 	    QGraphicsScene *sideScene;
 	    QPen *mPen;
+	    QBrush *mBrush;
 	    QPointF startPos;
 
   		ros::Subscriber mPoseSub;
-
-  		bool isTopDownView;
 
   		// index for input angles from subscribed message
   		const double TURNTABLE_YAW=0;
@@ -50,20 +49,28 @@ class armvizwidget : public QWidget{
   		const double CLAW_CLOSURE_ANGLE=5;
 
   		//dimensions
-  		const double ROBOT_LEN=0, ROBOT_WIDTH=0;
-  		const double TURNTABLE_RAD=0;
+  		const double ROBOT_LEN=45, ROBOT_WIDTH=45;
+  		const double TURNTABLE_RAD=15;
   		const double SHOULDER_LEN=25, ELBOW_LEN=25, WRIST_LEN=25, CLAW_LEN=15;
   		const double SHOULDER_THICK=2, ELBOW_THICK=2, WRIST_THICK=2;
+  		const double JOINT_RAD=2;
 
   		struct ArmLink{
   			double length;
   			double thickness;
-  			QColor mColor;
+  			double jointRad;
+  			QColor linkColor;
+  			QColor jointColor;
   		};
 
   		ArmLink *shoulder, *elbow, *wrist;
 
   		QPointF DrawLink(ArmLink *armLink, QPen *mPen, QPointF startPos, double pitch, QGraphicsScene *mScene);
+  		void DrawJoint(ArmLink *armLink, QPen *mPen, QBrush *mBrush, QPointF startPos, QGraphicsScene *mScene);
+  		void DrawClaw(QPointF startPos, QPen *mPen, QGraphicsScene *mScene, bool isSideView);
+  		void DrawTurnTable(QPointF startPos, QPen *mPen, QGraphicsScene *mScene, bool isSideView);
+  		void DrawRobotFrame(QPointF startPos, qreal offset, QPen *mPen, QGraphicsScene *mScene, bool isSideView);
+
   		void DrawArmSideView(std::vector<double> angles);
   		void DrawArmTopView(std::vector<double> angles);
 };
