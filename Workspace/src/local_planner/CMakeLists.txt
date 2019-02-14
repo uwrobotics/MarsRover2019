@@ -11,7 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
     roscpp
     std_msgs
     message_generation
-    occupancy_grid
+    #occupancy_grid
     robot_localization
     tf2_ros
     tf
