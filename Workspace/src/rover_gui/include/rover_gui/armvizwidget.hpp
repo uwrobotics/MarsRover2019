@@ -7,6 +7,7 @@
 #include <QBrush>
 #include <QPointF>
 #include <QGraphicsScene>
+#include <QGraphicsView>
 #include <QGraphicsItem>
 #include <vector>
 #ifndef Q_MOC_RUN
@@ -56,6 +57,7 @@ class Arm : public QGraphicsItem{
 		~Arm();
 		void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr); 
 		QRectF boundingRect() const;
+		void setAngles(std::vector<double> angles);
 
 	private:
 		// index for input angles that defines the geomerty of the arm, also the index of the angles in the received ROS message
@@ -75,7 +77,7 @@ class Arm : public QGraphicsItem{
 	    RobotFrame robotFrame;
 
 	    bool isSideView;
-	    std::vector<double> angles;	
+	    std::vector<double> mAngles;	
 
 	    QPointF DrawLink(QPainter *painter, ArmLink armLink, QPointF startPos, double pitch);
   		void DrawJoint(QPainter *painter, ArmLink armLink, QPointF startPos);
@@ -112,7 +114,7 @@ class armvizwidget : public QWidget{
   		const double SHOULDER_JOINT_RAD=2, ELBOW_JOINT_RAD=2, WRIST_JOINT_RAD=2;
   		const double CLAW_LEN=10, CLAW_WIDTH=10, CLAW_THICK=2;
   		const double TURNTABLE_RAD=15, TURNTABLE_OFFSET=2;
-  		const double ROBOT_LEN=45, ROBOT_WIDTH=45, FRAME_OFFSET=2;
+  		const double ROBOT_LEN=60, ROBOT_WIDTH=60, FRAME_OFFSET=2;
 };
 
 #endif // ARMVIZWIDGET_HPP
