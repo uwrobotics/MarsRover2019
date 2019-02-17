@@ -366,7 +366,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
               <pointCloudTopicName>point_cloud/cloud_registered</pointCloudTopicName>
               <cameraInfoTopicName>left/camera_info</cameraInfoTopicName>              
               <depthImageCameraInfoTopicName>depth/camera_info</depthImageCameraInfoTopicName>            
-              <pointCloudCutoff>1.0</pointCloudCutoff>                
+              <pointCloudCutoff>0.05</pointCloudCutoff>
+              <pointCloudCutoffMax>20.0</pointCloudCutoffMax>
                   <hackBaseline>0.07</hackBaseline>
                   <distortionK1>0.0</distortionK1>
                   <distortionK2>0.0</distortionK2>
