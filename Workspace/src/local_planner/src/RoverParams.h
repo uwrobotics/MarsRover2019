@@ -5,7 +5,6 @@
 #ifndef PROJECT_ROVERPARAMS_H
 #define PROJECT_ROVERPARAMS_H
 
-
 typedef struct RobotParams {
   double maxV;
   double minV;
@@ -23,5 +22,4 @@ typedef struct RobotParams {
 
 } RobotParams_t;
 
-
-#endif //PROJECT_ROVERPARAMS_H
+#endif // PROJECT_ROVERPARAMS_H

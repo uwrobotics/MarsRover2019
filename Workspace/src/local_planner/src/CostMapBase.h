@@ -5,10 +5,6 @@
 #ifndef PROJECT_COSTMAPBASE_H
 #define PROJECT_COSTMAPBASE_H
 
+class CostMapBase {};
 
-class CostMapBase {
-
-};
-
-
-#endif //PROJECT_COSTMAPBASE_H
+#endif // PROJECT_COSTMAPBASE_H

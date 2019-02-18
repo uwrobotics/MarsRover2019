@@ -8,17 +8,18 @@
 #include "RoverParams.h"
 
 #include <geometry_msgs/Twist.h>
+#include <ros/node_handle.h>
 
 class CPlanningAlgoBase {
 public:
-  CPlanningAlgoBase(const RobotParams_t* robotParams);
+  CPlanningAlgoBase(const RobotParams_t *robotParams, ros::NodeHandle *pNh);
 
-  virtual geometry_msgs::Twist CalculateBestVelocity(const geometry_msgs::Twist& curVel, double headingToGoal, double distToGoal);
+  virtual geometry_msgs::Twist
+  CalculateBestVelocity(const geometry_msgs::Twist &curVel,
+                        double headingToGoal, double distToGoal);
 
 protected:
-  const RobotParams_t* m_pRobotParams;
-
+  const RobotParams_t *m_pRobotParams;
 };
 
-
-#endif //PROJECT_PLANNINGALGOBASE_H
+#endif // PROJECT_PLANNINGALGOBASE_H

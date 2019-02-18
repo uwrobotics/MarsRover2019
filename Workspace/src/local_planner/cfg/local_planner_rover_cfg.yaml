@@ -7,9 +7,10 @@ roverParams_maxW: 1.0
 roverParams_robotLength: 1.07
 roverParams_robotWidth: 1.03
 roverParams_timestep: 0.5
-local_planner/occupancy_topic: /OccupancyGrid
-local_planner/goal_gps_topic: /autonomy/goal_gps
+local_planner/costmap_topic: /costmap
+local_planner/goal_gps_topic: /goal/utm
 local_planner/odometry_topic: /odometry/rover_gps_odom
+local_planner/pose_topic: /localization/pose_utm
 
 local_planner/velocity_out_topic: /cmd_vel #/local_planner/cmd_vel
 local_planner/status_topic: /local_planner/status

@@ -49,7 +49,7 @@ int main(int argc, char **argv) {
   CLocalPlanner localPlanner(&nh, roverParams);
   ROS_INFO("local planner setup complete");
 
-  //ros::spin();
+  // ros::spin();
   localPlanner.Exec();
   return 0;
 }

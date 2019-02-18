@@ -1,11 +1,7 @@
 <launch>
     <!-- param name = "debug" value = "true" type = "bool" / -->
-    <!-- param name = "PCL2TopicName" value = "/duo3d_camera/depth/points" type = "str" / -->
 
-    <include file="$(find simulation)/launch/simulation.launch" />
-    <include file="$(find simulation)/launch/localization.launch" />
+    <include file="$(find simulation)/launch/simulation_full.launch" />
     <!--include file="$(find occupancy_grid)/launch/occupancy_grid_sim.launch" /-->
-
-
 
 </launch>
