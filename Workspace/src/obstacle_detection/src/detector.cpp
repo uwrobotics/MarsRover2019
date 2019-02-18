@@ -38,7 +38,7 @@ class MapReader{
 		}
 
 		static void cameraInfoCallback(const sensor_msgs::CameraInfoPtr& msg){
-			focalLength = msg->K[0];	
+			focalLength = (float)(msg->K[0]);	
 		}
 
 		float* getLeftImage(){
