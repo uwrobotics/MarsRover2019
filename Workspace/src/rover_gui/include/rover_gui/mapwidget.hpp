@@ -6,14 +6,16 @@
 #include <QtCore>
 #include <QtGui>
 #ifndef Q_MOC_RUN
-#include <robot_localization/navsat_conversions.h>
-#include <ros/ros.h>
 #include <geometry_msgs/Pose2D.h>
+#include <ros/ros.h>
+#include <sensor_msgs/NavSatFix.h>
 #endif
 
 namespace Ui {
 class MapWidget;
 }
+
+class Arrow;
 
 class MapWidget : public QWidget {
   Q_OBJECT
@@ -24,24 +26,35 @@ public:
 
   bool Init(ros::NodeHandle &nh);
 
-  void subscriber_callback(const geometry_msgs::Pose2D::ConstPtr &receivedMsg);
-  float scaling_function(float x_dist, float y_dist);
   void SetLatLon(double lat, double lon);
 
 private:
+  void PoseCallback(geometry_msgs::Pose2DConstPtr receivedMsg);
+  void GoalCallback(geometry_msgs::Pose2DConstPtr receivedMsg);
+
   Ui::MapWidget *ui;
 
   ros::NodeHandle *mpNh;
 
-  QGraphicsScene *scene;
+  QGraphicsScene *mScene;
+  Arrow *mRoverArrowItem;
+  QGraphicsEllipseItem *mGoalItem;
+  Arrow *mBaseStationArrowItem;
+
   double longitude;
   double latitude;
   double easting_utm;
   double northing_utm;
   std::string utm_zone, rover_utm_zone;
+  double mScale;
 
   // subscribers
-  ros::Subscriber mSub;
+  ros::Subscriber mPoseSub;
+  ros::Subscriber mGoalSub;
+
+private Q_SLOTS:
+  void ZoomOut();
+  void ZoomIn();
 };
 
 #endif // MAPWIDGET_HPP
