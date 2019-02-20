@@ -28,6 +28,7 @@ MainWindow::MainWindow(int argc, char **argv, ros::NodeHandle &nh,
   // Initialize widgets
   ui.mapWidget->Init(mNh);
   ui.autonomyControlsWidget->Init(mNh);
+  ui.consoleWidget->Init(mNh);
 
   QObject::connect(
       ui.actionAbout_Qt, SIGNAL(triggered(bool)), qApp,

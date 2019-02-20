@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf
   tf2
   robot_localization
+  console_message
 )
 
 ## System dependencies are found with CMake's conventions
@@ -146,7 +147,7 @@ add_executable(${PROJECT_NAME}_node src/localization_converter_node.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-# add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} console_message_generate_messages_cpp console_message)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}_node

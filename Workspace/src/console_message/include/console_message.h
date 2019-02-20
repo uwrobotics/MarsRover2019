@@ -2,15 +2,17 @@
 #define CONSOLE_MESSAGE
 
 #include <string>
+#include <console_message/console_msg.h>
+#include <ros/node_handle.h>
 
-class Console_Message{
+class ConsoleMessage{
 
 public:
 
-	struct Message{
-	  char* node_sender;
-	  char* msg;
-	  char* level;
+	enum eLevels{
+	  INFO = 0,
+	  WARN,
+	  ERROR
 	};
 
 	//User notes - there are five error levels (case matters):
@@ -20,8 +22,13 @@ public:
 	//Fatal - The entire system (node, motor, arm, ect) is permanently offline
 	//Debug - Info that team members other than the software team could use/would like to know
 	
-	Console_Message();
-	void sendMessage(struct Message arg);
+	//Console_Message();
+	static void Initialize(ros::NodeHandle& nh);
+
+	static void SendMessage(std::string msg, eLevels level=INFO);
+
+private:
+	static ros::Publisher* s_pPub;
 
 };
 
