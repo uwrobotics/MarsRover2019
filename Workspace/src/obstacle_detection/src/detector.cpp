@@ -15,14 +15,14 @@ class MapReader{
 	public:
 		
 		MapReader(ros::NodeHandle* node): n(node){
-			subLeftImage = n->subscribe("/zed/rgb/image_raw_color", 10, MapReader::leftImageCallback);
-			subDepthMap = n->subscribe("/zed/depth/depth_registered", 10, MapReader::depthMapCallback);
-			subCameraInfo = n->subscribe("/zed/left/camera_info", 10, MapReader::cameraInfoCallback);
+			subLeftImage = n->subscribe("/zed/rgb/image_raw_color", 1, MapReader::leftImageCallback);
+			subDepthMap = n->subscribe("/zed/depth/depth_registered", 1, MapReader::depthMapCallback);
+			subCameraInfo = n->subscribe("/zed/left/camera_info", 1, MapReader::cameraInfoCallback);
 			leftImage = NULL;
-			mapWidth = 0;
-			mapHeight = 0;
+			mapWidth = 2560;
+			mapHeight = 720; 
 			depthMap = NULL;
-			focalLength = 0.0;
+			focalLength = 1.0;
 		}
 
 		static void leftImageCallback(const sensor_msgs::Image::ConstPtr& msg)
@@ -101,11 +101,14 @@ int main(int argc, char **argv)
 	 */
 
 	ros::NodeHandle n;	
-	ros::Rate r(10);
+	ros::Rate r(2);
 	MapReader d(&n);
 	ros::Publisher obstaclePub = n.advertise<obstacle_detection::obstacleDataArray>("obstacles", 100);
+	
+	ros::Duration(1.0).sleep();//Wait for data to come in
 	//SpinOnce Pattern for Callbacks: https://wiki.ros.org/roscpp/Overview/Callbacks%20and%20Spinning
 	while(ros::ok()){
+		r.sleep();
 		ros::spinOnce();
 
 		float* leftImagePointer = d.getLeftImage();	
@@ -113,16 +116,17 @@ int main(int argc, char **argv)
 		float focalLength = d.getFocalLength();
 		ROS_INFO("Focal length: %9.6f", focalLength);
 		ROS_INFO("LeftImageHeight: %d", d.getMapHeight());
+		ROS_INFO("LeftImageWidth: %d", d.getMapWidth());
 		//float* to cv::Mat conversion: https://stackoverflow.com/questions/39579398/opencv-how-to-create-mat-from-uint8-t-pointer
-		cv::Mat leftImage(d.getMapHeight(),d.getMapWidth(), CV_8UC3, leftImagePointer); //3 channel (RGB) data	
-		cv::Mat depthMap(d.getMapHeight(),d.getMapWidth(), CV_8UC1, depthMapPointer); //1-channel data
+		cv::Mat leftImage(d.getMapHeight(),d.getMapWidth(), CV_32FC3, leftImagePointer); //3 channel (RGB) data	
+		cv::Mat depthMap(d.getMapHeight(),d.getMapWidth(), CV_32FC1, depthMapPointer); //1-channel data
 		//Image to Saliency: https://github.com/fpuja/opencv_contrib/blob/saliencyModuleDevelop/modules/saliency/samples/computeSaliency.cpp	
 
 
 		cv::Ptr<cv::saliency::Saliency> saliencyAlgorithm = cv::saliency::StaticSaliencySpectralResidual::create(/*"SPECTRAL_RESIDUAL"*/);
 		if( saliencyAlgorithm == NULL){
 			std::cout << "ERROR in instantiation of saliency algorithm\n";
-			return -1;
+	//		return -1;
 		}
 
 		cv::Mat saliencyMap;
@@ -133,7 +137,7 @@ int main(int argc, char **argv)
 		}	
 		else{
 			std::cout <<"ERROR in computing saliency map from Left RGB map...\n";
-			return -1;		
+	//		return -1;		
 		}
 
 		//Now we have the binary Saliency map...
@@ -187,7 +191,6 @@ int main(int argc, char **argv)
 		obstaclePub.publish(dataArray);
 
 
-		//r.sleep();
 	}
 
 	return 0;
