@@ -18,30 +18,41 @@ class MapReader{
 			subLeftImage = n->subscribe("/zed/rgb/image_raw_color", 1, MapReader::leftImageCallback);
 			subDepthMap = n->subscribe("/zed/depth/depth_registered", 1, MapReader::depthMapCallback);
 			subCameraInfo = n->subscribe("/zed/left/camera_info", 1, MapReader::cameraInfoCallback);
-			leftImage = NULL;
-			mapWidth = 2560;
-			mapHeight = 720; 
-			depthMap = NULL;
+			leftImageWidth = 2560;
+			leftImageHeight = 720; 
+			depthMapWidth = 2560;
+			depthMapHeight = 720;
+			depthMap = new float[depthMapWidth * depthMapHeight];
+			leftImage = new uint8_t[leftImageWidth * leftImageHeight * 3  ]; //3-channel RGB
 			focalLength = 1.0;
 		}
 
 		static void leftImageCallback(const sensor_msgs::Image::ConstPtr& msg)
 		{
-			leftImage = (float*)(&msg->data[0]);
-			mapWidth = msg->width;
-			mapHeight = msg->height;
+			ROS_INFO("color image size: %d\n", msg->step * msg->height);
+			ROS_INFO("%d", sizeof(uint8_t) * leftImageWidth * leftImageHeight * 3);
+			std::memcpy(leftImage, (&msg->data[0]), sizeof(uint8_t) * leftImageWidth * leftImageHeight * 3) ;;
+			leftImageWidth = msg->width;
+			leftImageHeight = msg->height;
+		}
+
+		~MapReader(){
+			delete [] leftImage;
+			delete [] depthMap;
 		}
 
 		static void depthMapCallback(const sensor_msgs::Image::ConstPtr& msg)
 		{
-			depthMap = (float*)(&msg->data[0]);
+			//std::memcpy(depthMap, (&msg->data[0]), sizeof(float) * mapWidth * mapHeight);;
+			depthMapWidth = msg->width;
+			depthMapHeight = msg->height;
 		}
 
 		static void cameraInfoCallback(const sensor_msgs::CameraInfoPtr& msg){
 			focalLength = (float)(msg->K[0]);	
 		}
 
-		float* getLeftImage(){
+		uint8_t* getLeftImage(){
 			return leftImage;
 		}		
 
@@ -53,20 +64,28 @@ class MapReader{
 			return focalLength;
 		}
 
-		int getMapWidth(){
-			return mapWidth;
+		int getDepthMapWidth(){
+			return depthMapWidth;
+		}
+		int getDepthMapHeight(){
+			return depthMapHeight;
+		}
+		int getLeftImageWidth(){
+			return leftImageWidth;
+		}
+		int getLeftImageHeight(){
+			return leftImageHeight;
 		}
 
-		int getMapHeight(){
-			return mapHeight;
-		}
 
 	private:	
-		static float* leftImage;
+		static uint8_t* leftImage;
 		static float* depthMap; 
-		static float focalLength ;
-		static int mapWidth ;
-		static int mapHeight;
+		static float focalLength;
+		static int leftImageWidth;
+		static int leftImageHeight;
+		static int depthMapWidth;
+		static int depthMapHeight;
 		ros::NodeHandle* n;
 		ros::Subscriber subLeftImage;
 		ros::Subscriber subDepthMap;
@@ -74,11 +93,13 @@ class MapReader{
 };
 
 
-float* MapReader::leftImage;
+uint8_t* MapReader::leftImage;
 float* MapReader::depthMap; 
 float MapReader::focalLength;
-int MapReader::mapWidth;
-int MapReader::mapHeight;
+int MapReader::leftImageWidth;
+int MapReader::leftImageHeight;
+int MapReader::depthMapWidth;
+int MapReader::depthMapHeight;
 
 int main(int argc, char **argv)
 {
@@ -111,15 +132,17 @@ int main(int argc, char **argv)
 		r.sleep();
 		ros::spinOnce();
 
-		float* leftImagePointer = d.getLeftImage();	
+		uint8_t* leftImagePointer = d.getLeftImage();	
 		float* depthMapPointer = d.getDepthMap();
 		float focalLength = d.getFocalLength();
 		ROS_INFO("Focal length: %9.6f", focalLength);
-		ROS_INFO("LeftImageHeight: %d", d.getMapHeight());
-		ROS_INFO("LeftImageWidth: %d", d.getMapWidth());
+		ROS_INFO("LeftImageHeight: %d", d.getLeftImageHeight());
+		ROS_INFO("LeftImageWidth: %d", d.getLeftImageWidth());
+		ROS_INFO("depthMapHeight: %d", d.getDepthMapHeight());
+		ROS_INFO("depthMapWidth: %d", d.getDepthMapWidth());
 		//float* to cv::Mat conversion: https://stackoverflow.com/questions/39579398/opencv-how-to-create-mat-from-uint8-t-pointer
-		cv::Mat leftImage(d.getMapHeight(),d.getMapWidth(), CV_32FC3, leftImagePointer); //3 channel (RGB) data	
-		cv::Mat depthMap(d.getMapHeight(),d.getMapWidth(), CV_32FC1, depthMapPointer); //1-channel data
+		cv::Mat leftImage(d.getLeftImageHeight(),d.getLeftImageWidth(), CV_8UC3, leftImagePointer); //3 channel (RGB) data	
+		cv::Mat depthMap(d.getDepthMapHeight(),d.getDepthMapWidth(), CV_32FC1, depthMapPointer); //1-channel data
 		//Image to Saliency: https://github.com/fpuja/opencv_contrib/blob/saliencyModuleDevelop/modules/saliency/samples/computeSaliency.cpp	
 
 
@@ -176,7 +199,7 @@ int main(int argc, char **argv)
 		obstacle_detection::obstacleDataArray dataArray;
  		for(int i = 0; i < mc.size(); i++){
 			double depth = depthMap.at<double>(mc[i].x,mc[i].y);//get the depth of each centroid	
-			double xdisplacement = (mc[i].x - d.getMapWidth()/2)*depth/focalLength; 
+			double xdisplacement = (mc[i].x - d.getDepthMapWidth()/2)*depth/focalLength; 
 			obstacle_detection::obstacleData obstacle;
 			obstacle.x = xdisplacement;
 			obstacle.z = depth;
