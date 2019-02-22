@@ -13,9 +13,10 @@ project(obstacle_detection)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
+  OpenCV
+  #image_geometry
+  #cv_bridge
   std_msgs
-  cv_bridge 
-  image_geometry
   message_generation
 )
 
@@ -113,7 +114,7 @@ catkin_package(
 #  LIBRARIES obstacle_detection
 #  CATKIN_DEPENDS roscpp rospy std_msgs
 #  DEPENDS system_lib
-  CATKIN_DEPENDS message_runtime cv_bridge image_geometry
+  CATKIN_DEPENDS message_runtime #cv_bridge image_geometry
 )
 
 ###########
