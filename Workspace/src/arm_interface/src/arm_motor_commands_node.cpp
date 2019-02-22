@@ -6,18 +6,21 @@
 #include <arm_node/Custom_msg.h>
 
 class InitObjects {
-	private:
+	public:
 	static ros::NodeHandle nh;  
         static ros::Publisher pub_user_to_GUI;
 	static ros::Publisher pub_user_to_CAN;   
         static int freq;
-
-	public:
-	InitObjects() {
-		pub_user_to_GUI =  nh.advertise<std_msgs::Float64MultiArray>("GUI", 1000); 
+	
+	
+	/**
+	InitObjects(): 
+		pub_user_to_GUI =  nh.advertise<std_msgs::Float64MultiArray>("GUI", 1000);
        		pub_user_to_CAN =  nh.advertise<arm_node::Custom_msg>("CAN", 1000);
-		freq = 10; 
+		freq = 10;
+	{
 	}
+	**/
 
 	
 	static ros::Publisher getPubGUI() {
@@ -95,7 +98,11 @@ void subscriberFunctionFromCAN (int argc, char** argv) {
 
 int main(int argc, char** argv) {
 	//initializing the node
-	ros::init(argc, argv, "arm_motor_commands");	
+	ros::init(argc, argv, "arm_motor_commands");		
+
+	InitObjects::getPubGUI() =  InitObjects::getNodeHandlerObject().advertise<std_msgs::Float64MultiArray>("GUI", 1000);
+	InitObjects::getPubCAN() =  InitObjects::getNodeHandlerObject().advertise<arm_node::Custom_msg>("CAN", 1000);
+	InitObjects::getFreq() = 10;
 
 	int freq = 2;
 	ros::Rate rate(freq);
