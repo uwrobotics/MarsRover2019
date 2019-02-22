@@ -2,22 +2,29 @@
 #include <std_msgs/String.h> 
 #include <std_msgs/Int32.h>
 #include <stdbool.h>
-#include <list>
+#include <std_msgs/Float64MultiArray.h>
+#include <arm_node/Custom_msg.h>
 
-struct msg_from_topics {
+struct msg_from_topics {		//not needed, can remove it when custom ros message implemented
 	bool ik_status; 
-	std::list<float> data_points; 
+	std_msgs::Float64MultiArray data_points; 
 };
 
 class InitObjects {
 	private:
-	ros::init(argc, argv, "arm_motor_commands");
 	ros::NodeHandle nh;
-	ros::Publisher pub_user_to_GUI =  nh.advertise<std::list<float> >("GUI", 1000); 
-        ros::Publisher pub_user_to_CAN =  nh.advertise<std::list<float> >("CAN", 1000);
-	std_msgs::Int32 freq = 10; 
+	ros::Publisher pub_user_to_GUI;
+	ros::Publisher pub_user_to_CAN;
+	std_msgs::Int32 freq;
 
-	public: 
+	public:
+	construct() {
+		pub_user_to_GUI =  nh.advertise<std_msgs::Float64MultiArray>("GUI", 1000); 
+       		pub_user_to_CAN =  nh.advertise<std_msgs::Float64MultiArray>("CAN", 1000);
+		freq = 10; 
+	}
+
+	
 	static ros::Publisher getPubGUI() {
 		return pub_user_to_GUI; 
 	}
@@ -49,7 +56,7 @@ void publisherFunctionToCAN (msg_from_topics msg){
 	}
 }
 
-void publisherFunctionToGUI (std::list<float> msg){
+void publisherFunctionToGUI (std_msgs::Float64MultiArray msg){
 	//create publisher object
 	ros::Rate rate(InitObjects.getFreq()); 
 
@@ -66,7 +73,7 @@ void messageReceivedFromGUI(const msg_from_topics values) {
 }
 
 // messageReceieveFromCAN has a message passed into it and returrns the message 
-void messageReceivedFromCAN(const std::list<float> values) {
+void messageReceivedFromCAN(const std_msgs::Float64MultiArray values) {
 	
 	publisherFunctionToGUI(values); 
 }
@@ -92,6 +99,7 @@ void subscriberFunctionFromCAN (int argc, char** argv) {
 
 int main(int argc, char** argv) {
 	//initializing the node
+	ros::init(argc, argv, "arm_motor_commands");	
 
 	int freq = 2;
 	ros::Rate rate(freq);
