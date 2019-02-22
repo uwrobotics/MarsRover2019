@@ -1,21 +1,12 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(local_planner)
-
-## Compile as C++11, supported in ROS Kinetic and newer
-add_compile_options(-std=c++11)
+project(simulation)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-    roscpp
-    std_msgs
-    message_generation
-    #occupancy_grid
-    robot_localization
-    tf2_ros
-    tf
-    tf2
+  robot_localization
+  std_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -37,10 +28,10 @@ find_package(catkin REQUIRED COMPONENTS
 ##   your messages/services/actions (e.g. std_msgs, actionlib_msgs, ...).
 ## * In the file package.xml:
 ##   * add a build_depend tag for "message_generation"
-##   * add a build_depend and a exec_depend tag for each package in MSG_DEP_SET
+##   * add a build_depend and a run_depend tag for each package in MSG_DEP_SET
 ##   * If MSG_DEP_SET isn't empty the following dependency has been pulled in
 ##     but can be declared for certainty nonetheless:
-##     * add a exec_depend tag for "message_runtime"
+##     * add a run_depend tag for "message_runtime"
 ## * In this file (CMakeLists.txt):
 ##   * add "message_generation" and every package in MSG_DEP_SET to
 ##     find_package(catkin REQUIRED COMPONENTS ...)
@@ -51,16 +42,10 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * uncomment the generate_messages entry below
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
-## Generate messages in the 'msg' folder
-add_message_files(
-    FILES
-    #   Message1.msg
-    #   Message2.msg
-    #   GridDataDimension.msg
-    #   OccupancyGrid.msg
-    #   OccupancyGridHeader.msg
-    LocalPlannerStatus.msg
-)
+# Generate messages in the 'msg' folder
+ # add_message_files(
+ #   FILES
+ # )
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -77,11 +62,10 @@ add_message_files(
 # )
 
 ## Generate added messages and services with any dependencies listed here
-generate_messages(
-    DEPENDENCIES
-    std_msgs
-)
-
+ # generate_messages(
+ #   DEPENDENCIES
+ #   std_msgs  # Or other packages containing msgs
+ # )
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -90,7 +74,7 @@ generate_messages(
 ## To declare and build dynamic reconfigure parameters within this
 ## package, follow these steps:
 ## * In the file package.xml:
-##   * add a build_depend and a exec_depend tag for "dynamic_reconfigure"
+##   * add a build_depend and a run_depend tag for "dynamic_reconfigure"
 ## * In this file (CMakeLists.txt):
 ##   * add "dynamic_reconfigure" to
 ##     find_package(catkin REQUIRED COMPONENTS ...)
@@ -108,15 +92,15 @@ generate_messages(
 ###################################
 ## The catkin_package macro generates cmake config files for your package
 ## Declare things to be passed to dependent projects
-## INCLUDE_DIRS: uncomment this if your package contains header files
+## INCLUDE_DIRS: uncomment this if you package contains header files
 ## LIBRARIES: libraries you create in this project that dependent projects also need
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-    #  INCLUDE_DIRS include
-    #  LIBRARIES local_planner
-    CATKIN_DEPENDS roscpp std_msgs message_runtime robot_localization tf2_ros tf2 tf
-    #  DEPENDS system_lib
+#  INCLUDE_DIRS include
+#  LIBRARIES rover_autonomy
+   CATKIN_DEPENDS robot_localization message_runtime
+#  DEPENDS system_lib
 )
 
 ###########
@@ -125,49 +109,32 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
+# include_directories(include)
 include_directories(
-# include
   ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
-# add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/local_planner.cpp
+# add_library(rover_autonomy
+#   src/${PROJECT_NAME}/rover_autonomy.cpp
 # )
-add_library(PlanningAlgoLib src/PlanningAlgoBase.cpp)
 
-add_dependencies(PlanningAlgoLib local_planner_generate_messages_cpp ${catkin_EXPORTED_TARGETS})
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
-# add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(rover_autonomy ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
-## With catkin_make all packages are built within a single CMake context
-## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/local_planner_node.cpp)
-add_executable(local_planner src/LocalPlanner.cpp src/LocalPlannerMain.cpp)
-add_executable(autonomy_input_node src/autonomy_goal_input.cpp)
-## Rename C++ executable without prefix
-## The above recommended prefix causes long target names, the following renames the
-## target back to the shorter version for ease of user use
-## e.g. "rosrun someones_pkg node" instead of "rosrun someones_pkg someones_pkg_node"
-# set_target_properties(${PROJECT_NAME}_node PROPERTIES OUTPUT_NAME node PREFIX "")
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-# add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-add_dependencies(local_planner ${catkin_EXPORTED_TARGETS} local_planner_generate_messages_cpp)
+# add_dependencies(rover_autonomy_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
-## Specify libraries to link a library or executable target against
-# target_link_libraries(${PROJECT_NAME}_node
+##Specify libraries to link a library or executable target against
+# target_link_libraries( library
 #   ${catkin_LIBRARIES}
 # )
-target_link_libraries(local_planner PlanningAlgoLib ${catkin_LIBRARIES} )
 
-target_link_libraries(autonomy_input_node
-    ${catkin_LIBRARIES}
-    )
 #############
 ## Install ##
 #############
@@ -183,7 +150,7 @@ target_link_libraries(autonomy_input_node
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS ${PROJECT_NAME} ${PROJECT_NAME}_node
+# install(TARGETS rover_autonomy rover_autonomy_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -208,7 +175,7 @@ target_link_libraries(autonomy_input_node
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_local_planner.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_rover_autonomy.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
