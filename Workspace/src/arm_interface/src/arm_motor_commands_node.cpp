@@ -5,7 +5,7 @@
 #include <std_msgs/Float64MultiArray.h>
 #include <arm_interface/ArmCmd.h>
 #include <can_msgs/Frame.h>
-
+#include "ik/Roboarm.h"
 
 // Desired pos
 std::vector<double> desiredPos(6);

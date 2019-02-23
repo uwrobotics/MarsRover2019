@@ -9,13 +9,39 @@ find_package(
   std_msgs
 )
 
+
+
+
+###########
+## Build ##
+###########
+
+## Specify additional locations of header files
+## Your package locations should be listed before other locations
+
+
+
 include_directories(
+        include
   ${catkin_INCLUDE_DIRS}
 )
+## Declare a C++ library
+add_library(${PROJECT_NAME}
+        src/Roboarm.cpp
+        )
 
-add_executable(ik src/main.cpp)
+
+add_executable(ik_node src/main.cpp)
+target_link_libraries(ik_node ${catkin_LIBRARIES})
+
 target_link_libraries(ik ${catkin_LIBRARIES})
 
+catkin_package(
+        INCLUDE_DIRS include
+        LIBRARIES ik
+        CATKIN_DEPENDS roscpp std_msgs
+ #       DEPENDS system_lib
+)
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
 ## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
@@ -101,24 +127,7 @@ target_link_libraries(ik ${catkin_LIBRARIES})
 ## LIBRARIES: libraries you create in this project that dependent projects also need
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
-catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES ik
-#  CATKIN_DEPENDS roscpp std_msgs
-#  DEPENDS system_lib
-)
 
-###########
-## Build ##
-###########
-
-## Specify additional locations of header files
-## Your package locations should be listed before other locations
-
-## Declare a C++ library
-# add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/ik.cpp
-# )
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries

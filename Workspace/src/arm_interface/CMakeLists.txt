@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   message_generation
   can_msgs
+  ik
 )
 
 ## System dependencies are found with CMake's conventions
@@ -103,10 +104,10 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
- ##INCLUDE_DIRS include
+ #INCLUDE_DIRS include
  ##LIBRARIES arm_interface
  CATKIN_DEPENDS roscpp std_msgs message_runtime
- DEPENDS system_lib
+ #DEPENDS system_lib
 )
 
 ###########
@@ -144,6 +145,7 @@ add_executable(${PROJECT_NAME}_node src/arm_motor_commands_node.cpp)
 ## target back to the shorter version for ease of user use
 ## e.g. "rosrun someones_pkg node" instead of "rosrun someones_pkg someones_pkg_node"
 # set_target_properties(${PROJECT_NAME}_node PROPERTIES OUTPUT_NAME node PREFIX "")
+add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} ik)
 
 target_link_libraries(${PROJECT_NAME}_node
    ${catkin_LIBRARIES}
@@ -151,7 +153,7 @@ target_link_libraries(${PROJECT_NAME}_node
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 
-#add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
 
 
 ## Specify libraries to link a library or executable target against
