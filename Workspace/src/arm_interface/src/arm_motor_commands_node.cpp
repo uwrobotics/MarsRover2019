@@ -3,118 +3,150 @@
 #include <std_msgs/Int32.h>
 #include <stdbool.h>
 #include <std_msgs/Float64MultiArray.h>
-#include <arm_node/Custom_msg.h>
-
-class InitObjects {
-	public:
-	static ros::NodeHandle nh;  
-        static ros::Publisher pub_user_to_GUI;
-	static ros::Publisher pub_user_to_CAN;   
-        static int freq;
-	
-	
-	/**
-	InitObjects(): 
-		pub_user_to_GUI =  nh.advertise<std_msgs::Float64MultiArray>("GUI", 1000);
-       		pub_user_to_CAN =  nh.advertise<arm_node::Custom_msg>("CAN", 1000);
-		freq = 10;
-	{
-	}
-	**/
-
-	
-	static ros::Publisher getPubGUI() {
-		return pub_user_to_GUI; 
-	}
-	static ros::Publisher getPubCAN() {
-		return pub_user_to_CAN; 
-	}
-	static ros::NodeHandle getNodeHandlerObject() {
-		return nh; 
-	}	
-	static int getFreq() {
-		return freq; 
-	}	
-};
+#include <arm_interface/ArmCmd.h>
+#include <can_msgs/Frame.h>
 
 
-// publisher function consumes the parameters required to create the publisher object, the frequency at which publishing is carried out,
-// and the topic which needs to be published to. 
-void publisherFunctionToCAN (arm_node::Custom_msg msg){
-	//create publisher object
-	ros::Rate rate(InitObjects::getFreq()); 
-	
-	if (msg.ik_status == false) {
-	//this should only run when ik_status is false, but this will be fixed when the inverseKinematicsLibrary is ready to be implemented i.e. "if (!msg.ik_status)"
-	InitObjects::getPubCAN().publish(msg);
-	}	
-	else {
-	//this should pass the msg into the inverse kinematics library and then publish the returned structure
-	//InitObjects.getPubCAN().publish(inverseKinematicsLibrary(msg));
-	}
+// Desired pos
+std::vector<double> desiredPos(6);
+// Desired angles
+std::vector<double> desiredAngles(6);
+// Actual angles
+std::vector<double> actualAngles(6);
+// IK vels
+std::vector<double> ikCmdVels(6);
+// FK vels
+std::vector<double> fkCmdVels(6);
+
+bool ik_mode = false;
+
+ros::Publisher desAnglesPub;
+ros::Publisher desAnglesCanPub;
+ros::Publisher actAnglesPub;
+ros::Subscriber armCmdSub;
+//ros::Subscriber canTSESub;
+std::vector<ros::Subscriber> canSubs(6);
+
+std::vector<bool> jointsReady(6);
+
+std::string canTopics[] = {"/can/arm_joints/turntable",
+                         "/can/arm_joints/shoulder",
+                         "/can/arm_joints/elbow",
+                         "/can/arm_joints/wristpitch",
+                         "/can/arm_joints/wristroll",
+                         "/can/arm_joints/claw"};
+
+size_t vel_ctrl_can_ids[] = {0x301, 0x302, 0x303, 0x401, 0x402, 0x403};
+size_t pos_ctrl_can_ids[] = {0x309, 0x30A, 0x30B, 0x409, 0x40A, 0x40B};
+
+void armCmdCallback(arm_interface::ArmCmdConstPtr msg) {
+  ik_mode = msg->ik_status;
+  if (ik_mode) {
+    for (int i = 0; i < 6; i++)
+    {
+      ikCmdVels[i] = msg->data_points[i];
+    }
+  }
+  else {
+    for (int i = 0; i < 6; i++)
+    {
+      fkCmdVels[i] = msg->data_points[i];
+    }
+  }
 }
 
-void publisherFunctionToGUI (std_msgs::Float64MultiArray msg){
-	//create publisher object
-	ros::Rate rate(InitObjects::getFreq()); 
+void canCallback(can_msgs::FrameConstPtr msg) {
+  size_t joint_id = msg->id - 0x500;
+  jointsReady[joint_id] = true;
 
-	//publish message object and send message to rosout with details
-	InitObjects::getPubGUI().publish(msg);
-	
+  actualAngles[joint_id] = *(double*)(msg->data.data());
 }
 
-// messageRecievedFromGUI return the message that is recieved from the Inverse Kinematics library after it passes the message parameter into the library
-// Not sure if this library exists or not yet
-void messageReceivedFromGUI(const arm_node::Custom_msg values) {
-	
-	publisherFunctionToCAN(values);
+
+void PublishAngles()
+{
+  std_msgs::Float64MultiArray msg;
+  msg.layout.dim.push_back(std_msgs::MultiArrayDimension());
+  msg.layout.dim[0].size = 6;
+  msg.layout.dim[0].stride = 1;
+  msg.layout.dim[0].label = "angles"; // or whatever name you typically use to index vec1
+  msg.data.clear();
+  msg.data.insert(msg.data.end(), desiredAngles.begin(), desiredAngles.end());
+  desAnglesPub.publish(msg);
+
+  msg.data.clear();
+  msg.data.insert(msg.data.end(), actualAngles.begin(), actualAngles.end());
+  actAnglesPub.publish(msg);
 }
 
-// messageReceieveFromCAN has a message passed into it and returrns the message 
-void messageReceivedFromCAN(const std_msgs::Float64MultiArray values) {
-	
-	publisherFunctionToGUI(values); 
+void InitializeMode(bool velMode)
+{
+  can_msgs::Frame msg;
+  msg.data[0] = 1;
+  uint32_t modeOffset = (velMode)?0:8;
+  msg.id = 0x300 + modeOffset;
+  desAnglesCanPub.publish(msg);
+  msg.id = 0x400 + modeOffset;
+  desAnglesCanPub.publish(msg);
 }
 
-// subscriberFunction is passed into the necessary parameters required to initiaize the node and a boolean that determines if the message that is recieved from the topic
 
-// needs to be passed into the Inverse Kinematics library or has it returned from it and needs to be returned as it is 
-void subscriberFunctionFromGUI (int argc, char** argv) {
-	
-	ros::Subscriber sub = InitObjects::getNodeHandlerObject().subscribe("GUI", 10, &messageReceivedFromGUI);
+void SendVelCommand()
+{
+  if(ik_mode) {
+    std::vector<double> cmdVels(6);
+    cmdVels[0] = ikCmdVels[0];
+    cmdVels[4] = ikCmdVels[4];
+    cmdVels[5] = ikCmdVels[5];
 
-	ros::spinOnce();		
+    // TODO ik integration
+
+    can_msgs::Frame canMsg;
+    for (int i = 0; i < 6; i++)
+    {
+      canMsg.id = vel_ctrl_can_ids[i];
+      *(double*)(canMsg.data.data()) = cmdVels[i];
+      desAnglesCanPub.publish(canMsg);
+    }
+
+  } else {
+    can_msgs::Frame canMsg;
+    for (int i = 0; i < 6; i++)
+    {
+      canMsg.id = vel_ctrl_can_ids[i];
+      *(double*)(canMsg.data.data()) = fkCmdVels[i];
+      desAnglesCanPub.publish(canMsg);
+    }
+  }
 }
 
-void subscriberFunctionFromCAN (int argc, char** argv) {
-	//initializing the node
-	ros::init(argc, argv, "subscribe_arm_motor_commands");
-
-
-	ros::Subscriber sub = InitObjects::getNodeHandlerObject().subscribe("CAN", 10, &messageReceivedFromCAN);
-
-	ros::spinOnce();		
-}
+const bool velMode = true;
 
 int main(int argc, char** argv) {
 	//initializing the node
 	ros::init(argc, argv, "arm_motor_commands");		
+  ros::NodeHandle nh;
 
-	InitObjects::getPubGUI() =  InitObjects::getNodeHandlerObject().advertise<std_msgs::Float64MultiArray>("GUI", 1000);
-	InitObjects::getPubCAN() =  InitObjects::getNodeHandlerObject().advertise<arm_node::Custom_msg>("CAN", 1000);
-	InitObjects::getFreq() = 10;
+	desAnglesCanPub = nh.advertise<can_msgs::Frame>("/CAN_transmitter", 6);
+	actAnglesPub = nh.advertise<std_msgs::Float64MultiArray>("/arm_interface/actual_joint_angles", 1);
+	desAnglesPub = nh.advertise<std_msgs::Float64MultiArray>("/arm_interface/desired_joint_angles", 1);
 
-	int freq = 2;
+  for(int i = 0; i < 6; i++)
+  {
+    canSubs[i] = nh.subscribe(canTopics[i], 1, canCallback);
+  }
+  armCmdSub = nh.subscribe("/arm_interface/arm_cmd", 1, armCmdCallback);
+
+  InitializeMode(velMode);
+
+	int freq = 5;
 	ros::Rate rate(freq);
 
 	//loop that publishes info until the node is shut down
 	while (ros::ok()) {
-		
-		subscriberFunctionFromGUI(argc, argv);
-
-		subscriberFunctionFromCAN(argc, argv);
-		
-		//wait until the next iteration call
+    ros::spinOnce();
+    SendVelCommand();
+    PublishAngles();
 		rate.sleep();
 	}
 }

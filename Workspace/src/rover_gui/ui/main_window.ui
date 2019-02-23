@@ -355,13 +355,22 @@ alternate-background-color: rgb(136, 138, 133);</string>
           <string notr="true">color: rgb(136, 138, 133);</string>
          </property>
          <property name="currentIndex">
-          <number>2</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="tabArm">
           <attribute name="title">
            <string>Arm Viz</string>
           </attribute>
           <layout class="QVBoxLayout" name="verticalLayout_12">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
            <item>
             <widget class="armvizwidget" name="armviz" native="true"/>
            </item>
