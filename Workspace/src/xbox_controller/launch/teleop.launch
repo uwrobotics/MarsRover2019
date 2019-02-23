@@ -1,0 +1,14 @@
+<launch>
+    <arg name="joy_dev" default="/dev/input/js0" />
+    <arg name="config_filepath" default="$(find xbox_controller)/config/teleop_config.yaml" />
+
+    <node pkg="joy" type="joy_node" name="joy_node">
+        <param name="dev" value="$(arg joy_dev)" />
+        <param name="deadzone" value="0.3" />
+        <param name="autorepeat_rate" value="20" />
+    </node>
+
+    <node pkg="xbox_controller" name="teleop_twist_joy" type="joy_to_twist" output="screen">
+        <rosparam command="load" file="$(arg config_filepath)" />
+    </node>
+</launch>
