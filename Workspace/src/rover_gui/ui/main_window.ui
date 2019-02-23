@@ -18,8 +18,8 @@
   </property>
   <property name="maximumSize">
    <size>
-    <width>1920</width>
-    <height>1080</height>
+    <width>4000</width>
+    <height>4000</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -222,7 +222,7 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="CameraViewWidget" name="widget" native="true">
+           <widget class="CameraViewWidget" name="fovViewWidget" native="true">
             <property name="sizePolicy">
              <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
               <horstretch>0</horstretch>
@@ -312,7 +312,7 @@
           </sizepolicy>
          </property>
          <property name="currentIndex">
-          <number>2</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="tabArm">
           <attribute name="title">
@@ -330,7 +330,7 @@
           </attribute>
           <layout class="QVBoxLayout" name="verticalLayout_13">
            <item>
-            <widget class="CameraViewWidget" name="widget_9" native="true">
+            <widget class="CameraViewWidget" name="drillCamViewWidget" native="true">
              <property name="sizePolicy">
               <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
                <horstretch>0</horstretch>
@@ -512,7 +512,7 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="CameraViewWidget" name="widget_5" native="true">
+           <widget class="CameraViewWidget" name="depthViewWidget" native="true">
             <property name="sizePolicy">
              <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
               <horstretch>0</horstretch>
@@ -567,7 +567,7 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="CameraViewWidget" name="widget_7" native="true">
+           <widget class="CameraViewWidget" name="clearanceCamView" native="true">
             <property name="sizePolicy">
              <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
               <horstretch>0</horstretch>
