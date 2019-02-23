@@ -62,6 +62,7 @@ struct TeleopTwistJoy::Impl {
   std::map<std::string, double> fk_scale_map;
 
   bool sent_disable_msg;
+  bool sent_arm_disable_msg;
 };
 
 /**
@@ -249,7 +250,18 @@ void TeleopTwistJoy::Impl::joyCallback(
 
     cmd_vel_pub.publish(cmd_vel_msg);
     sent_disable_msg = false;
-  } else if (joy_msg->buttons[fk_enable_button]) {
+  } else {
+    // When enable button is released, immediately send a single no-motion
+    // command
+    // in order to stop the robot.
+    if (!sent_disable_msg) {
+      cmd_vel_pub.publish(cmd_vel_msg);
+      sent_disable_msg = true;
+    }
+  }
+
+
+  if (joy_msg->buttons[fk_enable_button]) {
     arm_cmd_msg.ik_status = false;
     if (arm_gen_axes_map.find("turntable") != arm_gen_axes_map.end()) {
       arm_cmd_msg.data_points[0] =
@@ -277,6 +289,8 @@ void TeleopTwistJoy::Impl::joyCallback(
       arm_cmd_msg.data_points[3] =
           joy_msg->axes[fk_axes_map["wrist"]] * fk_scale_map["wrist"];
     }
+    arm_control_pub.publish(arm_cmd_msg);
+    sent_arm_disable_msg = false;
   } else if (joy_msg->buttons[ik_enable_button]) {
     arm_cmd_msg.ik_status = true;
     if (arm_gen_axes_map.find("turntable") != arm_gen_axes_map.end()) {
@@ -305,13 +319,15 @@ void TeleopTwistJoy::Impl::joyCallback(
       arm_cmd_msg.data_points[3] =
           joy_msg->axes[ik_axes_map["theta"]] * ik_scale_map["theta"];
     }
+    arm_control_pub.publish(arm_cmd_msg);
+    sent_arm_disable_msg = false;
   } else {
     // When enable button is released, immediately send a single no-motion
     // command
     // in order to stop the robot.
-    if (!sent_disable_msg) {
-      cmd_vel_pub.publish(cmd_vel_msg);
-      sent_disable_msg = true;
+    if (!sent_arm_disable_msg) {
+      arm_control_pub.publish(arm_cmd_msg);
+      sent_arm_disable_msg = true;
     }
   }
 }

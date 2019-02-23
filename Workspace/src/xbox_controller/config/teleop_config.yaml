@@ -30,7 +30,7 @@ dr_scale_linear: 0.7
 dr_scale_linear_turbo: 1.5
 
 dr_axis_angular: 0  # Left thumb stick horizontal
-dr_scale_angular: 0.4
+dr_scale_angular: 3.0
 
 dr_enable_turbo_button: 5 # Right bumper button
 
@@ -61,8 +61,8 @@ arm_gen_scales: {turntable: 5, wristroll: 5, claw: 5} # deg/s, deg/s, cm/s
 #ik_axis_theta: 4 # up/down right joy
 #ik_scale_theta: 5 # deg/s
 
-ik_axes: {fwd: 0, up: 1, theta: 4} # U/D L joy, R/L L joy, U/D R joy
-ik_scales: {fwd: 5, up: 5, theta: 5} # cm/s, cm/s, deg/s
+ik_axes: {fwd: 0, up: 1, theta: 4} # R/L L joy, U/D L joy, U/D R joy
+ik_scales: {fwd: -5, up: 5, theta: 5} # cm/s, cm/s, deg/s
 
 ## fk controls
 #fk_axis_shoulder: 0 # Left/right left joy
