@@ -67,6 +67,7 @@ class Arm : public QGraphicsItem{
   		const double WRIST_PITCH=3;
   		const double WRIST_ROLL=4;
   		const double CLAW_CLOSURE_ANGLE=5;
+  		const int NUM_ANGLES = 6;
 
 		QPen *mPen;
 	    QBrush *mBrush;
@@ -79,7 +80,7 @@ class Arm : public QGraphicsItem{
 	    bool isSideView;
 	    std::vector<double> mAngles;	
 
-	    QPointF DrawLink(QPainter *painter, ArmLink armLink, QPointF startPos, double pitch);
+	    QPointF DrawLink(QPainter *painter, ArmLink armLink, QPointF startPos, double angle);
   		void DrawJoint(QPainter *painter, ArmLink armLink, QPointF startPos);
   		void DrawClaw(QPainter *painter, Claw claw, QPointF startPos);
   		void DrawTurnTable(QPainter *painter, TurnTable turnTable, QPointF startPos);
@@ -109,12 +110,12 @@ class armvizwidget : public QWidget{
   		ros::Subscriber mPoseSub;
 
   		//dimensions for drawing
-  		const double SHOULDER_LEN=25, ELBOW_LEN=25, WRIST_LEN=25;
+  		const double SHOULDER_LEN=25, ELBOW_LEN=25, WRIST_LEN=15;
   		const double SHOULDER_THICK=2, ELBOW_THICK=2, WRIST_THICK=2;
   		const double SHOULDER_JOINT_RAD=2, ELBOW_JOINT_RAD=2, WRIST_JOINT_RAD=2;
   		const double CLAW_LEN=10, CLAW_WIDTH=10, CLAW_THICK=2;
   		const double TURNTABLE_RAD=15, TURNTABLE_OFFSET=2;
-  		const double ROBOT_LEN=60, ROBOT_WIDTH=60, FRAME_OFFSET=2;
+  		const double ROBOT_LEN=60, ROBOT_WIDTH=45, FRAME_OFFSET=2;
 };
 
 #endif // ARMVIZWIDGET_HPP
