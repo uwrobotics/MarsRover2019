@@ -30,6 +30,7 @@ MainWindow::MainWindow(int argc, char **argv, ros::NodeHandle &nh,
   ui.autonomyControlsWidget->Init(mNh);
   ui.fovViewWidget->subscribe(mNh, "/zed/rgb/image_raw_color");
   ui.depthViewWidget->subscribe(mNh, "/zed/depth/depth_registered", true);
+  ui.consoleWidget->Init(mNh);
 
   QObject::connect(
       ui.actionAbout_Qt, SIGNAL(triggered(bool)), qApp,
