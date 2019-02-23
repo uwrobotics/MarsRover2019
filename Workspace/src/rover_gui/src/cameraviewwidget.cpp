@@ -37,8 +37,14 @@ void CameraViewWidget::imageCallback(const sensor_msgs::Image::ConstPtr &msg) {
   QImage image;
 
   if (!mbDepthImg) {
+    QImage::Format format = QImage::Format_RGB888;
+    if (msg->encoding == sensor_msgs::image_encodings::BGRA8)
+    {
+      format = QImage::Format_ARGB32;
+    }
+    // ROS_INFO("%s", msg->encoding.c_str());
     QImage temp(&(msg->data[0]), msg->width, msg->height,
-                QImage::Format_RGB888);
+                format);
     image = temp; //.scaled(ui->label->width(), ui->label->height(),
                   //Qt::AspectRatioMode::IgnoreAspectRatio);
     ui->label->setScaledContents(true);
