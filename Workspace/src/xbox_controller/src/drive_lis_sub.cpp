@@ -2,6 +2,7 @@
 #include "ros/ros.h"
 #include "sensor_msgs/Joy.h"
 #include "teleop_twist.h"
+#include <arm_interface/ArmCmd.h>
 
 #include <map>
 #include <string>
@@ -77,17 +78,22 @@ TeleopTwistJoy::TeleopTwistJoy(ros::NodeHandle *nh, ros::NodeHandle *nh_param) {
       nh->advertise<geometry_msgs::Twist>("/cmd_vel", 1, true);
   pimpl_->joy_sub = nh->subscribe<sensor_msgs::Joy>(
       "joy", 1, &TeleopTwistJoy::Impl::joyCallback, pimpl_);
+  pimpl_->arm_control_pub =
+      nh->advertise<arm_interface::ArmCmd>("/arm_interface/arm_cmd", 1);
 
   nh_param->param<int>("dr_enable_button", pimpl_->dr_enable_button, 0);
-  nh_param->param<int>("dr_enable_turbo_button", pimpl_->dr_enable_turbo_button, 5);
+  nh_param->param<int>("dr_enable_turbo_button", pimpl_->dr_enable_turbo_button,
+                       5);
 
   if (nh_param->getParam("dr_axis_linear", pimpl_->dr_axis_linear_map)) {
     nh_param->getParam("dr_axis_linear", pimpl_->dr_axis_linear_map);
     nh_param->getParam("dr_scale_linear", pimpl_->dr_scale_linear_map);
-    nh_param->getParam("dr_scale_linear_turbo", pimpl_->dr_scale_linear_turbo_map);
+    nh_param->getParam("dr_scale_linear_turbo",
+                       pimpl_->dr_scale_linear_turbo_map);
   } else {
     nh_param->param<int>("dr_axis_linear", pimpl_->dr_axis_linear_map["x"], 1);
-    nh_param->param<double>("dr_scale_linear", pimpl_->dr_scale_linear_map["x"], 0.5);
+    nh_param->param<double>("dr_scale_linear", pimpl_->dr_scale_linear_map["x"],
+                            0.5);
     nh_param->param<double>("dr_scale_linear_turbo",
                             pimpl_->dr_scale_linear_turbo_map["x"], 1.0);
   }
@@ -95,36 +101,53 @@ TeleopTwistJoy::TeleopTwistJoy(ros::NodeHandle *nh, ros::NodeHandle *nh_param) {
   if (nh_param->getParam("dr_axis_angular", pimpl_->dr_axis_angular_map)) {
     nh_param->getParam("dr_axis_angular", pimpl_->dr_axis_angular_map);
     nh_param->getParam("dr_scale_angular", pimpl_->dr_scale_angular_map);
-    nh_param->getParam("dr_scale_angular_turbo", pimpl_->dr_scale_angular_turbo_map);
+    nh_param->getParam("dr_scale_angular_turbo",
+                       pimpl_->dr_scale_angular_turbo_map);
   } else {
-    nh_param->param<int>("dr_axis_angular", pimpl_->dr_axis_angular_map["yaw"], 0);
-    nh_param->param<double>("dr_scale_angular", pimpl_->dr_scale_angular_map["yaw"],
-                            0.5);
+    nh_param->param<int>("dr_axis_angular", pimpl_->dr_axis_angular_map["yaw"],
+                         0);
+    nh_param->param<double>("dr_scale_angular",
+                            pimpl_->dr_scale_angular_map["yaw"], 0.5);
     nh_param->param<double>("dr_scale_angular_turbo",
                             pimpl_->dr_scale_angular_turbo_map["yaw"],
                             pimpl_->dr_scale_angular_map["yaw"]);
   }
 
-  if (!nh_param->getParam("ik_enable_button", pimpl_->ik_enable_button)) {ROS_ERROR("FAILED");}
-  if (!nh_param->getParam("fk_enable_button", pimpl_->fk_enable_button)) {ROS_ERROR("FAILED");}
-  if (!nh_param->getParam("arm_gen_axes", pimpl_->arm_gen_axes_map)) {ROS_ERROR("FAILED");}
-  if (!nh_param->getParam("arm_gen_scales", pimpl_->arm_gen_scale_map)) {ROS_ERROR("FAILED");}
-  if (!nh_param->getParam("ik_axes", pimpl_->ik_axes_map)) {ROS_ERROR("FAILED");}
-  if (!nh_param->getParam("ik_scales", pimpl_->ik_scale_map)) {ROS_ERROR("FAILED");}
-  if (!nh_param->getParam("fk_axes", pimpl_->fk_axes_map)) {ROS_ERROR("FAILED");}
-  if (!nh_param->getParam("fk_scales", pimpl_->fk_scale_map)) {ROS_ERROR("FAILED");}
-
+  if (!nh_param->getParam("ik_enable_button", pimpl_->ik_enable_button)) {
+    ROS_ERROR("FAILED");
+  }
+  if (!nh_param->getParam("fk_enable_button", pimpl_->fk_enable_button)) {
+    ROS_ERROR("FAILED");
+  }
+  if (!nh_param->getParam("arm_gen_axes", pimpl_->arm_gen_axes_map)) {
+    ROS_ERROR("FAILED");
+  }
+  if (!nh_param->getParam("arm_gen_scales", pimpl_->arm_gen_scale_map)) {
+    ROS_ERROR("FAILED");
+  }
+  if (!nh_param->getParam("ik_axes", pimpl_->ik_axes_map)) {
+    ROS_ERROR("FAILED");
+  }
+  if (!nh_param->getParam("ik_scales", pimpl_->ik_scale_map)) {
+    ROS_ERROR("FAILED");
+  }
+  if (!nh_param->getParam("fk_axes", pimpl_->fk_axes_map)) {
+    ROS_ERROR("FAILED");
+  }
+  if (!nh_param->getParam("fk_scales", pimpl_->fk_scale_map)) {
+    ROS_ERROR("FAILED");
+  }
 
   ROS_INFO_NAMED("TeleopTwistJoy", "Teleop drive enable button %i.",
                  pimpl_->dr_enable_button);
   ROS_INFO_COND_NAMED(pimpl_->dr_enable_turbo_button >= 0, "TeleopTwistJoy",
                       "Turbo on button %i.", pimpl_->dr_enable_turbo_button);
   ROS_INFO_NAMED("TeleopTwistJoy", "Teleop ik enable button %i.",
-                   pimpl_->ik_enable_button);
+                 pimpl_->ik_enable_button);
   ROS_INFO_NAMED("TeleopTwistJoy", "Teleop fk enable button %i.",
-                   pimpl_->fk_enable_button);
+                 pimpl_->fk_enable_button);
 
-  for (auto& pair : pimpl_->dr_axis_linear_map) {
+  for (auto &pair : pimpl_->dr_axis_linear_map) {
     ROS_INFO_NAMED("TeleopTwistJoy", "Linear axis %s on %i at scale %f.",
                    pair.first.c_str(), pair.second,
                    pimpl_->dr_scale_linear_map[pair.first]);
@@ -134,7 +157,7 @@ TeleopTwistJoy::TeleopTwistJoy(ros::NodeHandle *nh, ros::NodeHandle *nh_param) {
                         pimpl_->dr_scale_linear_turbo_map[pair.first]);
   }
 
-  for (auto& pair : pimpl_->dr_axis_angular_map) {
+  for (auto &pair : pimpl_->dr_axis_angular_map) {
     ROS_INFO_NAMED("TeleopTwistJoy", "Angular axis %s on %i at scale %f.",
                    pair.first.c_str(), pair.second,
                    pimpl_->dr_scale_angular_map[pair.first]);
@@ -144,17 +167,17 @@ TeleopTwistJoy::TeleopTwistJoy(ros::NodeHandle *nh, ros::NodeHandle *nh_param) {
                         pimpl_->dr_scale_angular_turbo_map[pair.first]);
   }
 
-  for (auto& pair : pimpl_->arm_gen_axes_map) {
+  for (auto &pair : pimpl_->arm_gen_axes_map) {
     ROS_INFO_NAMED("TeleopTwistJoy", "General arm axis %s on %i at scale %f.",
                    pair.first.c_str(), pair.second,
                    pimpl_->arm_gen_scale_map[pair.first]);
   }
-  for (auto& pair : pimpl_->ik_axes_map) {
+  for (auto &pair : pimpl_->ik_axes_map) {
     ROS_INFO_NAMED("TeleopTwistJoy", "IK axis %s on %i at scale %f.",
                    pair.first.c_str(), pair.second,
                    pimpl_->ik_scale_map[pair.first]);
   }
-  for (auto& pair : pimpl_->fk_axes_map) {
+  for (auto &pair : pimpl_->fk_axes_map) {
     ROS_INFO_NAMED("TeleopTwistJoy", "FK axis %s on %i at scale %f.",
                    pair.first.c_str(), pair.second,
                    pimpl_->fk_scale_map[pair.first]);
@@ -167,31 +190,33 @@ void TeleopTwistJoy::Impl::joyCallback(
     const sensor_msgs::Joy::ConstPtr &joy_msg) {
   // Initializes with zeros by default.
   geometry_msgs::Twist cmd_vel_msg;
+  arm_interface::ArmCmd arm_cmd_msg;
+  arm_cmd_msg.data_points.resize(6);
 
   if (dr_enable_turbo_button >= 0 && joy_msg->buttons[dr_enable_turbo_button]) {
     if (dr_axis_linear_map.find("x") != dr_axis_linear_map.end()) {
-      cmd_vel_msg.linear.x =
-          joy_msg->axes[dr_axis_linear_map["x"]] * dr_scale_linear_turbo_map["x"];
+      cmd_vel_msg.linear.x = joy_msg->axes[dr_axis_linear_map["x"]] *
+                             dr_scale_linear_turbo_map["x"];
     }
     if (dr_axis_linear_map.find("y") != dr_axis_linear_map.end()) {
-      cmd_vel_msg.linear.y =
-          joy_msg->axes[dr_axis_linear_map["y"]] * dr_scale_linear_turbo_map["y"];
+      cmd_vel_msg.linear.y = joy_msg->axes[dr_axis_linear_map["y"]] *
+                             dr_scale_linear_turbo_map["y"];
     }
     if (dr_axis_linear_map.find("z") != dr_axis_linear_map.end()) {
-      cmd_vel_msg.linear.z =
-          joy_msg->axes[dr_axis_linear_map["z"]] * dr_scale_linear_turbo_map["z"];
+      cmd_vel_msg.linear.z = joy_msg->axes[dr_axis_linear_map["z"]] *
+                             dr_scale_linear_turbo_map["z"];
     }
     if (dr_axis_angular_map.find("yaw") != dr_axis_angular_map.end()) {
       cmd_vel_msg.angular.z = joy_msg->axes[dr_axis_angular_map["yaw"]] *
-          dr_scale_angular_turbo_map["yaw"];
+                              dr_scale_angular_turbo_map["yaw"];
     }
     if (dr_axis_angular_map.find("pitch") != dr_axis_angular_map.end()) {
       cmd_vel_msg.angular.y = joy_msg->axes[dr_axis_angular_map["pitch"]] *
-          dr_scale_angular_turbo_map["pitch"];
+                              dr_scale_angular_turbo_map["pitch"];
     }
     if (dr_axis_angular_map.find("roll") != dr_axis_angular_map.end()) {
       cmd_vel_msg.angular.x = joy_msg->axes[dr_axis_angular_map["roll"]] *
-          dr_scale_angular_turbo_map["roll"];
+                              dr_scale_angular_turbo_map["roll"];
     }
 
     cmd_vel_pub.publish(cmd_vel_msg);
@@ -210,20 +235,76 @@ void TeleopTwistJoy::Impl::joyCallback(
           joy_msg->axes[dr_axis_linear_map["z"]] * dr_scale_linear_map["z"];
     }
     if (dr_axis_angular_map.find("yaw") != dr_axis_angular_map.end()) {
-      cmd_vel_msg.angular.z =
-          joy_msg->axes[dr_axis_angular_map["yaw"]] * dr_scale_angular_map["yaw"];
+      cmd_vel_msg.angular.z = joy_msg->axes[dr_axis_angular_map["yaw"]] *
+                              dr_scale_angular_map["yaw"];
     }
     if (dr_axis_angular_map.find("pitch") != dr_axis_angular_map.end()) {
-      cmd_vel_msg.angular.y =
-          joy_msg->axes[dr_axis_angular_map["pitch"]] * dr_scale_angular_map["pitch"];
+      cmd_vel_msg.angular.y = joy_msg->axes[dr_axis_angular_map["pitch"]] *
+                              dr_scale_angular_map["pitch"];
     }
     if (dr_axis_angular_map.find("roll") != dr_axis_angular_map.end()) {
-      cmd_vel_msg.angular.x =
-          joy_msg->axes[dr_axis_angular_map["roll"]] * dr_scale_angular_map["roll"];
+      cmd_vel_msg.angular.x = joy_msg->axes[dr_axis_angular_map["roll"]] *
+                              dr_scale_angular_map["roll"];
     }
 
     cmd_vel_pub.publish(cmd_vel_msg);
     sent_disable_msg = false;
+  } else if (joy_msg->buttons[fk_enable_button]) {
+    arm_cmd_msg.ik_status = false;
+    if (arm_gen_axes_map.find("turntable") != arm_gen_axes_map.end()) {
+      arm_cmd_msg.data_points[0] =
+          joy_msg->axes[arm_gen_axes_map["turntable"]] *
+          arm_gen_scale_map["turntable"];
+    }
+    if (arm_gen_axes_map.find("wristroll") != arm_gen_axes_map.end()) {
+      arm_cmd_msg.data_points[4] =
+          joy_msg->axes[arm_gen_axes_map["wristroll"]] *
+          arm_gen_scale_map["wristroll"];
+    }
+    if (arm_gen_axes_map.find("claw") != arm_gen_axes_map.end()) {
+      arm_cmd_msg.data_points[5] =
+          joy_msg->axes[arm_gen_axes_map["claw"]] * arm_gen_scale_map["claw"];
+    }
+    if (fk_axes_map.find("shoulder") != fk_axes_map.end()) {
+      arm_cmd_msg.data_points[1] =
+          joy_msg->axes[fk_axes_map["shoulder"]] * fk_scale_map["shoulder"];
+    }
+    if (fk_axes_map.find("elbow") != fk_axes_map.end()) {
+      arm_cmd_msg.data_points[2] =
+          joy_msg->axes[fk_axes_map["elbow"]] * fk_scale_map["elbow"];
+    }
+    if (fk_axes_map.find("wrist") != fk_axes_map.end()) {
+      arm_cmd_msg.data_points[3] =
+          joy_msg->axes[fk_axes_map["wrist"]] * fk_scale_map["wrist"];
+    }
+  } else if (joy_msg->buttons[ik_enable_button]) {
+    arm_cmd_msg.ik_status = true;
+    if (arm_gen_axes_map.find("turntable") != arm_gen_axes_map.end()) {
+      arm_cmd_msg.data_points[0] =
+          joy_msg->axes[arm_gen_axes_map["turntable"]] *
+          arm_gen_scale_map["turntable"];
+    }
+    if (arm_gen_axes_map.find("wristroll") != arm_gen_axes_map.end()) {
+      arm_cmd_msg.data_points[4] =
+          joy_msg->axes[arm_gen_axes_map["wristroll"]] *
+          arm_gen_scale_map["wristroll"];
+    }
+    if (arm_gen_axes_map.find("claw") != arm_gen_axes_map.end()) {
+      arm_cmd_msg.data_points[5] =
+          joy_msg->axes[arm_gen_axes_map["claw"]] * arm_gen_scale_map["claw"];
+    }
+    if (ik_axes_map.find("fwd") != ik_axes_map.end()) {
+      arm_cmd_msg.data_points[1] =
+          joy_msg->axes[ik_axes_map["fwd"]] * ik_scale_map["fwd"];
+    }
+    if (ik_axes_map.find("up") != ik_axes_map.end()) {
+      arm_cmd_msg.data_points[2] =
+          joy_msg->axes[ik_axes_map["up"]] * ik_scale_map["up"];
+    }
+    if (ik_axes_map.find("theta") != ik_axes_map.end()) {
+      arm_cmd_msg.data_points[3] =
+          joy_msg->axes[ik_axes_map["theta"]] * ik_scale_map["theta"];
+    }
   } else {
     // When enable button is released, immediately send a single no-motion
     // command
