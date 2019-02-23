@@ -25,7 +25,7 @@ sudo apt install clang-format
 ```
 Once the package is installed, you can run the following command:
 ```
-cd <folder containing repository>/Workspace/src
+cd <folder containing repository>/Workspace/src/<package_youre_working_on>
 find . -name '*.h' -or -name '*.hpp' -or -name '*.cpp' | xargs clang-format -i -style=file $1
 ```
 

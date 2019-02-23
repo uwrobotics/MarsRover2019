@@ -27,6 +27,7 @@ MainWindow::MainWindow(int argc, char **argv, ros::NodeHandle &nh,
 
   // Initialize widgets
   ui.mapWidget->Init(mNh);
+  ui.autonomyControlsWidget->Init(mNh);
 
   QObject::connect(
       ui.actionAbout_Qt, SIGNAL(triggered(bool)), qApp,
@@ -40,16 +41,3 @@ MainWindow::~MainWindow() {}
 *****************************************************************************/
 
 } // namespace roverGUI
-
-// TODO: this needs to be moved elsewhere
-void roverGUI::MainWindow::on_longitudeLineEdit_returnPressed() {
-  on_latitudeLineEdit_returnPressed();
-}
-
-void roverGUI::MainWindow::on_latitudeLineEdit_returnPressed() {
-  double longitude =
-      (ui.longitudeLineEdit->text()).toDouble(); // reads as a QString
-  double latitude = (ui.latitudeLineEdit->text()).toDouble();
-
-  ui.mapWidget->SetLatLon(latitude, longitude);
-}
