@@ -8,7 +8,7 @@ receiver_interface:    "can0"
 transmitter_interface: "can0"
 
 #fiter for acceptable ids 
-can_ids: [301, 302, 303]
+can_ids: [0x500, 0x501, 0x502, 0x503, 0x504, 0x505]
 # Topics
 # in ROS, dictionaries must have string keys
 ids_to_topics: {"0x500": "/can/arm_joints/turntable",
