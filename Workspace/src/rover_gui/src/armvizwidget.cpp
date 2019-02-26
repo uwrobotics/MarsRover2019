@@ -32,9 +32,15 @@ Arm::~Arm() {
 void Arm::setAngles(std::vector<double> angles){
   mAngles.resize(NUM_ANGLES);
   if (angles.size() >= NUM_ANGLES){
-    for (int i=0; i<NUM_ANGLES; i++){
-        mAngles[i] = angles[i];
-      }
+//    for (int i=0; i<NUM_ANGLES; i++){
+//        mAngles[i] = angles[i];
+//      }
+    mAngles[TURNTABLE_YAW] = angles[TURNTABLE_YAW] * M_PI/180;
+    mAngles[WRIST_ROLL] = angles[WRIST_ROLL] * M_PI/180;
+    mAngles[CLAW_CLOSURE_ANGLE] = angles[CLAW_CLOSURE_ANGLE] * M_PI/180;
+    mAngles[SHOULDER_PITCH] = angles[SHOULDER_PITCH] * M_PI/180;
+    mAngles[ELBOW_PITCH] = mAngles[SHOULDER_PITCH] + angles[ELBOW_PITCH] * M_PI/180;
+    mAngles[WRIST_PITCH] = mAngles[ELBOW_PITCH] + angles[WRIST_PITCH] * M_PI/180;
   }
 }
 

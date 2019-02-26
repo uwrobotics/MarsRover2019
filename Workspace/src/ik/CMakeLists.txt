@@ -20,6 +20,12 @@ find_package(
 ## Your package locations should be listed before other locations
 
 
+catkin_package(
+        INCLUDE_DIRS include
+        LIBRARIES ik
+        CATKIN_DEPENDS roscpp std_msgs
+        #       DEPENDS system_lib
+)
 
 include_directories(
         include
@@ -30,18 +36,14 @@ add_library(${PROJECT_NAME}
         src/Roboarm.cpp
         )
 
+add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
-add_executable(ik_node src/main.cpp)
-target_link_libraries(ik_node ${catkin_LIBRARIES})
+#add_executable(ik_node src/main.cpp)
+#target_link_libraries(ik_node ${catkin_LIBRARIES})
 
-target_link_libraries(ik ${catkin_LIBRARIES})
+#target_link_libraries(ik_lib ${catkin_LIBRARIES})
 
-catkin_package(
-        INCLUDE_DIRS include
-        LIBRARIES ik
-        CATKIN_DEPENDS roscpp std_msgs
- #       DEPENDS system_lib
-)
+
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
 ## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
@@ -169,18 +171,18 @@ catkin_package(
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS ${PROJECT_NAME} ${PROJECT_NAME}_node
-#   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
+install(TARGETS ${PROJECT_NAME}
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
 ## Mark cpp header files for installation
-# install(DIRECTORY include/${PROJECT_NAME}/
-#   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-#   FILES_MATCHING PATTERN "*.h"
-#   PATTERN ".svn" EXCLUDE
-# )
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  FILES_MATCHING PATTERN "*.h"
+  PATTERN ".svn" EXCLUDE
+)
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
 # install(FILES

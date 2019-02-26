@@ -13,8 +13,10 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   message_generation
   can_msgs
-  #ik
+  ik
 )
+
+#find_package(ik REQUIRED)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -106,7 +108,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
  #INCLUDE_DIRS include
  ##LIBRARIES arm_interface
- CATKIN_DEPENDS roscpp std_msgs message_runtime
+ CATKIN_DEPENDS roscpp std_msgs message_runtime ik
  #DEPENDS system_lib
 )
 
@@ -117,8 +119,9 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
+  include
   ${catkin_INCLUDE_DIRS}
+  ${ik_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
@@ -140,16 +143,22 @@ include_directories(
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/arm_interface_node.cpp)
 add_executable(${PROJECT_NAME}_node src/arm_motor_commands_node.cpp)
+add_executable(arm_sim_node src/arm_sim_node.cpp)
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
 ## e.g. "rosrun someones_pkg node" instead of "rosrun someones_pkg someones_pkg_node"
 # set_target_properties(${PROJECT_NAME}_node PROPERTIES OUTPUT_NAME node PREFIX "")
-add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} ik)
 
 target_link_libraries(${PROJECT_NAME}_node
    ${catkin_LIBRARIES}
+  #ik
 )
+target_link_libraries(arm_sim_node
+        ${catkin_LIBRARIES}
+        #ik
+        )
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 

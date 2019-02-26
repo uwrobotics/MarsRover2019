@@ -4,11 +4,11 @@
   <version>0.0.0</version>
   <license>TODO</license>
   <maintainer email="x@todo.com">Robert Toyonaga</maintainer>
-  <maintainer email="x@todo.com">Omar Alashqar</maintainer>
+  <!--maintainer email="x@todo.com">Omar Alashqar</maintainer -->
   <description>The ik package</description>
 
-  <author>Robert Toyonaga</author>
-  <author>Omar Alashqar</author>
+  <!--author>Robert Toyonaga</author>
+  <author>Omar Alashqar</author-->
 
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>roscpp</build_depend>

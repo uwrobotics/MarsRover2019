@@ -3,28 +3,28 @@
 #define PI 3.141592
 
 struct Point{
-    float x;
-    float y;
+  double x;
+  double y;
 };
 
 class Roboarm {
   public:
-    float linkVelocities[3];
-    float linkAngles[3];
+  double linkVelocities[3];
+  double linkAngles[3];
 
-    Point pose [4]; // shoulder, elbox, wrist, ee
-    float eePhi;
+  Point pose [4]; // shoulder, elbox, wrist, ee
+  //double eePhi;
 
-    void calculateVelocities(float endEffector[3], float angles[3],bool limits= false);
-    float* calculatePose();
+  bool calculateVelocities(double endEffector[3], double angles[3],bool limits= false);
+  double* calculatePose();
 
-    Roboarm(float lengths[3], float angles[3], float stepSize = 0.001);
+  Roboarm(double lengths[3], double angles[3], double stepSize = 0.001);
     
-    ~Roboarm();
+  ~Roboarm();
 
-  private:
-    float linkLengths[3];
-    float alpha;
+private:
+  double linkLengths[3];
+  double alpha;
 };
 
 #endif
