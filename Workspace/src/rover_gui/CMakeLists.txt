@@ -10,7 +10,8 @@ add_compile_options(-std=c++11)
 ##############################################################################
 
 # qt_build provides the qt cmake glue, roscpp the comms for a default talker
-find_package(catkin REQUIRED COMPONENTS qt_build roscpp console_message OpenCV cv_bridge)
+find_package(catkin REQUIRED COMPONENTS qt_build roscpp console_message cv_bridge)
+find_package(OpenCV REQUIRED)
 include_directories(${catkin_INCLUDE_DIRS} include/rover_gui include ${OpenCV_INCLUDE_DIRS})
 
 # Use this to define what the package will export (e.g. libs, headers).
