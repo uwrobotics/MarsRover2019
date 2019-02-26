@@ -5,7 +5,7 @@
 #include <std_msgs/Float64MultiArray.h>
 #include <arm_interface/ArmCmd.h>
 #include <can_msgs/Frame.h>
-#include "ik/Roboarm.h"
+//#include "ik/Roboarm.h"
 
 // Desired pos
 std::vector<double> desiredPos(6);
@@ -83,6 +83,7 @@ void InitializeMode(bool velMode)
 {
   can_msgs::Frame msg;
   msg.data[0] = 1;
+  msg.dlc = 1;
   uint32_t modeOffset = (velMode)?0:8;
   msg.id = 0x300 + modeOffset;
   desAnglesCanPub.publish(msg);
@@ -102,6 +103,7 @@ void SendVelCommand()
     // TODO ik integration
 
     can_msgs::Frame canMsg;
+    canMsg.dlc = 8;
     for (int i = 0; i < 6; i++)
     {
       canMsg.id = vel_ctrl_can_ids[i];
@@ -111,6 +113,7 @@ void SendVelCommand()
 
   } else {
     can_msgs::Frame canMsg;
+    canMsg.dlc = 8;
     for (int i = 0; i < 6; i++)
     {
       canMsg.id = vel_ctrl_can_ids[i];
