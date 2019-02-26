@@ -7,6 +7,8 @@
 #include <geometry_msgs/Pose2D.h>
 #include <tf2_ros/buffer.h>
 #include <robot_localization/navsat_conversions.h>
+#include <nav_msgs/Odometry.h>
+#include <tf/tf.h>
 
 #define MAX_ANTENNA_FIXES   10
 
@@ -39,7 +41,8 @@ ros::Publisher angle_publisher;
 //    }
 //}
 
-void rover_loc_callback(const geometry_msgs::Pose2D::ConstPtr& msg)
+// utm version
+void rover_loc_utm_callback(const geometry_msgs::Pose2D::ConstPtr& msg)
 {
     // waits for antenna location, not sure how to get this....
     // for now can just use an arbitrary fixed location as the antenna location for testing
@@ -83,6 +86,42 @@ void rover_loc_callback(const geometry_msgs::Pose2D::ConstPtr& msg)
    // }
 }
 
+// using ekf filtered data
+void rover_loc_filtered_callback(const nav_msgs::Odometry::ConstPtr& msg) {
+//     ROS_INFO("Position-> x: [%f], y: [%f], z: [%f]", msg->pose.pose.position.x,msg->pose.pose.position.y, msg->pose.pose.position.z);
+//     ROS_INFO("Orientation-> x: [%f], y: [%f], z: [%f], w: [%f]", msg->pose.pose.orientation.x, msg->pose.pose.orientation.y, msg->pose.pose.orientation.z, msg->pose.pose.orientation.w);
+    
+    rover_x = msg->pose.pose.position.x;
+    rover_y = msg->pose.pose.position.y;
+    
+    // random fixed antenna location for now
+    antenna_x = 0;
+    antenna_y = 0;
+    
+    // convert quaternion orientation to just 2D yaw (don't really need this if using relative angles)
+    tf::Quaternion q(
+        msg->pose.pose.orientation.x,
+        msg->pose.pose.orientation.y,
+        msg->pose.pose.orientation.z,
+        msg->pose.pose.orientation.w
+    );
+    tf::Matrix3x3 m(q);
+    double roll, pitch, yaw;
+    m.getRPY(roll, pitch, yaw);
+    ROS_INFO("Yaw: [%f]", yaw);
+    
+    // Get vector of robot's position relative to Antenna
+    double diff_x = rover_x - antenna_x;
+    double diff_y = rover_y - antenna_y;
+    ROS_INFO ("Rover_x: %f,     Rover_y: %f", rover_x, rover_y);
+    ROS_INFO ("Antenna_x: %f,     Antenna_y: %f", antenna_x, antenna_y);
+    ROS_INFO ("Diff_x: %f,     Diff_y: %f", diff_x, diff_y);
+    
+    //Get rover's angle from the east-west axis
+    double rover_angle_from_east = atan(diff_y/diff_x) * 180 / M_PI; // Convert to degrees
+    ROS_INFO ("rover_angle_from_east: %f", rover_angle_from_east);
+}
+
 int main (int argc, char *argv[])
 {
     ROS_INFO("Starting angle node");
@@ -90,7 +129,10 @@ int main (int argc, char *argv[])
     ros::NodeHandle node_handle;
 
     // subscribe to the utm coordinates being published from the rover
-    ros::Subscriber rover_loc_sub = node_handle.subscribe("/localization/pose_utm", 1, rover_loc_callback);
+    //ros::Subscriber rover_loc_sub = node_handle.subscribe("/localization/pose_utm", 1, rover_loc_callback);
+    
+    // subscribe to filtered odometry info 
+    ros::Subscriber rover_loc_sub = node_handle.subscribe("/odometry/filtered", 1, rover_loc_filtered_callback);
 
     // publish angle
     angle_publisher = node_handle.advertise<std_msgs::Float32>("/antenna/rover_angle_from_east", 10);
