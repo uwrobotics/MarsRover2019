@@ -1,0 +1,7 @@
+<launch>
+    <!--<param name = "debug" value = "true" type = "bool" />-->
+    <include file="$(find local_planner)/launch/sim_setup.launch" />
+    <include file="$(find local_planner)/launch/local_planner_stand_alone.launch" />
+
+
+</launch>
