@@ -113,7 +113,7 @@ void SendVelCommand()
     cmdVels[5] = ikCmdVels[5];
 
     // TODO ik integration
-    double endEffectorSpeed[] = {ikCmdVels[1], ikCmdVels[2], ikCmdVels[3] * M_PI/180};
+    double endEffectorSpeed[] = {-ikCmdVels[1], -ikCmdVels[2], -ikCmdVels[3] * M_PI/180};
     double currentAngles[] = {actualAngles[1] * M_PI/180, actualAngles[2] * M_PI/180, actualAngles[3] * M_PI/180};
     if (ikControl.calculateVelocities(endEffectorSpeed, currentAngles)) {
       ROS_INFO("ik succeeded");

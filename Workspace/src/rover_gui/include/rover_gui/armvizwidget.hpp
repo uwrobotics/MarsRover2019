@@ -110,7 +110,7 @@ class armvizwidget : public QWidget{
   		ros::Subscriber mPoseSub;
 
   		//dimensions for drawing
-  		const double SHOULDER_LEN=25, ELBOW_LEN=25, WRIST_LEN=15;
+  		const double SHOULDER_LEN=35.5, ELBOW_LEN=40.64, WRIST_LEN=30.48;
   		const double SHOULDER_THICK=2, ELBOW_THICK=2, WRIST_THICK=2;
   		const double SHOULDER_JOINT_RAD=2, ELBOW_JOINT_RAD=2, WRIST_JOINT_RAD=2;
   		const double CLAW_LEN=10, CLAW_WIDTH=10, CLAW_THICK=2;

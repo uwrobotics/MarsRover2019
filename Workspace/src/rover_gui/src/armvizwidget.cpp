@@ -259,6 +259,8 @@ void armvizwidget::ArmPosCallback(std_msgs::Float64MultiArrayConstPtr armPos) {
   topViewArm->setAngles(armPos->data);
   sideScene->update();
   topViewArm->update();
+  ui->armVizSideGraphicsView->fitInView(-100, -20, 200, 160, Qt::KeepAspectRatio);
+  ui->armVizTopGraphicsView->fitInView(-100, -100, 200, 200, Qt::KeepAspectRatio);
 }
 
 
