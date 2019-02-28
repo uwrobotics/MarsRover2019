@@ -29,6 +29,8 @@ MainWindow::MainWindow(int argc, char **argv, ros::NodeHandle &nh,
   ui.mapWidget->Init(mNh);
   ui.autonomyControlsWidget->Init(mNh);
   ui.fovViewWidget->subscribe(mNh, "/zed/rgb/image_raw_color");
+  ui.widget_4->subscribe(mNh, "/usb_cam1/image_raw");
+  ui.clearanceCamView->subscribe(mNh, "/usb_cam2/image_raw");
   ui.depthViewWidget->subscribe(mNh, "/zed/depth/depth_registered", true);
   ui.consoleWidget->Init(mNh);
   ui.armviz->Init(mNh);
