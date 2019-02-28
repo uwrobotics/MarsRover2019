@@ -29,10 +29,33 @@ void rotate_map(cv::Mat & cost_map, double angle)
     cv::warpAffine(cost_map, cost_map, rotation_matrix, cost_map.size());
 }
 
-void localization_update(cv::Mat & cost_map, double delta_x, double delta_y, double delta_heading)
+void calculate_translations(double delta_x, double delta_y, double last_heading,
+                            double current_heading, double & x_translation, double & y_translation){
+
+
+    double alpha = atan2(-delta_x, delta_y);
+    double beta = alpha - last_heading;
+    double d = sqrt( pow(delta_x, 2) + pow(delta_y, 2) );
+
+    x_translation = d * sin(beta);
+    y_translation = d * cos(beta);
+
+}
+
+void localization_update(cv::Mat & cost_map, double delta_x, double delta_y, double last_heading,
+                         double current_heading)
 {
-    scale_map(cost_map, 0.5);
-    translate_map(cost_map, delta_x, delta_y);
+
+    // Following the math derived in meetings.
+    double x_translation = 0, y_translation = 0;
+    calculate_translations(delta_x, delta_y, last_heading, current_heading,
+                           x_translation, y_translation);
+
+
+    double delta_heading = current_heading - last_heading;
+
+
+    translate_map(cost_map, x_translation, y_translation);
     rotate_map(cost_map, delta_heading);
 }
 
@@ -52,5 +75,3 @@ void localization_update(cv::Mat & cost_map, double delta_x, double delta_y, dou
 //    cout << m << endl;
 //
 //    system("PAUSE");
-//    return EXIT_SUCCESS;
-//}

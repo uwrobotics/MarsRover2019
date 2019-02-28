@@ -19,3 +19,4 @@ set(OpenCV_LIBS opencv_core opencv_imgproc)
 
 # linking
 target_link_libraries(cost_map_node ${OpenCV_LIBS})
+

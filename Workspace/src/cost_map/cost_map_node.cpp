@@ -28,10 +28,8 @@ int main(int argc, char** argv)
 	int last_heading = 0, last_x = 0, last_y = 0;
 	int delta_heading = 0, delta_x = 0, delta_y = 0;
 
-	// Do we use an array for the object camera stuff? What is the
-	// type of the messages published by the camera?
 
-	/* ROS SETUP STUFF @AYUSH HELP.
+	/* ROS SETUP STUFF @AYUSH
      ros::init(argc, argv, "cost_map_node");
      ros:: NodeHandle nh;
 
@@ -52,7 +50,7 @@ int main(int argc, char** argv)
 
 	    get_object_info();
 
-	    localization_update(cost_map, delta_x, delta_y, delta_heading);
+	    localization_update(cost_map, delta_x, delta_y, last_heading, current_heading);
 
 	    object_update(cost_map);
 
