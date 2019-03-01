@@ -62,10 +62,10 @@ def detectTennisBall():
             top_left_point_x = int(ball_x - ball_radius)
             top_left_point_y = int(ball_y - ball_radius)
             bottom_right_point_x = int(ball_x + ball_radius)
-            bottom_right_point_y = int(ball_x + ball_radius)
+            bottom_right_point_y = int(ball_y + ball_radius)
             top_left_point = (top_left_point_x, top_left_point_y)
             bottom_right_point = (bottom_right_point_x, bottom_right_point_y)
-            cv2.rectangle(tennisBalls, top_left_point, bottom_right_point, (0, 0, 255), 3)
+            cv2.rectangle(tennisBalls, top_left_point, bottom_right_point, (0, 255, 0), 3)
 
         # Publish TennisBallTracker message
         # outputMsg = TennisBallTracker()
@@ -74,8 +74,6 @@ def detectTennisBall():
         # outputMsg.radius = ball_radius
         # outputMsg.isDetected = True
         # pub.publish(outputMsg)
-
-        # cv2.imshow("Webcam", tennisBalls)
 
         image_message = bridge.cv2_to_imgmsg(tennisBalls, encoding="passthrough")
         pub.publish(image_message)
