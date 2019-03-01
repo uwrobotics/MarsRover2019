@@ -21,7 +21,7 @@ bridge = CvBridge()
 
 def detectTennisBall(imageMsg):
     
-    frame = bridge.imgmsg_to_cv2(imageMsg, desired_encoding="passthrough")
+    frame = bridge.imgmsg_to_cv2(imageMsg, desired_encoding="bgr8")
 
     # Resizing the frame
     frame = imutils.resize(frame, width=600)
@@ -73,7 +73,8 @@ def detectTennisBall(imageMsg):
         # outputMsg.isDetected = True
         # pub.publish(outputMsg)
 
-        image_message = bridge.cv2_to_imgmsg(tennisBalls, encoding="passthrough")
+        tennisBalls = cv2.cvtColor(tennisBalls,cv2.COLOR_BGR2RGB)
+        image_message = bridge.cv2_to_imgmsg(tennisBalls, encoding="rgb8")
         pub.publish(image_message)
 
 if __name__ == '__main__':

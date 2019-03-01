@@ -1,0 +1,4 @@
+uwrt_bringup
+/home/nvidia/MarsRover2019/Workspace/devel/.private/uwrt_bringup/share/uwrt_bringup/cmake/uwrt_bringupConfig.cmake /home/nvidia/MarsRover2019/Workspace/devel/share/uwrt_bringup/cmake/uwrt_bringupConfig.cmake
+/home/nvidia/MarsRover2019/Workspace/devel/.private/uwrt_bringup/share/uwrt_bringup/cmake/uwrt_bringupConfig-version.cmake /home/nvidia/MarsRover2019/Workspace/devel/share/uwrt_bringup/cmake/uwrt_bringupConfig-version.cmake
+/home/nvidia/MarsRover2019/Workspace/devel/.private/uwrt_bringup/lib/pkgconfig/uwrt_bringup.pc /home/nvidia/MarsRover2019/Workspace/devel/lib/pkgconfig/uwrt_bringup.pc
