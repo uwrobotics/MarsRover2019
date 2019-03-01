@@ -3,7 +3,8 @@
 import rospy
 from std_msgs.msg import String
 from tennis_ball_tracker.msg import TennisBallTracker
-from cv_bridge import CvBridge
+from sensor_msgs.msg import Image
+from cv_bridge import CvBridge, CvBridgeError
 
 import cv2
 import numpy as np
@@ -19,6 +20,8 @@ greenUpper = (64, 255, 255)
 camera = cv2.VideoCapture(0)
 
 def detectTennisBall():
+    bridge = CvBridge()
+
 	# Grab the current camera frame
     grabbed, frame = camera.read()
 
@@ -53,20 +56,33 @@ def detectTennisBall():
 
         # Check radius constraints
         if ball_radius > 10:
-            cv2.circle(tennisBalls, (int(ball_x), int(ball_y)), int(ball_radius), (0, 0, 255), 3)
-            cv2.circle(tennisBalls, ball_center, 3, (0, 0, 255), -1)
+            # Draw circle around tennis ball and point at center
+            # cv2.circle(tennisBalls, (int(ball_x), int(ball_y)), int(ball_radius), (0, 0, 255), 3)
+            # cv2.circle(tennisBalls, ball_center, 3, (0, 0, 255), -1)
+            top_left_point_x = int(ball_x - ball_radius)
+            top_left_point_y = int(ball_y - ball_radius)
+            bottom_right_point_x = int(ball_x + ball_radius)
+            bottom_right_point_y = int(ball_x + ball_radius)
+            top_left_point = (top_left_point_x, top_left_point_y)
+            bottom_right_point = (bottom_right_point_x, bottom_right_point_y)
+            cv2.rectangle(tennisBalls, top_left_point, bottom_right_point, (0, 0, 255), 3)
 
-        # Publish message
-        outputMsg = TennisBallTracker()
-        outputMsg.x = ball_x
-        outputMsg.y = ball_y
-        outputMsg.radius = ball_radius
-        outputMsg.isDetected = True
-        pub.publish(outputMsg)
+        # Publish TennisBallTracker message
+        # outputMsg = TennisBallTracker()
+        # outputMsg.x = ball_x
+        # outputMsg.y = ball_y
+        # outputMsg.radius = ball_radius
+        # outputMsg.isDetected = True
+        # pub.publish(outputMsg)
+
+        # cv2.imshow("Webcam", tennisBalls)
+
+        image_message = bridge.cv2_to_imgmsg(tennisBalls, encoding="passthrough")
+        pub.publish(image_message)
 
 if __name__ == '__main__':
     rospy.init_node('tennis_ball_tracker', anonymous=True)
-    pub = rospy.Publisher('tennis_ball_tracker/detection', TennisBallTracker, queue_size=1)
+    pub = rospy.Publisher('tennis_ball_tracker/image', Image, queue_size=1)
 
     while not rospy.is_shutdown():
         detectTennisBall()
