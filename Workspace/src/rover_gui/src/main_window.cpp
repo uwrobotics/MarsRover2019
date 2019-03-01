@@ -28,10 +28,9 @@ MainWindow::MainWindow(int argc, char **argv, ros::NodeHandle &nh,
   // Initialize widgets
   ui.mapWidget->Init(mNh);
   ui.autonomyControlsWidget->Init(mNh);
-  ui.fovViewWidget->subscribe(mNh, "/zed/rgb/image_raw_color");
+  ui.fovViewWidget->subscribe(mNh, "/tennis_ball_tracker/image");
   ui.widget_4->subscribe(mNh, "/usb_cam1/image_raw");
-  ui.clearanceCamView->subscribe(mNh, "/tennis_ball_tracker/image");
-//  ui.clearanceCamView->subscribe(mNh, "/usb_cam2/image_raw");
+  ui.clearanceCamView->subscribe(mNh, "/usb_cam2/image_raw");
   ui.depthViewWidget->subscribe(mNh, "/zed/depth/depth_registered", true);
   ui.consoleWidget->Init(mNh);
   ui.armviz->Init(mNh);
