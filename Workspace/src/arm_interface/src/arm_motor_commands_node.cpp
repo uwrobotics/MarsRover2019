@@ -7,59 +7,61 @@
 
 class InitObjects {
 	public:
-	static ros::NodeHandle nh;  
-        static ros::Publisher pub_user_to_GUI;
-	static ros::Publisher pub_user_to_CAN;   
-        static int freq;
+	ros::NodeHandle nh;  
+        ros::Publisher pub_user_to_GUI = nh.advertise<std_msgs::Float64MultiArray>("GUI", 1000); 
+	ros::Publisher pub_user_to_CAN;  
+        int freq; 
 	
-	
-	/**
-	InitObjects(): 
+	/**InitObjects(){ 
 		pub_user_to_GUI =  nh.advertise<std_msgs::Float64MultiArray>("GUI", 1000);
        		pub_user_to_CAN =  nh.advertise<arm_node::Custom_msg>("CAN", 1000);
 		freq = 10;
-	{
-	}
-	**/
-
+	}; 
+        **/
 	
-	static ros::Publisher getPubGUI() {
+	
+	ros::Publisher getPubGUI() {
 		return pub_user_to_GUI; 
-	}
-	static ros::Publisher getPubCAN() {
+	}; 
+
+	ros::Publisher getPubCAN() {
 		return pub_user_to_CAN; 
-	}
-	static ros::NodeHandle getNodeHandlerObject() {
+	}; 
+
+	ros::NodeHandle getNodeHandlerObject() {
 		return nh; 
-	}	
-	static int getFreq() {
+	}; 
+	
+	int getFreq() {
 		return freq; 
-	}	
+	};	
 };
 
+InitObjects Init; 
+ 
 
 // publisher function consumes the parameters required to create the publisher object, the frequency at which publishing is carried out,
 // and the topic which needs to be published to. 
 void publisherFunctionToCAN (arm_node::Custom_msg msg){
 	//create publisher object
-	ros::Rate rate(InitObjects::getFreq()); 
+	ros::Rate rate(Init.getFreq()); 
 	
 	if (msg.ik_status == false) {
 	//this should only run when ik_status is false, but this will be fixed when the inverseKinematicsLibrary is ready to be implemented i.e. "if (!msg.ik_status)"
-	InitObjects::getPubCAN().publish(msg);
+	Init.getPubCAN().publish(msg);
 	}	
 	else {
 	//this should pass the msg into the inverse kinematics library and then publish the returned structure
-	//InitObjects.getPubCAN().publish(inverseKinematicsLibrary(msg));
+	//Init.getPubCAN().publish(inverseKinematicsLibrary(msg));
 	}
 }
 
 void publisherFunctionToGUI (std_msgs::Float64MultiArray msg){
 	//create publisher object
-	ros::Rate rate(InitObjects::getFreq()); 
+	ros::Rate rate(Init.getFreq()); 
 
 	//publish message object and send message to rosout with details
-	InitObjects::getPubGUI().publish(msg);
+	Init.getPubGUI().publish(msg);
 	
 }
 
@@ -81,7 +83,7 @@ void messageReceivedFromCAN(const std_msgs::Float64MultiArray values) {
 // needs to be passed into the Inverse Kinematics library or has it returned from it and needs to be returned as it is 
 void subscriberFunctionFromGUI (int argc, char** argv) {
 	
-	ros::Subscriber sub = InitObjects::getNodeHandlerObject().subscribe("GUI", 10, &messageReceivedFromGUI);
+	ros::Subscriber sub = Init.getNodeHandlerObject().subscribe("GUI", 10, &messageReceivedFromGUI);
 
 	ros::spinOnce();		
 }
@@ -91,20 +93,21 @@ void subscriberFunctionFromCAN (int argc, char** argv) {
 	ros::init(argc, argv, "subscribe_arm_motor_commands");
 
 
-	ros::Subscriber sub = InitObjects::getNodeHandlerObject().subscribe("CAN", 10, &messageReceivedFromCAN);
+	ros::Subscriber sub = Init.getNodeHandlerObject().subscribe("CAN", 10, &messageReceivedFromCAN);
 
 	ros::spinOnce();		
 }
 
 int main(int argc, char** argv) {
 	//initializing the node
-	ros::init(argc, argv, "arm_motor_commands");		
+	ros::init(argc, argv, "arm_motor_commands");	
 
-	InitObjects::getPubGUI() =  InitObjects::getNodeHandlerObject().advertise<std_msgs::Float64MultiArray>("GUI", 1000);
-	InitObjects::getPubCAN() =  InitObjects::getNodeHandlerObject().advertise<arm_node::Custom_msg>("CAN", 1000);
-	InitObjects::getFreq() = 10;
+	InitObjects init;	
 
-	int freq = 2;
+	Init.getPubGUI() =  Init.getNodeHandlerObject().advertise<std_msgs::Float64MultiArray>("GUI", 1000);
+	Init.getPubCAN() =  Init.getNodeHandlerObject().advertise<arm_node::Custom_msg>("CAN", 1000);
+
+	int freq = Init.getFreq();
 	ros::Rate rate(freq);
 
 	//loop that publishes info until the node is shut down
