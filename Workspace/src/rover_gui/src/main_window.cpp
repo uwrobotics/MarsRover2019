@@ -32,6 +32,7 @@ MainWindow::MainWindow(int argc, char **argv, ros::NodeHandle &nh,
   ui.depthViewWidget->subscribe(mNh, "/zed/depth/depth_registered", true);
   ui.consoleWidget->Init(mNh);
   ui.armviz->Init(mNh);
+  ui.costmapWidget->subscribe(mNh, "/autonomy/cost_map", false, true);
 
   QObject::connect(
       ui.actionAbout_Qt, SIGNAL(triggered(bool)), qApp,

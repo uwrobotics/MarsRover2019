@@ -5,7 +5,7 @@
 #include <opencv2/core/core.hpp>
 #include <iostream>
 
-void localization_update(cv::Mat & cost_map, double delta_x, double delta_y, double delta_heading);
+void localization_update(cv::Mat & cost_map, double delta_x, double delta_y, double delta_heading, cv::Point2f centre_point);
 
 void scale_map(cv::Mat & cost_map, double scale_factor);
 void translate_map(cv::Mat & cost_map, double delta_x, double delta_y);

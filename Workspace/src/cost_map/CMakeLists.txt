@@ -1,21 +1,46 @@
-cmake_minimum_required(VERSION 3.12)
-project(cost_map_node)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+cmake_minimum_required(VERSION 2.8.3)
+project(cost_map)
 
-# Where to find CMake modules and OpenCV
-set(OpenCV_DIR opencv_2/mingw-build/install)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+## Compile as C++11, supported in ROS Kinetic and newer
+add_compile_options(-std=c++11)
 
-find_package(OpenCV REQUIRED HINTS opencv_2/mingw-build/install)
-include_directories(${OpenCV_INCLUDE_DIRS})
+## Find catkin macros and libraries
+## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
+## is used, also find other catkin packages
+find_package(catkin REQUIRED COMPONENTS
+        roscpp
+        rospy
+        #OpenCV
+        #image_geometry
+        #cv_bridge
+        std_msgs
+        obstacle_detection
+        )
+
+find_package(OpenCV REQUIRED)
+catkin_package()
+
+#find_package(OpenCV REQUIRED HINTS opencv_2/mingw-build/install)
+include_directories(
+        include
+        ${catkin_INCLUDE_DIRS}
+        ${OpenCV_INCLUDE_DIRS}
+)
 
 
-add_executable(cost_map_node cost_map_node.cpp
+add_executable(${PROJECT_NAME}_node cost_map_node.cpp
         cost_map_locatlization.cpp
-        cost_map_localization.h)
+        )
+
+add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} obstacle_detection_generate_messages)
+
+## Specify libraries to link a library or executable target against
+target_link_libraries(${PROJECT_NAME}_node
+        ${catkin_LIBRARIES} ${OpenCV_LIBS}
+        )
 
 # add libs you need
-set(OpenCV_LIBS opencv_core opencv_imgproc)
+#set(OpenCV_LIBS opencv_core opencv_imgproc)
 
 # linking
-target_link_libraries(cost_map_node ${OpenCV_LIBS})
+#target_link_libraries(cost_map_node ${OpenCV_LIBS})

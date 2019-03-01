@@ -19,13 +19,14 @@ public:
   explicit CameraViewWidget(QWidget *parent = nullptr);
   ~CameraViewWidget();
   void subscribe(ros::NodeHandle &guiHandle, std::string imageTopic,
-                 bool bDepthImg = false);
+                 bool bDepthImg = false, bool bCostmap = false);
   void imageCallback(const sensor_msgs::Image::ConstPtr &msg);
 
 private:
   Ui::CameraViewWidget *ui;
   ros::Subscriber sub;
   bool mbDepthImg;
+  bool mbCostmap;
 
   // protected:
   // void resizeEvent(QResizeEvent *);
