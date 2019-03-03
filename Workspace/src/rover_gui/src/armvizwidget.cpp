@@ -8,7 +8,7 @@
 
 
 Arm::Arm(ArmLink shoulder, ArmLink elbow, ArmLink wrist, Claw claw, TurnTable turnTable, RobotFrame robotFrame,
-         QPointF startPos, bool isSideView, std::vector<double> angles, QGraphicsItem *parent) :
+         QPointF startPos, bool isSideView, bool isDesiredArm, std::vector<double> angles, QGraphicsItem *parent) :
 QGraphicsItem(parent),
 shoulder(shoulder),
 elbow(elbow),
@@ -18,6 +18,7 @@ turnTable(turnTable),
 robotFrame(robotFrame),
 startPos(startPos),
 isSideView(isSideView),
+isDesiredArm(isDesiredArm),
 mAngles(angles),
 mPen(new QPen()),
 mBrush(new QBrush())
@@ -38,6 +39,22 @@ void Arm::setAngles(std::vector<double> angles){
   }
 }
 
+std::vector<double> Arm::getAngles () const{
+  return mAngles;
+}
+
+bool  Arm::operator==(const Arm& rhs) const{
+  if (mAngles.size() == rhs.getAngles().size()){
+    for (int i=0; i<mAngles.size(); i++){
+      if(mAngles[i] != rhs.getAngles()[i]){
+        return false;
+        }
+      }
+    return true;
+  }
+  return false;
+}
+
 QRectF Arm::boundingRect() const{
   double penWidthPadding = 5; 
   double width = std::max(robotFrame.length, 
@@ -54,8 +71,10 @@ void Arm::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidg
   
   if (isSideView){
     // draw in reverse order, part that needs to appear on topper must be drawn later
-    DrawRobotFrame(painter, robotFrame, startPos, 2);
-    DrawTurnTable(painter, turnTable, startPos);
+    if (!isDesiredArm){
+       DrawRobotFrame(painter, robotFrame, startPos, 2);
+       DrawTurnTable(painter, turnTable, startPos);
+    }
 
     DrawJoint(painter, shoulder, startPos);
     QPointF shoulder_end = DrawLink(painter,shoulder, startPos, mAngles[SHOULDER_PITCH]);
@@ -69,8 +88,11 @@ void Arm::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidg
     DrawClaw(painter, claw, wrist_end);
     
   } else {
-    DrawRobotFrame(painter, robotFrame, startPos, 2);
-    DrawTurnTable(painter, turnTable, startPos);
+    
+    if (!isDesiredArm){
+      DrawRobotFrame(painter, robotFrame, startPos, 2);
+      DrawTurnTable(painter, turnTable, startPos);
+    }
 
     DrawJoint(painter, shoulder, startPos);
     QPointF shoulder_end = DrawLink(painter,shoulder, startPos, mAngles[TURNTABLE_YAW]);
@@ -103,8 +125,8 @@ QPointF Arm::DrawLink(QPainter *painter, ArmLink armLink, QPointF startPos, doub
     end_y = start_y - armLink.length * std::sin(double(pitch));
   } else{
     double yaw = angle;
-    end_x = start_x - armLink.length * std::sin(double(yaw));
-    end_y = start_y - armLink.length * std::cos(double(yaw));
+    end_x = start_x - armLink.length * std::sin(double(yaw)) / 1.5;
+    end_y = start_y - armLink.length * std::cos(double(yaw)) / 1.5;
   }
 
   QLineF line(start_x, start_y, end_x, end_y);
@@ -213,30 +235,39 @@ ui(new Ui::armvizwidget)
 {	
   ui->setupUi(this);
 
-  sideScene = new QGraphicsScene(this);
-  topScene = new QGraphicsScene(this);
+  sideviewScene = new QGraphicsScene(this);
+  topviewScene = new QGraphicsScene(this);
 
-  ui->armVizSideGraphicsView->setScene(sideScene);
-  ui->armVizTopGraphicsView->setScene(topScene);
+  ui->armVizSideGraphicsView->setScene(sideviewScene);
+  ui->armVizTopGraphicsView->setScene(topviewScene);
 
-  std::vector<double> angles = {30/180.0*M_PI, 45/180.0*M_PI, 20/180.0*M_PI, 10/180.0*M_PI, 0, 0};
-  sideViewArm = createArm(true, angles);
-  topViewArm = createArm(false, angles);
+  std::vector<double> desired_angles = {30/180.0*M_PI, 45/180.0*M_PI, 20/180.0*M_PI, 10/180.0*M_PI, 0, 0};
+  std::vector<double> actual_angles = {15/180.0*M_PI, 30/180.0*M_PI, 10/180.0*M_PI, 5/180.0*M_PI, 0, 0};
 
-  sideScene->addItem(sideViewArm);
-  topScene->addItem(topViewArm);
+  sideViewActualArm = createArm(true, true, actual_angles);
+  sideViewDesiredArm = createArm(false, true, desired_angles);
+  topViewActualArm = createArm(true, false, actual_angles);
+  topViewDesiredArm = createArm(false, false, desired_angles);
 
+  
+  sideviewScene->addItem(sideViewActualArm);
+  sideviewScene->addItem(sideViewDesiredArm);
+  topviewScene->addItem(topViewActualArm);
+  topviewScene->addItem(topViewDesiredArm);
+  
   ui->armVizSideGraphicsView->show();
   ui->armVizTopGraphicsView->show();
 
-  ui->armVizSideGraphicsView->setSceneRect(sideScene->itemsBoundingRect());
-  ui->armVizTopGraphicsView->setSceneRect(topScene->itemsBoundingRect());
+  ui->armVizSideGraphicsView->setSceneRect(sideviewScene->itemsBoundingRect());
+  ui->armVizTopGraphicsView->setSceneRect(topviewScene->itemsBoundingRect());
 
-  sideViewArm->setPos(-10, 35);
-  topViewArm->setPos(0, 15);
+  sideViewActualArm->setPos(-10, 30);
+  sideViewDesiredArm->setPos(-10, 30);
 
+  topViewActualArm->setPos(0, 15);
+  topViewDesiredArm->setPos(0, 15);
+  
   // ROS_INFO("%f %f %f %f", sideViewArm->scenePos().x(), sideViewArm->scenePos().y(), topViewArm->pos().x(), topViewArm->pos().y());
-
 }
 
 armvizwidget::~armvizwidget() {
@@ -245,25 +276,58 @@ armvizwidget::~armvizwidget() {
 
 bool armvizwidget::Init(ros::NodeHandle &nh) {
   avNh = &nh;
-  mPoseSub = nh.subscribe(ARM_POSE_TOPIC, 1, &armvizwidget::ArmPosCallback, this);
+  actualPoseSub = nh.subscribe(ARM_ACTUL_POSE_TOPIC, 1, &armvizwidget::actualArmPosCallback, this);
+  desiredPoseSub = nh.subscribe(ARM_DESIRED_POSE_TOPIC, 1, &armvizwidget::desiredArmPosCallback, this);
 }
 
-void armvizwidget::ArmPosCallback(std_msgs::Float64MultiArrayConstPtr armPos) {
-  sideViewArm->setAngles(armPos->data);
-  topViewArm->setAngles(armPos->data);
-  sideScene->update();
-  topViewArm->update();
+void armvizwidget::actualArmPosCallback(std_msgs::Float64MultiArrayConstPtr armPos) {
+  sideViewActualArm->setAngles(armPos->data);
+  // do not display the actual arm if it has reached the desire arm position
+  if (sideViewActualArm == sideViewDesiredArm){
+    sideViewActualArm->setVisible(false);
+  } else {
+    sideViewActualArm->setVisible(true);
+  }
+
+  topViewActualArm->setAngles(armPos->data);
+  if (topViewActualArm == topViewDesiredArm){
+    topViewActualArm->setVisible(false);
+  } else {
+    topViewActualArm->setVisible(true);
+  }
+
+  sideviewScene->update();
 }
 
 
-Arm* armvizwidget::createArm(bool isSideView, std::vector<double> angles){
-  ArmLink shoulder = {SHOULDER_LEN, SHOULDER_THICK, SHOULDER_JOINT_RAD, Qt::black, Qt::red};
-  ArmLink elbow = {ELBOW_LEN, ELBOW_THICK, ELBOW_JOINT_RAD, Qt::black, Qt::red};
-  ArmLink wrist = {WRIST_LEN, WRIST_THICK, WRIST_JOINT_RAD, Qt::black, Qt::red};
-  Claw claw = {CLAW_LEN, CLAW_WIDTH, CLAW_THICK, Qt::black};
-  TurnTable turnTable = {TURNTABLE_RAD, TURNTABLE_OFFSET, Qt::black, Qt::gray};
-  RobotFrame robotFrame = {ROBOT_LEN, ROBOT_WIDTH, FRAME_OFFSET, Qt::black, Qt::gray};
+void armvizwidget::desiredArmPosCallback(std_msgs::Float64MultiArrayConstPtr armPos) {
+  sideViewDesiredArm->setAngles(armPos->data);
+  topViewDesiredArm->setAngles(armPos->data);
+  topviewScene->update();
+}
 
-  Arm* arm = new Arm(shoulder, elbow, wrist, claw, turnTable, robotFrame, QPointF(0, 0), isSideView, angles);
-  return arm;
+
+Arm* armvizwidget::createArm(bool isDesiredArm, bool isSideView, std::vector<double> angles){
+  if (!isDesiredArm){
+    ArmLink shoulder = {SHOULDER_LEN, SHOULDER_THICK, SHOULDER_JOINT_RAD, Qt::black, Qt::red};
+    ArmLink elbow = {ELBOW_LEN, ELBOW_THICK, ELBOW_JOINT_RAD, Qt::black, Qt::red};
+    ArmLink wrist = {WRIST_LEN, WRIST_THICK, WRIST_JOINT_RAD, Qt::black, Qt::red};
+    Claw claw = {CLAW_LEN, CLAW_WIDTH, CLAW_THICK, Qt::black};
+    TurnTable turnTable = {TURNTABLE_RAD, TURNTABLE_OFFSET, Qt::black, Qt::gray};
+    RobotFrame robotFrame = {ROBOT_LEN, ROBOT_WIDTH, FRAME_OFFSET, Qt::black, Qt::gray};
+
+    Arm* arm = new Arm(shoulder, elbow, wrist, claw, turnTable, robotFrame, QPointF(0, 0), isSideView, isDesiredArm, angles);
+    return arm;
+  } else {
+      ArmLink shoulder = {SHOULDER_LEN, SHOULDER_THICK, SHOULDER_JOINT_RAD, Qt::blue, Qt::red};
+      ArmLink elbow = {ELBOW_LEN, ELBOW_THICK, ELBOW_JOINT_RAD, Qt::blue, Qt::red};
+      ArmLink wrist = {WRIST_LEN, WRIST_THICK, WRIST_JOINT_RAD, Qt::blue, Qt::red};
+      Claw claw = {CLAW_LEN, CLAW_WIDTH, CLAW_THICK, Qt::blue};
+      TurnTable turnTable = {TURNTABLE_RAD, TURNTABLE_OFFSET, Qt::blue, Qt::gray};
+      RobotFrame robotFrame = {ROBOT_LEN, ROBOT_WIDTH, FRAME_OFFSET, Qt::blue, Qt::gray};
+
+      Arm* arm = new Arm(shoulder, elbow, wrist, claw, turnTable, robotFrame, QPointF(0, 0), isSideView, isDesiredArm, angles);
+      return arm;
+  }
+  
 }

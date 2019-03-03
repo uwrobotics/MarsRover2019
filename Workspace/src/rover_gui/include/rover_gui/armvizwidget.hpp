@@ -53,11 +53,13 @@ struct RobotFrame{
 class Arm : public QGraphicsItem{
 	public:
 		Arm(ArmLink shoulder, ArmLink elbow, ArmLink wrist, Claw claw, TurnTable turnTable, RobotFrame robotFrame,
-			 QPointF startPos, bool isSideView, std::vector<double> angles, QGraphicsItem *parent = nullptr);
+			 QPointF startPos, bool isSideView, bool isDesiredArm, std::vector<double> angles, QGraphicsItem *parent = nullptr);
 		~Arm();
 		void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr); 
 		QRectF boundingRect() const;
 		void setAngles(std::vector<double> angles);
+		std::vector<double> getAngles() const;
+		bool operator==(const Arm& rhs) const;
 
 	private:
 		// index for input angles that defines the geomerty of the arm, also the index of the angles in the received ROS message
@@ -69,6 +71,9 @@ class Arm : public QGraphicsItem{
   		const double CLAW_CLOSURE_ANGLE=5;
   		const int NUM_ANGLES = 6;
 
+  		//tolerance for two angles to be considered as equal
+  		const double TOL = 0.05;
+
 		QPen *mPen;
 	    QBrush *mBrush;
 	    QPointF startPos;
@@ -78,6 +83,7 @@ class Arm : public QGraphicsItem{
 	    RobotFrame robotFrame;
 
 	    bool isSideView;
+	    bool isDesiredArm;
 	    std::vector<double> mAngles;	
 
 	    QPointF DrawLink(QPainter *painter, ArmLink armLink, QPointF startPos, double angle);
@@ -98,24 +104,25 @@ class armvizwidget : public QWidget{
 
 	private:
 		// expects an ID array of six angles in radians
-		void ArmPosCallback(std_msgs::Float64MultiArrayConstPtr armPos);
-		Arm* createArm(bool isSideView, std::vector<double> angles);
+		void actualArmPosCallback(std_msgs::Float64MultiArrayConstPtr armPos);
+		void desiredArmPosCallback(std_msgs::Float64MultiArrayConstPtr armPos);
+		Arm* createArm(bool isDesiredArm, bool isSideView, std::vector<double> angles);
 
 	    Ui::armvizwidget *ui;
-	    QGraphicsScene *topScene;
-	    QGraphicsScene *sideScene;
-	    Arm *topViewArm, *sideViewArm;
+	    QGraphicsScene *sideviewScene, *topviewScene;
+	    Arm *topViewActualArm, *topViewDesiredArm, *sideViewActualArm, *sideViewDesiredArm;
 
 	    ros::NodeHandle *avNh;
-  		ros::Subscriber mPoseSub;
+  		ros::Subscriber actualPoseSub;
+  		ros::Subscriber desiredPoseSub;
 
   		//dimensions for drawing
   		const double SHOULDER_LEN=25, ELBOW_LEN=25, WRIST_LEN=15;
   		const double SHOULDER_THICK=2, ELBOW_THICK=2, WRIST_THICK=2;
   		const double SHOULDER_JOINT_RAD=2, ELBOW_JOINT_RAD=2, WRIST_JOINT_RAD=2;
   		const double CLAW_LEN=10, CLAW_WIDTH=10, CLAW_THICK=2;
-  		const double TURNTABLE_RAD=15, TURNTABLE_OFFSET=2;
-  		const double ROBOT_LEN=60, ROBOT_WIDTH=45, FRAME_OFFSET=2;
+  		const double TURNTABLE_RAD=12, TURNTABLE_OFFSET=2;
+  		const double ROBOT_LEN=40, ROBOT_WIDTH=40, FRAME_OFFSET=2;
 };
 
 #endif // ARMVIZWIDGET_HPP
