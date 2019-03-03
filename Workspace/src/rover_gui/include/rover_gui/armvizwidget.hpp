@@ -72,7 +72,7 @@ class Arm : public QGraphicsItem{
   		const int NUM_ANGLES = 6;
 
   		//tolerance for two angles to be considered as equal
-  		const double TOL = 0.05;
+  		const double ANGLE_TOL = 0.05;
 
 		QPen *mPen;
 	    QBrush *mBrush;

@@ -23,6 +23,7 @@ mAngles(angles),
 mPen(new QPen()),
 mBrush(new QBrush())
 {
+  mAngles.resize(NUM_ANGLES);
 }
 
 Arm::~Arm() {
@@ -46,7 +47,7 @@ std::vector<double> Arm::getAngles () const{
 bool  Arm::operator==(const Arm& rhs) const{
   if (mAngles.size() == rhs.getAngles().size()){
     for (int i=0; i<mAngles.size(); i++){
-      if(mAngles[i] != rhs.getAngles()[i]){
+      if(std::abs(mAngles[i] - rhs.getAngles()[i]) > ANGLE_TOL){
         return false;
         }
       }
@@ -71,7 +72,7 @@ void Arm::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidg
   
   if (isSideView){
     // draw in reverse order, part that needs to appear on topper must be drawn later
-    if (!isDesiredArm){
+    if (isDesiredArm){
        DrawRobotFrame(painter, robotFrame, startPos, 2);
        DrawTurnTable(painter, turnTable, startPos);
     }
@@ -89,7 +90,7 @@ void Arm::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidg
     
   } else {
     
-    if (!isDesiredArm){
+    if (isDesiredArm){
       DrawRobotFrame(painter, robotFrame, startPos, 2);
       DrawTurnTable(painter, turnTable, startPos);
     }
@@ -244,10 +245,10 @@ ui(new Ui::armvizwidget)
   std::vector<double> desired_angles = {30/180.0*M_PI, 45/180.0*M_PI, 20/180.0*M_PI, 10/180.0*M_PI, 0, 0};
   std::vector<double> actual_angles = {15/180.0*M_PI, 30/180.0*M_PI, 10/180.0*M_PI, 5/180.0*M_PI, 0, 0};
 
-  sideViewActualArm = createArm(true, true, actual_angles);
-  sideViewDesiredArm = createArm(false, true, desired_angles);
-  topViewActualArm = createArm(true, false, actual_angles);
-  topViewDesiredArm = createArm(false, false, desired_angles);
+  sideViewActualArm = createArm(false, true, actual_angles);
+  sideViewDesiredArm = createArm(true, true, desired_angles);
+  topViewActualArm = createArm(false, false, actual_angles);
+  topViewDesiredArm = createArm(true, false, desired_angles);
 
   
   sideviewScene->addItem(sideViewActualArm);
@@ -302,13 +303,26 @@ void armvizwidget::actualArmPosCallback(std_msgs::Float64MultiArrayConstPtr armP
 
 void armvizwidget::desiredArmPosCallback(std_msgs::Float64MultiArrayConstPtr armPos) {
   sideViewDesiredArm->setAngles(armPos->data);
+  if (*sideViewActualArm == *sideViewDesiredArm){
+    sideViewActualArm->setVisible(false);
+  } else {
+    sideViewActualArm->setVisible(true);
+  }
+
   topViewDesiredArm->setAngles(armPos->data);
+   if (*topViewActualArm == *topViewDesiredArm){
+    topViewActualArm->setVisible(false);
+  } else {
+    topViewActualArm->setVisible(true);
+  }
+
+
   topviewScene->update();
 }
 
 
 Arm* armvizwidget::createArm(bool isDesiredArm, bool isSideView, std::vector<double> angles){
-  if (!isDesiredArm){
+  if (isDesiredArm){
     ArmLink shoulder = {SHOULDER_LEN, SHOULDER_THICK, SHOULDER_JOINT_RAD, Qt::black, Qt::red};
     ArmLink elbow = {ELBOW_LEN, ELBOW_THICK, ELBOW_JOINT_RAD, Qt::black, Qt::red};
     ArmLink wrist = {WRIST_LEN, WRIST_THICK, WRIST_JOINT_RAD, Qt::black, Qt::red};
