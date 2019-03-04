@@ -333,36 +333,37 @@
           </plugin>
           <pose frame=''>0.337 0 0.30795 3.14159 -0 0</pose>
         </sensor>
-        <sensor name='duo3d_camera' type='depth'>
+        <sensor type="depth" name="zed">
           <always_on>1</always_on>
-          <visualize>1</visualize>
-          <pose frame=''>0.29 0 0.35 0 -0 0</pose>
-          <camera name='__default__'>
-            <horizontal_fov>2.967</horizontal_fov>
+          <visualize>true</visualize>
+          <pose>0.29 0 0.35 0 -0 0</pose>
+          <camera>
+            <horizontal_fov>1.57</horizontal_fov>
             <image>
-              <width>320</width>
-              <height>240</height>
+              <width>2560</width>
+              <height>720</height>
               <format>R8G8B8</format>
             </image>
             <depth_camera>
-              <output>depths</output>
+
             </depth_camera>
             <clip>
-              <near>0.1</near>
-              <far>2.5</far>
+              <near>0.5</near>
+              <far>20.0</far>
             </clip>
           </camera>
-          <plugin name='camera_controller' filename='libgazebo_ros_openni_kinect.so'>
+          <plugin name="camera_controller" filename="libgazebo_ros_openni_kinect.so">
             <alwaysOn>true</alwaysOn>
-            <updateRate>20.0</updateRate>
-            <cameraName>duo3d_camera</cameraName>
+            <updateRate>30.0</updateRate>
+            <cameraName>zed</cameraName>
             <frameName>kinect_link</frameName>
-            <imageTopicName>rgb/image_raw</imageTopicName>
-            <depthImageTopicName>depth/image_raw</depthImageTopicName>
-            <pointCloudTopicName>depth/points</pointCloudTopicName>
-            <cameraInfoTopicName>rgb/camera_info</cameraInfoTopicName>
+            <imageTopicName>rgb/image_raw_color</imageTopicName>
+            <depthImageTopicName>depth/depth_registered</depthImageTopicName>
+            <pointCloudTopicName>point_cloud/cloud_registered</pointCloudTopicName>
+            <cameraInfoTopicName>left/camera_info</cameraInfoTopicName>
             <depthImageCameraInfoTopicName>depth/camera_info</depthImageCameraInfoTopicName>
-            <pointCloudCutoff>0.4</pointCloudCutoff>
+            <pointCloudCutoff>0.05</pointCloudCutoff>
+            <pointCloudCutoffMax>20.0</pointCloudCutoffMax>
             <hackBaseline>0.07</hackBaseline>
             <distortionK1>0.0</distortionK1>
             <distortionK2>0.0</distortionK2>
