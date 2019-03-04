@@ -32,7 +32,6 @@ Arm::~Arm() {
 }
 
 void Arm::setAngles(std::vector<double> angles){
-  mAngles.resize(NUM_ANGLES);
   if (angles.size() >= NUM_ANGLES){
 //    for (int i=0; i<NUM_ANGLES; i++){
 //        mAngles[i] = angles[i];
@@ -304,7 +303,9 @@ void armvizwidget::actualArmPosCallback(std_msgs::Float64MultiArrayConstPtr armP
   }
 
   sideviewScene->update();
+  topviewScene->update();
   ui->armVizSideGraphicsView->fitInView(-100, -20, 200, 160, Qt::KeepAspectRatio);
+  ui->armVizTopGraphicsView->fitInView(-100, -20, 200, 160, Qt::KeepAspectRatio);
 }
 
 
@@ -323,8 +324,9 @@ void armvizwidget::desiredArmPosCallback(std_msgs::Float64MultiArrayConstPtr arm
     topViewActualArm->setVisible(true);
   }
 
-
+  sideviewScene->update();
   topviewScene->update();
+  ui->armVizSideGraphicsView->fitInView(-100, -20, 200, 160, Qt::KeepAspectRatio);
   ui->armVizTopGraphicsView->fitInView(-100, -20, 200, 160, Qt::KeepAspectRatio);
 }
 
