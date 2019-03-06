@@ -1,5 +1,0 @@
-localization_converter
-/home/nvidia/MarsRover2019/Workspace/devel/.private/localization_converter/share/localization_converter/cmake/localization_converterConfig-version.cmake /home/nvidia/MarsRover2019/Workspace/devel/share/localization_converter/cmake/localization_converterConfig-version.cmake
-/home/nvidia/MarsRover2019/Workspace/devel/.private/localization_converter/share/localization_converter/cmake/localization_converterConfig.cmake /home/nvidia/MarsRover2019/Workspace/devel/share/localization_converter/cmake/localization_converterConfig.cmake
-/home/nvidia/MarsRover2019/Workspace/devel/.private/localization_converter/lib/localization_converter/localization_converter_node /home/nvidia/MarsRover2019/Workspace/devel/lib/localization_converter/localization_converter_node
-/home/nvidia/MarsRover2019/Workspace/devel/.private/localization_converter/lib/pkgconfig/localization_converter.pc /home/nvidia/MarsRover2019/Workspace/devel/lib/pkgconfig/localization_converter.pc

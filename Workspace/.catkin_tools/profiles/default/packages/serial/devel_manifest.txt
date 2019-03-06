@@ -1,6 +1,0 @@
-dependencies/serial
-/home/nvidia/MarsRover2019/Workspace/devel/.private/serial/share/serial/cmake/serialConfig.cmake /home/nvidia/MarsRover2019/Workspace/devel/share/serial/cmake/serialConfig.cmake
-/home/nvidia/MarsRover2019/Workspace/devel/.private/serial/share/serial/cmake/serialConfig-version.cmake /home/nvidia/MarsRover2019/Workspace/devel/share/serial/cmake/serialConfig-version.cmake
-/home/nvidia/MarsRover2019/Workspace/devel/.private/serial/lib/libserial.so /home/nvidia/MarsRover2019/Workspace/devel/lib/libserial.so
-/home/nvidia/MarsRover2019/Workspace/devel/.private/serial/lib/pkgconfig/serial.pc /home/nvidia/MarsRover2019/Workspace/devel/lib/pkgconfig/serial.pc
-/home/nvidia/MarsRover2019/Workspace/devel/.private/serial/lib/serial/serial_example /home/nvidia/MarsRover2019/Workspace/devel/lib/serial/serial_example

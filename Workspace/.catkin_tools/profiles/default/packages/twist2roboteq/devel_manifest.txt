@@ -1,6 +1,0 @@
-twist2roboteq
-/home/nvidia/MarsRover2019/Workspace/devel/.private/twist2roboteq/share/twist2roboteq/cmake/twist2roboteqConfig-version.cmake /home/nvidia/MarsRover2019/Workspace/devel/share/twist2roboteq/cmake/twist2roboteqConfig-version.cmake
-/home/nvidia/MarsRover2019/Workspace/devel/.private/twist2roboteq/share/twist2roboteq/cmake/twist2roboteqConfig.cmake /home/nvidia/MarsRover2019/Workspace/devel/share/twist2roboteq/cmake/twist2roboteqConfig.cmake
-/home/nvidia/MarsRover2019/Workspace/devel/.private/twist2roboteq/lib/twist2roboteq/twist2roboteq_node /home/nvidia/MarsRover2019/Workspace/devel/lib/twist2roboteq/twist2roboteq_node
-/home/nvidia/MarsRover2019/Workspace/devel/.private/twist2roboteq/lib/twist2roboteq/twist2roboteq_odom /home/nvidia/MarsRover2019/Workspace/devel/lib/twist2roboteq/twist2roboteq_odom
-/home/nvidia/MarsRover2019/Workspace/devel/.private/twist2roboteq/lib/pkgconfig/twist2roboteq.pc /home/nvidia/MarsRover2019/Workspace/devel/lib/pkgconfig/twist2roboteq.pc

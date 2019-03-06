@@ -1,5 +1,0 @@
-xbox_controller
-/home/nvidia/MarsRover2019/Workspace/devel/.private/xbox_controller/share/xbox_controller/cmake/xbox_controllerConfig-version.cmake /home/nvidia/MarsRover2019/Workspace/devel/share/xbox_controller/cmake/xbox_controllerConfig-version.cmake
-/home/nvidia/MarsRover2019/Workspace/devel/.private/xbox_controller/share/xbox_controller/cmake/xbox_controllerConfig.cmake /home/nvidia/MarsRover2019/Workspace/devel/share/xbox_controller/cmake/xbox_controllerConfig.cmake
-/home/nvidia/MarsRover2019/Workspace/devel/.private/xbox_controller/lib/xbox_controller/joy_to_twist /home/nvidia/MarsRover2019/Workspace/devel/lib/xbox_controller/joy_to_twist
-/home/nvidia/MarsRover2019/Workspace/devel/.private/xbox_controller/lib/pkgconfig/xbox_controller.pc /home/nvidia/MarsRover2019/Workspace/devel/lib/pkgconfig/xbox_controller.pc

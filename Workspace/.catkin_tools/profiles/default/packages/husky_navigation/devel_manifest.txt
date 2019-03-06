@@ -1,4 +1,0 @@
-dependencies/husky/husky_navigation
-/home/nvidia/MarsRover2019/Workspace/devel/.private/husky_navigation/share/husky_navigation/cmake/husky_navigationConfig-version.cmake /home/nvidia/MarsRover2019/Workspace/devel/share/husky_navigation/cmake/husky_navigationConfig-version.cmake
-/home/nvidia/MarsRover2019/Workspace/devel/.private/husky_navigation/share/husky_navigation/cmake/husky_navigationConfig.cmake /home/nvidia/MarsRover2019/Workspace/devel/share/husky_navigation/cmake/husky_navigationConfig.cmake
-/home/nvidia/MarsRover2019/Workspace/devel/.private/husky_navigation/lib/pkgconfig/husky_navigation.pc /home/nvidia/MarsRover2019/Workspace/devel/lib/pkgconfig/husky_navigation.pc

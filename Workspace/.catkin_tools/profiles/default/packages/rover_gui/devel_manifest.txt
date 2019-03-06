@@ -1,5 +1,0 @@
-rover_gui
-/home/nvidia/MarsRover2019/Workspace/devel/.private/rover_gui/share/rover_gui/cmake/rover_guiConfig-version.cmake /home/nvidia/MarsRover2019/Workspace/devel/share/rover_gui/cmake/rover_guiConfig-version.cmake
-/home/nvidia/MarsRover2019/Workspace/devel/.private/rover_gui/share/rover_gui/cmake/rover_guiConfig.cmake /home/nvidia/MarsRover2019/Workspace/devel/share/rover_gui/cmake/rover_guiConfig.cmake
-/home/nvidia/MarsRover2019/Workspace/devel/.private/rover_gui/lib/rover_gui/rover_gui /home/nvidia/MarsRover2019/Workspace/devel/lib/rover_gui/rover_gui
-/home/nvidia/MarsRover2019/Workspace/devel/.private/rover_gui/lib/pkgconfig/rover_gui.pc /home/nvidia/MarsRover2019/Workspace/devel/lib/pkgconfig/rover_gui.pc

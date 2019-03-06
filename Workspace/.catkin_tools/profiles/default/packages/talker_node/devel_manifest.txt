@@ -1,4 +1,0 @@
-talker_node
-/home/nvidia/MarsRover2019/Workspace/devel/.private/talker_node/share/talker_node/cmake/talker_nodeConfig-version.cmake /home/nvidia/MarsRover2019/Workspace/devel/share/talker_node/cmake/talker_nodeConfig-version.cmake
-/home/nvidia/MarsRover2019/Workspace/devel/.private/talker_node/share/talker_node/cmake/talker_nodeConfig.cmake /home/nvidia/MarsRover2019/Workspace/devel/share/talker_node/cmake/talker_nodeConfig.cmake
-/home/nvidia/MarsRover2019/Workspace/devel/.private/talker_node/lib/pkgconfig/talker_node.pc /home/nvidia/MarsRover2019/Workspace/devel/lib/pkgconfig/talker_node.pc

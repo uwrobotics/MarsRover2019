@@ -1,4 +1,0 @@
-dependencies/husky/husky_description
-/home/nvidia/MarsRover2019/Workspace/devel/.private/husky_description/share/husky_description/cmake/husky_descriptionConfig.cmake /home/nvidia/MarsRover2019/Workspace/devel/share/husky_description/cmake/husky_descriptionConfig.cmake
-/home/nvidia/MarsRover2019/Workspace/devel/.private/husky_description/share/husky_description/cmake/husky_descriptionConfig-version.cmake /home/nvidia/MarsRover2019/Workspace/devel/share/husky_description/cmake/husky_descriptionConfig-version.cmake
-/home/nvidia/MarsRover2019/Workspace/devel/.private/husky_description/lib/pkgconfig/husky_description.pc /home/nvidia/MarsRover2019/Workspace/devel/lib/pkgconfig/husky_description.pc

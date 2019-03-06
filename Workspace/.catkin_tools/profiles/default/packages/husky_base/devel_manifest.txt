@@ -1,6 +1,0 @@
-dependencies/husky/husky_base
-/home/nvidia/MarsRover2019/Workspace/devel/.private/husky_base/share/husky_base/cmake/husky_baseConfig.cmake /home/nvidia/MarsRover2019/Workspace/devel/share/husky_base/cmake/husky_baseConfig.cmake
-/home/nvidia/MarsRover2019/Workspace/devel/.private/husky_base/share/husky_base/cmake/husky_baseConfig-version.cmake /home/nvidia/MarsRover2019/Workspace/devel/share/husky_base/cmake/husky_baseConfig-version.cmake
-/home/nvidia/MarsRover2019/Workspace/devel/.private/husky_base/lib/libhorizon_legacy.so /home/nvidia/MarsRover2019/Workspace/devel/lib/libhorizon_legacy.so
-/home/nvidia/MarsRover2019/Workspace/devel/.private/husky_base/lib/pkgconfig/husky_base.pc /home/nvidia/MarsRover2019/Workspace/devel/lib/pkgconfig/husky_base.pc
-/home/nvidia/MarsRover2019/Workspace/devel/.private/husky_base/lib/husky_base/husky_node /home/nvidia/MarsRover2019/Workspace/devel/lib/husky_base/husky_node

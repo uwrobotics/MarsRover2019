@@ -1,4 +1,0 @@
-dependencies/husky/husky_control
-/home/nvidia/MarsRover2019/Workspace/devel/.private/husky_control/share/husky_control/cmake/husky_controlConfig.cmake /home/nvidia/MarsRover2019/Workspace/devel/share/husky_control/cmake/husky_controlConfig.cmake
-/home/nvidia/MarsRover2019/Workspace/devel/.private/husky_control/share/husky_control/cmake/husky_controlConfig-version.cmake /home/nvidia/MarsRover2019/Workspace/devel/share/husky_control/cmake/husky_controlConfig-version.cmake
-/home/nvidia/MarsRover2019/Workspace/devel/.private/husky_control/lib/pkgconfig/husky_control.pc /home/nvidia/MarsRover2019/Workspace/devel/lib/pkgconfig/husky_control.pc

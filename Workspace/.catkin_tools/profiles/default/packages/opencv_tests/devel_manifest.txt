@@ -1,4 +1,0 @@
-dependencies/vision_opencv/opencv_tests
-/home/nvidia/MarsRover2019/Workspace/devel/.private/opencv_tests/share/opencv_tests/cmake/opencv_testsConfig.cmake /home/nvidia/MarsRover2019/Workspace/devel/share/opencv_tests/cmake/opencv_testsConfig.cmake
-/home/nvidia/MarsRover2019/Workspace/devel/.private/opencv_tests/share/opencv_tests/cmake/opencv_testsConfig-version.cmake /home/nvidia/MarsRover2019/Workspace/devel/share/opencv_tests/cmake/opencv_testsConfig-version.cmake
-/home/nvidia/MarsRover2019/Workspace/devel/.private/opencv_tests/lib/pkgconfig/opencv_tests.pc /home/nvidia/MarsRover2019/Workspace/devel/lib/pkgconfig/opencv_tests.pc

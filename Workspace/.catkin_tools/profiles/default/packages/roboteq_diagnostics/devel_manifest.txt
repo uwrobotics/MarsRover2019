@@ -1,4 +1,0 @@
-roboteq-indigo-devel/roboteq_diagnostics
-/home/nvidia/MarsRover2019/Workspace/devel/.private/roboteq_diagnostics/share/roboteq_diagnostics/cmake/roboteq_diagnosticsConfig-version.cmake /home/nvidia/MarsRover2019/Workspace/devel/share/roboteq_diagnostics/cmake/roboteq_diagnosticsConfig-version.cmake
-/home/nvidia/MarsRover2019/Workspace/devel/.private/roboteq_diagnostics/share/roboteq_diagnostics/cmake/roboteq_diagnosticsConfig.cmake /home/nvidia/MarsRover2019/Workspace/devel/share/roboteq_diagnostics/cmake/roboteq_diagnosticsConfig.cmake
-/home/nvidia/MarsRover2019/Workspace/devel/.private/roboteq_diagnostics/lib/pkgconfig/roboteq_diagnostics.pc /home/nvidia/MarsRover2019/Workspace/devel/lib/pkgconfig/roboteq_diagnostics.pc
