@@ -18,7 +18,7 @@ vs = cv2.VideoCapture(0)
 
 # Define the codec and create VideoWriter object
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-out = cv2.VideoWriter('output.mp4',fourcc, 10.0, (1920,1080))
+out = cv2.VideoWriter('output.mp4', fourcc, 10.0, (1920, 1080))
 
 # allow the camera or video file to warm up
 time.sleep(2.0)
@@ -30,7 +30,7 @@ while True:
 
     # crop to only use left view
     height, width = frame.shape[:2]
-    #frame = frame[:, 0:int(width / 2.0)]
+    # frame = frame[:, 0:int(width / 2.0)]
     frame = imutils.resize(frame, width=600)
 
     # if we are viewing a video and we did not grab a frame,
@@ -39,7 +39,7 @@ while True:
         break
 
     # apply bilateral filter to preserve edges
-    #blurred = cv2.bilateralFilter(frame, 9, 75, 75)
+    # blurred = cv2.bilateralFilter(frame, 9, 75, 75)
     blurred = cv2.GaussianBlur(frame, (11, 11), 0)
 
     # convert to hsv colour space
@@ -84,8 +84,10 @@ while True:
 
         # draw crosshairs on image
         height, width = frame.shape[:2]
-        cv2.line(frame, (int(width / 2.0), 0), (int(width / 2.0), height), (255, 0, 255), 3)
-        cv2.line(frame, (0, int(height / 2.0)), (width, int(height / 2.0)), (255, 0, 255), 3)
+        cv2.line(frame, (int(width / 2.0), 0), (int(width / 2.0), height),
+                 (255, 0, 255), 3)
+        cv2.line(frame, (0, int(height / 2.0)), (width, int(height / 2.0)),
+                 (255, 0, 255), 3)
 
         # determine minimum enclosing circle for countour
         ((x, y), radius) = cv2.minEnclosingCircle(max_cnt)
@@ -101,7 +103,7 @@ while True:
             # otherwise, compute the thickness of the line and
             # draw connecting lines
             thickness = int(np.sqrt(50 / float(i + 1)) * 2.5)
-            cv2.line(frame, pts[i-1], pts[i], (0, 0, 255), thickness)
+            cv2.line(frame, pts[i - 1], pts[i], (0, 0, 255), thickness)
 
     # show the frame to our screen
     cv2.imshow("Frame", frame)

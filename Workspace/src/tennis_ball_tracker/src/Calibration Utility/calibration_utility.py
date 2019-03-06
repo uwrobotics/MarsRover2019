@@ -47,61 +47,95 @@ class GUI:
 
         # labels
         self.hsvTitleLabel = tk.Label(self.leftFrame, text="HSV Ranges",
-            bg=self.gray, fg=self.white, font=("Calibri Bold", 25))
+                                      bg=self.gray, fg=self.white,
+                                      font=("Calibri Bold", 25))
         self.hsvLowerLabel = tk.Label(self.leftFrame, text="Lower",
-            bg=self.gray, fg=self.white, font=("Calibri Light", 22))
+                                      bg=self.gray, fg=self.white,
+                                      font=("Calibri Light", 22))
         self.hsvUpperLabel = tk.Label(self.leftFrame, text="Upper",
-            bg=self.gray, fg=self.white, font=("Calibri Light", 22))
+                                      bg=self.gray, fg=self.white,
+                                      font=("Calibri Light", 22))
 
         # labels for sliders
         self.sliderLabelH1 = tk.Label(self.sliderFrame1, text="H",
-            bg=self.gray, fg=self.white, font=("Calibri Light", 18))
+                                      bg=self.gray, fg=self.white,
+                                      font=("Calibri Light", 18))
         self.sliderLabelS1 = tk.Label(self.sliderFrame2, text="S",
-            bg=self.gray, fg=self.white, font=("Calibri Light", 18))
+                                      bg=self.gray, fg=self.white,
+                                      font=("Calibri Light", 18))
         self.sliderLabelV1 = tk.Label(self.sliderFrame3, text="V",
-            bg=self.gray, fg=self.white, font=("Calibri Light", 18))
+                                      bg=self.gray, fg=self.white,
+                                      font=("Calibri Light", 18))
         self.sliderLabelH2 = tk.Label(self.sliderFrame4, text="H",
-            bg=self.gray, fg=self.white, font=("Calibri Light", 18))
+                                      bg=self.gray, fg=self.white,
+                                      font=("Calibri Light", 18))
         self.sliderLabelS2 = tk.Label(self.sliderFrame5, text="S",
-            bg=self.gray, fg=self.white, font=("Calibri Light", 18))
+                                      bg=self.gray, fg=self.white,
+                                      font=("Calibri Light", 18))
         self.sliderLabelV2 = tk.Label(self.sliderFrame6, text="V",
-            bg=self.gray, fg=self.white, font=("Calibri Light", 18))
+                                      bg=self.gray, fg=self.white,
+                                      font=("Calibri Light", 18))
 
         # sliders
         self.sliderH1 = tk.Scale(self.sliderFrame1, from_=0, to=180,
-            orient='horizontal', bg=self.gray, activebackground=self.gray,
-            fg=self.white, highlightbackground=self.gray, highlightcolor=self.white,
-            length=350, font=("Calibri Light", 14), command=self.update_values)
+                                 orient='horizontal', bg=self.gray,
+                                 activebackground=self.gray,
+                                 fg=self.white, highlightbackground=self.gray,
+                                 highlightcolor=self.white,
+                                 length=350, font=("Calibri Light", 14),
+                                 command=self.update_values)
         self.sliderS1 = tk.Scale(self.sliderFrame2, from_=0, to=255,
-            orient='horizontal', bg=self.gray, activebackground=self.gray,
-            fg=self.white, highlightbackground=self.gray, highlightcolor=self.white,
-            length=350, font=("Calibri Light", 14), command=self.update_values)
+                                 orient='horizontal', bg=self.gray,
+                                 activebackground=self.gray,
+                                 fg=self.white, highlightbackground=self.gray,
+                                 highlightcolor=self.white,
+                                 length=350, font=("Calibri Light", 14),
+                                 command=self.update_values)
         self.sliderV1 = tk.Scale(self.sliderFrame3, from_=0, to=255,
-            orient='horizontal', bg=self.gray, activebackground=self.gray,
-            fg=self.white, highlightbackground=self.gray, highlightcolor=self.white,
-            length=350, font=("Calibri Light", 14), command=self.update_values)
+                                 orient='horizontal', bg=self.gray,
+                                 activebackground=self.gray,
+                                 fg=self.white, highlightbackground=self.gray,
+                                 highlightcolor=self.white,
+                                 length=350, font=("Calibri Light", 14),
+                                 command=self.update_values)
         self.sliderH2 = tk.Scale(self.sliderFrame4, from_=0, to=180,
-            orient='horizontal', bg=self.gray, activebackground=self.gray,
-            fg=self.white, highlightbackground=self.gray, highlightcolor=self.white,
-            length=350, font=("Calibri Light", 14), command=self.update_values)
+                                 orient='horizontal', bg=self.gray,
+                                 activebackground=self.gray,
+                                 fg=self.white, highlightbackground=self.gray,
+                                 highlightcolor=self.white,
+                                 length=350, font=("Calibri Light", 14),
+                                 command=self.update_values)
         self.sliderS2 = tk.Scale(self.sliderFrame5, from_=0, to=255,
-            orient='horizontal', bg=self.gray, activebackground=self.gray,
-            fg=self.white, highlightbackground=self.gray, highlightcolor=self.white,
-            length=350, font=("Calibri Light", 14), command=self.update_values)
+                                 orient='horizontal', bg=self.gray,
+                                 activebackground=self.gray,
+                                 fg=self.white, highlightbackground=self.gray,
+                                 highlightcolor=self.white,
+                                 length=350, font=("Calibri Light", 14),
+                                 command=self.update_values)
         self.sliderV2 = tk.Scale(self.sliderFrame6, from_=0, to=255,
-            orient='horizontal', bg=self.gray, activebackground=self.gray,
-            fg=self.white, highlightbackground=self.gray, highlightcolor=self.white,
-            length=350, font=("Calibri Light", 14), command=self.update_values)
+                                 orient='horizontal', bg=self.gray,
+                                 activebackground=self.gray,
+                                 fg=self.white, highlightbackground=self.gray,
+                                 highlightcolor=self.white,
+                                 length=350, font=("Calibri Light", 14),
+                                 command=self.update_values)
 
         # switch between stereo and single camera view
-        self.viewSwitch = tk.Button(self.leftFrame, text="Switch to Stereo View", command=self.switch_views,
-            bg=self.gray, fg=self.white, activebackground=self.gray, activeforeground=self.gray,
-            highlightbackground=self.gray, highlightcolor=self.white,
-            font=("Calibri Light", 16))
+        self.viewSwitch = tk.Button(self.leftFrame,
+                                    text="Switch to Stereo View",
+                                    command=self.switch_views,
+                                    bg=self.gray, fg=self.white,
+                                    activebackground=self.gray,
+                                    activeforeground=self.gray,
+                                    highlightbackground=self.gray,
+                                    highlightcolor=self.white,
+                                    font=("Calibri Light", 16))
 
         # canvas element -- used to show images
-        self.upperImageCanvas = tk.Canvas(self.rightUpperFrame, width=711, height=400, bg=self.gray)
-        self.lowerImageCanvas = tk.Canvas(self.rightLowerFrame, width=711, height=400)
+        self.upperImageCanvas = tk.Canvas(self.rightUpperFrame, width=711,
+                                          height=400, bg=self.gray)
+        self.lowerImageCanvas = tk.Canvas(self.rightLowerFrame, width=711,
+                                          height=400)
 
         # general packing
         self.leftFrame.pack(side=tk.LEFT)
@@ -179,8 +213,9 @@ class GUI:
     def update_values(self, event):
         # get slider positions and update slider position list
         self.slider_pos = [self.sliderH1.get(), self.sliderS1.get(),
-            self.sliderV1.get(), self.sliderH2.get(), self.sliderS2.get(),
-            self.sliderV2.get()]
+                           self.sliderV1.get(), self.sliderH2.get(),
+                           self.sliderS2.get(),
+                           self.sliderV2.get()]
 
     # function to cancel tasks on closing
     def on_closing(self):
@@ -199,14 +234,20 @@ class GUI:
                 hsv = cv2.cvtColor(frame.copy(), cv2.COLOR_BGR2HSV)
 
                 # apply HSV mask
-                mask = cv2.inRange(hsv, np.array([self.slider_pos[3], self.slider_pos[4], self.slider_pos[5]]),
-                    np.array([self.slider_pos[0], self.slider_pos[1], self.slider_pos[2]]))
+                mask = cv2.inRange(hsv, np.array(
+                    [self.slider_pos[3], self.slider_pos[4],
+                     self.slider_pos[5]]),
+                                   np.array(
+                                       [self.slider_pos[0], self.slider_pos[1],
+                                        self.slider_pos[2]]))
                 mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
 
                 # push image to canvas
                 mask = imutils.resize(mask, height=400)
-                self.root.photo = photo = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(mask))
-                self.upperImageCanvas.create_image(0, 0, image=photo, anchor=tk.NW)
+                self.root.photo = photo = PIL.ImageTk.PhotoImage(
+                    image=PIL.Image.fromarray(mask))
+                self.upperImageCanvas.create_image(0, 0, image=photo,
+                                                   anchor=tk.NW)
 
                 # run tracking
                 frame = imutils.resize(frame, height=400)
@@ -220,8 +261,12 @@ class GUI:
                 hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
 
                 # threshold image to find green tennis ball
-                mask = cv2.inRange(hsv, np.array([self.slider_pos[3], self.slider_pos[4], self.slider_pos[5]]),
-                                   np.array([self.slider_pos[0], self.slider_pos[1], self.slider_pos[2]]))
+                mask = cv2.inRange(hsv, np.array(
+                    [self.slider_pos[3], self.slider_pos[4],
+                     self.slider_pos[5]]),
+                                   np.array(
+                                       [self.slider_pos[0], self.slider_pos[1],
+                                        self.slider_pos[2]]))
 
                 # perform a series of dilations and erosions to remove noise
                 mask = cv2.erode(mask, None, iterations=10)
@@ -239,10 +284,12 @@ class GUI:
 
                 for c in cnts:
                     # get approximate number of vertices
-                    approx = cv2.approxPolyDP(c, 0.01 * cv2.arcLength(c, True), True)
+                    approx = cv2.approxPolyDP(c, 0.01 * cv2.arcLength(c, True),
+                                              True)
 
                     # discard non-circle contours
-                    if len(approx) > 8 and len(approx) < 18 and cv2.contourArea(c) > 20:
+                    if len(approx) > 8 and len(approx) < 18 and \
+                            cv2.contourArea(c) > 20:
                         # append to valid list
                         valid_contours.append(c)
 
@@ -260,14 +307,18 @@ class GUI:
 
                 # draw crosshairs on image
                 height, width = frame.shape[:2]
-                cv2.line(frame, (int(width / 2.0), 0), (int(width / 2.0), height), (255, 0, 255), 3)
-                cv2.line(frame, (0, int(height / 2.0)), (width, int(height / 2.0)), (255, 0, 255), 3)
+                cv2.line(frame, (int(width / 2.0), 0),
+                         (int(width / 2.0), height), (255, 0, 255), 3)
+                cv2.line(frame, (0, int(height / 2.0)),
+                         (width, int(height / 2.0)), (255, 0, 255), 3)
 
                 # draw contours and centres
                 for i, c in enumerate(valid_contours):
-                    # determine minimum enclosing circle and centre for countour
+                    # determine minimum enclosing circle
+                    # and centre for countour
                     ((x, y), radius) = cv2.minEnclosingCircle(c)
-                    cv2.circle(frame, (int(x), int(y)), int(radius), (0, 0, 255), 3)
+                    cv2.circle(frame, (int(x), int(y)), int(radius),
+                               (0, 0, 255), 3)
                     cv2.circle(frame, (int(x), int(y)), 7, (255, 0, 0), 3)
 
                 # loop over the set of tracked points
@@ -279,17 +330,21 @@ class GUI:
                     # otherwise, compute the thickness of the line and
                     # draw connecting lines
                     thickness = int(np.sqrt(50 / float(i + 1)) * 2.5)
-                    cv2.line(frame, self.pts[i - 1], self.pts[i], (0, 0, 255), thickness)
+                    cv2.line(frame, self.pts[i - 1], self.pts[i], (0, 0, 255),
+                             thickness)
 
                 # convert image to PIL format
-                self.root.preview_image = preview_image = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(frame))
-                self.lowerImageCanvas.create_image(0, 0, image=preview_image, anchor=tk.NW)
+                self.root.preview_image = preview_image = \
+                    PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(frame))
+                self.lowerImageCanvas.create_image(0, 0, image=preview_image,
+                                                   anchor=tk.NW)
 
             time.sleep(0.01)
 
     # function to switch between single and stereo preview modes
     def switch_views(self):
-        # switch between factors of 1.0 (single) and 2.0 (stereo) and update button text
+        # switch between factors of 1.0 (single) and 2.0 (stereo)
+        # and update button text
         if self.resizeFactor == 1.0:
             self.resizeFactor = 2.0
             self.viewSwitch.config(text="Switch to Single View")
