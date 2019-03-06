@@ -6,6 +6,7 @@
 #include <QWidget>
 #include "sensor_msgs/Image.h"
 #include <ros/ros.h>
+#include <cost_map/Costmap.h>
 
 #endif
 namespace Ui {
@@ -21,6 +22,7 @@ public:
   void subscribe(ros::NodeHandle &guiHandle, std::string imageTopic,
                  bool bDepthImg = false, bool bCostmap = false);
   void imageCallback(const sensor_msgs::Image::ConstPtr &msg);
+  void costmapCallback(const cost_map::CostmapConstPtr &msg);
 
 private:
   Ui::CameraViewWidget *ui;

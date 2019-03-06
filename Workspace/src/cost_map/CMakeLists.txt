@@ -12,13 +12,27 @@ find_package(catkin REQUIRED COMPONENTS
         rospy
         #OpenCV
         #image_geometry
-        #cv_bridge
+        cv_bridge
         std_msgs
+        sensor_msgs
         obstacle_detection
+        message_generation
         )
 
 find_package(OpenCV REQUIRED)
-catkin_package()
+
+add_message_files(
+        FILES
+        Costmap.msg
+)
+generate_messages(
+        DEPENDENCIES
+        std_msgs
+        sensor_msgs
+)
+catkin_package(
+        CATKIN_DEPENDS roscpp std_msgs message_runtime
+)
 
 #find_package(OpenCV REQUIRED HINTS opencv_2/mingw-build/install)
 include_directories(
@@ -32,7 +46,7 @@ add_executable(${PROJECT_NAME}_node cost_map_node.cpp
         cost_map_locatlization.cpp
         )
 
-add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} obstacle_detection_generate_messages)
+add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} obstacle_detection_generate_messages cost_map_generate_messages)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}_node

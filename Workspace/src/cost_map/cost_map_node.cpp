@@ -17,6 +17,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <std_msgs/Int32.h>
 #include <algorithm>
+#include <cost_map/Costmap.h>
 #define P_HIT 0.65
 #define P_MISS 0.2
 
@@ -46,19 +47,27 @@ void obstacleCallback(obstacle_detection::obstacleDataArrayConstPtr obstacles)
   pObstacleList = std::move(obstacles);
 }
 
-void publishCostmap(cv::Mat& grid, cv::Mat& costmap)
+void publishCostmap(cv::Mat& costmap, double resolution, cv::Point center_point)
 {
   ROS_INFO("publishing");
-  cv::Mat mats[3];
-  cv::split(grid, mats);
-  mats[2] = costmap;
-  cv::Mat merged;
-  cv::merge(mats,3,merged);
+  //cv::Mat mats[3];
+  //cv::split(grid, mats);
+  //mats[2] = costmap;
+  //cv::Mat merged;
+  //cv::merge(mats,3,merged);
+  std::cout << costmap << std::endl;
   cv_bridge::CvImage image_msg;
   image_msg.header.stamp = ros::Time::now();
-  image_msg.encoding = sensor_msgs::image_encodings::TYPE_32FC3;
-  image_msg.image = merged;
-  pub.publish(image_msg);
+  image_msg.encoding = sensor_msgs::image_encodings::TYPE_32FC1;
+  image_msg.image = costmap;
+
+  cost_map::Costmap msg;
+  image_msg.toImageMsg(msg.costmap);
+  msg.resolution = resolution;
+  msg.zero_x = center_point.x;
+  msg.zero_y = center_point.y;
+
+  pub.publish(msg);
 }
 
 void get_translation(geometry_msgs::Pose2D pose1, geometry_msgs::Pose2D pose2, float& translation_x, float& translation_y) {
@@ -181,7 +190,7 @@ int main(int argc, char** argv)
      ros:: NodeHandle nh;
 
      //@Ayush setup publisher/subscriber stuff.
-     pub = nh.advertise<sensor_msgs::Image>("/autonomy/cost_map", 1);
+     pub = nh.advertise<cost_map::Costmap>("/autonomy/cost_map", 1);
      ros::Subscriber locSub = nh.subscribe("/localization/pose_utm", 1, poseCallback);
      ros::Subscriber obstacleSub = nh.subscribe("/obstacle_detection/obstacle_list", 1, obstacleCallback);
 
@@ -217,7 +226,7 @@ int main(int argc, char** argv)
 
           }
 
-          publishCostmap(grid, cost_map);
+          publishCostmap(cost_map, RESOLUTION, cv::Point(center_point));
           pLastPose = std::move(pNewPose);
           pNewPose = nullptr;
           pObstacleList = nullptr;

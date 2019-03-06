@@ -13,8 +13,11 @@ CameraViewWidget::~CameraViewWidget() { delete ui; }
 
 void CameraViewWidget::subscribe(ros::NodeHandle &guiHandle,
                                  std::string cameraTopic, bool bDepthImg, bool bCostmap) {
-  sub = guiHandle.subscribe(cameraTopic, 1, &CameraViewWidget::imageCallback,
-                            this);
+  if (!bCostmap) {
+    sub = guiHandle.subscribe(cameraTopic, 1, &CameraViewWidget::imageCallback, this);
+  } else {
+    sub = guiHandle.subscribe(cameraTopic, 1, &CameraViewWidget::costmapCallback, this);
+  }
   mbDepthImg = bDepthImg;
   mbCostmap = bCostmap;
 }
@@ -51,39 +54,6 @@ void CameraViewWidget::imageCallback(const sensor_msgs::Image::ConstPtr &msg) {
     ui->label->setScaledContents(true);
     ui->label->setPixmap(
         QPixmap::fromImage(image).scaledToHeight(ui->label->height() - 4));
-  } else if (mbCostmap) {
-    cv_bridge::CvImagePtr cv_ptr;
-    ROS_INFO("received costmap");
-    // Convert from the ROS image message to a CvImage suitable for working with
-    // OpenCV for processing
-    try {
-      // Always copy, returning a mutable CvImage
-      // OpenCV expects color images to use BGR channel order.
-      cv_ptr = cv_bridge::toCvCopy(msg, msg->encoding);
-    } catch (cv_bridge::Exception &e) {
-      // if there is an error during conversion, display it
-      ROS_ERROR("tutorialROSOpenCV::main.cpp::cv_bridge exception: %s",
-                e.what());
-      return;
-    }
-    // ROS_INFO("%f", cv_ptr->image.at<float>(0, 0));
-    // Copy the image.data to imageBuf.
-    cv::Mat float_img = cv_ptr->image;
-    ROS_INFO("image: w %d, h %d, c %d", float_img.size().width, float_img.size().height, float_img.channels());
-    cv::Mat split[3];
-    cv::split(float_img, split);
-    cv::Mat mono8_img;
-    depthToCV8UC1(split[2], mono8_img, 255);
-    cv::Mat rgb_img;
-    cv::Mat in[] = {mono8_img, mono8_img, mono8_img};
-    cv::merge(in, 3, rgb_img);
-    cv::flip(rgb_img, rgb_img, 0);
-    QImage temp = QImage((uchar *)rgb_img.data, rgb_img.cols, rgb_img.rows,
-                         rgb_img.step, QImage::Format_RGB888);
-    image = temp;
-    ui->label->setScaledContents(true);
-    ui->label->setPixmap(
-        QPixmap::fromImage(image).scaledToHeight(ui->label->height() - 4));
   } else {
     cv_bridge::CvImagePtr cv_ptr;
     // Convert from the ROS image message to a CvImage suitable for working with
@@ -115,6 +85,42 @@ void CameraViewWidget::imageCallback(const sensor_msgs::Image::ConstPtr &msg) {
         QPixmap::fromImage(image).scaledToHeight(ui->label->height() - 4));
     // ui->label->setPixmap(QPixmap::fromImage(image));
   }
+}
+
+void CameraViewWidget::costmapCallback(const cost_map::CostmapConstPtr &msg){
+  QImage image;
+  cv_bridge::CvImagePtr cv_ptr;
+  ROS_INFO("received costmap");
+  // Convert from the ROS image message to a CvImage suitable for working with
+  // OpenCV for processing
+  try {
+    // Always copy, returning a mutable CvImage
+    // OpenCV expects color images to use BGR channel order.
+    cv_ptr = cv_bridge::toCvCopy(msg->costmap, msg->costmap.encoding);
+  } catch (cv_bridge::Exception &e) {
+    // if there is an error during conversion, display it
+    ROS_ERROR("tutorialROSOpenCV::main.cpp::cv_bridge exception: %s",
+              e.what());
+    return;
+  }
+  // ROS_INFO("%f", cv_ptr->image.at<float>(0, 0));
+  // Copy the image.data to imageBuf.
+  cv::Mat float_img = cv_ptr->image;
+  //ROS_INFO("image: w %d, h %d, c %d", float_img.size().width, float_img.size().height, float_img.channels());
+  //cv::Mat split[3];
+  //cv::split(float_img, split);
+  cv::Mat mono8_img;
+  depthToCV8UC1(float_img, mono8_img, 255);
+  cv::Mat rgb_img;
+  cv::Mat in[] = {mono8_img, mono8_img, mono8_img};
+  cv::merge(in, 3, rgb_img);
+  cv::flip(rgb_img, rgb_img, 0);
+  QImage temp = QImage((uchar *)rgb_img.data, rgb_img.cols, rgb_img.rows,
+                       rgb_img.step, QImage::Format_RGB888);
+  image = temp;
+  ui->label->setScaledContents(true);
+  ui->label->setPixmap(
+      QPixmap::fromImage(image).scaledToHeight(ui->label->height() - 4));
 }
 
 // void CameraViewWidget::resizeEvent(QResizeEvent *event) {
