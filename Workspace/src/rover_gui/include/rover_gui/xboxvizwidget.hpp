@@ -7,16 +7,15 @@ namespace Ui {
 class xboxvizwidget;
 }
 
-class xboxvizwidget : public QWidget
-{
-    Q_OBJECT
+class xboxvizwidget : public QWidget {
+  Q_OBJECT
 
 public:
-    explicit xboxvizwidget(QWidget *parent = nullptr);
-    ~xboxvizwidget();
+  explicit xboxvizwidget(QWidget *parent = nullptr);
+  ~xboxvizwidget();
 
 private:
-    Ui::xboxvizwidget *ui;
+  Ui::xboxvizwidget *ui;
 };
 
 #endif // XBOXVIZWIDGET_HPP
