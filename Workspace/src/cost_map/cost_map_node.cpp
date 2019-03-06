@@ -16,8 +16,8 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <std_msgs/Int32.h>
-
-#define P_HIT 0.8
+#include <algorithm>
+#define P_HIT 0.65
 #define P_MISS 0.2
 
 
@@ -71,10 +71,10 @@ void get_translation(geometry_msgs::Pose2D pose1, geometry_msgs::Pose2D pose2, f
   translation_y = deltax * (cos_t1) + deltay * sin_t1;
 }
 
-const int RATE = 5;
-const float RESOLUTION = 0.5f;
+const int RATE = 4;
+const float RESOLUTION = 0.25f;
 const float X_SIZE = 20.0f;
-const float Y_SIZE = 20.0f;
+const float Y_SIZE = 15.0f;
 const float Y_MIN = -2.0f;
 const int ROWS = (int)(Y_SIZE/RESOLUTION + 1);
 const int COLUMNS = (int)(X_SIZE/RESOLUTION + 1);
@@ -89,23 +89,26 @@ void fill_new_costmap(cv::Mat& newCostmap, cv::Mat& observedMask, cv::Mat& grid,
 {
   //cv::Point2f center = ()
   // fill in open space
+  cv::ellipse(newCostmap, cv::Point(center_point), cv::Size(8.0/RESOLUTION, 8.0/RESOLUTION), 90, -45, 45, cv::Scalar(0.4), -1);
+  cv::ellipse(observedMask, cv::Point(center_point), cv::Size(8.0/RESOLUTION, 8.0/RESOLUTION), 90, -45, 45, cv::Scalar(1), -1);
+
   for (auto& obstacle : obstacles->obstacles) {
     ROS_INFO("obs center %f, %f", obstacle.x, obstacle.z);
     cv::Point2f obstacle_center(obstacle.x, obstacle.z);
     cv::Point2f cam2obs = obstacle_center;
     cv::Point2f normal(cam2obs.y, -cam2obs.x);
     normal /= cv::norm(normal);
-    ROS_INFO("normal: %f, %f", normal.x, normal.y);
+    //ROS_INFO("normal: %f, %f", normal.x, normal.y);
     cv::Point2f pt1 = obstacle_center + normal * obstacle.diameter/2;
     cv::Point2f pt2 = obstacle_center - normal * obstacle.diameter/2;
-    ROS_INFO("pt 1: %f, %f", pt1.x, pt1.y);
-    ROS_INFO("pt 2: %f, %f", pt2.x, pt2.y);
+    //ROS_INFO("pt 1: %f, %f", pt1.x, pt1.y);
+    //ROS_INFO("pt 2: %f, %f", pt2.x, pt2.y);
     pt1 = world2pix(pt1);
     pt2 = world2pix(pt2);
-    ROS_INFO("pt 1: %f, %f", pt1.x, pt1.y);
-    ROS_INFO("pt 2: %f, %f", pt2.x, pt2.y);
+    //ROS_INFO("pt 1: %f, %f", pt1.x, pt1.y);
+    //ROS_INFO("pt 2: %f, %f", pt2.x, pt2.y);
     cv::Point pts[3] = {cv::Point(center_point), cv::Point(pt1), cv::Point(pt2)};
-    ROS_INFO("pts: %d, %d --> %d, %d, --> %d, %d", pts[0].x, pts[0].y, pts[1].x, pts[1].y, pts[2].x, pts[2].y);
+    //ROS_INFO("pts: %d, %d --> %d, %d, --> %d, %d", pts[0].x, pts[0].y, pts[1].x, pts[1].y, pts[2].x, pts[2].y);
     cv::fillConvexPoly(newCostmap, pts, 3, cv::Scalar(P_MISS));
 
     cv::fillConvexPoly(observedMask, pts, 3, cv::Scalar(1));
@@ -116,10 +119,13 @@ void fill_new_costmap(cv::Mat& newCostmap, cv::Mat& observedMask, cv::Mat& grid,
     cv::Point2f obstacle_center(obstacle.x, obstacle.z);
     cv::Point2f cam2obs = obstacle_center;
     float angle = atan2(cam2obs.y, cam2obs.x);
-    cv::Size axes(1, obstacle.diameter/2/RESOLUTION);
+    //cv::Size axes(1, obstacle.diameter/2/RESOLUTION);
     cv::Point center(world2pix(obstacle_center));
-    cv::ellipse(newCostmap, center, axes, angle * 180/M_PI, 0, 360, cv::Scalar(P_HIT), -1);
-    cv::ellipse(observedMask, center, axes, angle * 180/M_PI, 0, 360, cv::Scalar(1), -1);
+    //cv::ellipse(newCostmap, center, axes, angle * 180/M_PI, 0, 360, cv::Scalar(P_HIT), -1);
+    //cv::ellipse(observedMask, center, axes, angle * 180/M_PI, 0, 360, cv::Scalar(1), -1);
+    cv::Size axes(std::max(obstacle.diam_major/RESOLUTION, 1.0), std::max(obstacle.diam_minor/RESOLUTION, 1.0));
+    cv::ellipse(newCostmap, center, axes, obstacle.cov_angle * 180/M_PI, 0, 360, cv::Scalar(P_HIT), -1);
+    cv::ellipse(observedMask, center, axes, obstacle.cov_angle * 180/M_PI, 0, 360, cv::Scalar(1), -1);
     //cv::imshow("mask", observedMask);
     //cv::waitKey(0);
   }
@@ -130,13 +136,13 @@ void mixCostMaps(cv::Mat& main_costmap, cv::Mat& new_costmap, cv::Mat& newmask)
 {
   cv::Mat odds_old = main_costmap/(1.0-main_costmap);
   cv::Mat odds_new = new_costmap/(1.0-new_costmap);
-  std::cout << "odds_old = "<< odds_old << std::endl;
-  std::cout << "odds_new = "<< odds_new << std::endl;
+  //std::cout << "odds_old = "<< odds_old << std::endl;
+  //std::cout << "odds_new = "<< odds_new << std::endl;
   cv::Mat result = odds_old.mul(odds_new);
-  std::cout << "result = "<< result << std::endl;
+  //std::cout << "result = "<< result << std::endl;
 
   result = result/(result + 1.0);
-  std::cout << "result2 = "<< result << std::endl;
+  //std::cout << "result2 = "<< result << std::endl;
   //cv::imshow("mask", result);
   //cv::waitKey(1);
   result.copyTo(main_costmap, newmask);

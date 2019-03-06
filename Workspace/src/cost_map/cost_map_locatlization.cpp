@@ -8,7 +8,7 @@
 
 using namespace std;
 //using namespace cv;
-static const double RESOLUTION = 0.5;
+static const double RESOLUTION = 0.25;
 
 void scale_map(cv::Mat & cost_map, double scale_factor)
 {
@@ -44,7 +44,7 @@ void rotate_and_translate_map(cv::Mat & cost_map, double shift_left_by, double s
 
 void localization_update(cv::Mat & cost_map, double delta_x, double delta_y, double delta_heading, cv::Point2f centre_point)
 {
-    scale_map(cost_map, 0.9);
+    scale_map(cost_map, 0.75);
     //translate_map(cost_map, delta_x/RESOLUTION, -delta_y/RESOLUTION);
     //rotate_map(cost_map, delta_heading, centre_point);
     rotate_and_translate_map(cost_map, delta_x/RESOLUTION, -delta_y/RESOLUTION, delta_heading, centre_point);
