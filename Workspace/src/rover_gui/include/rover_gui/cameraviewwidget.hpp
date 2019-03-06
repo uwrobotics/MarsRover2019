@@ -3,10 +3,10 @@
 
 #ifndef Q_MOC_RUN
 
-#include <QWidget>
 #include "sensor_msgs/Image.h"
-#include <ros/ros.h>
+#include <QWidget>
 #include <cost_map/Costmap.h>
+#include <ros/ros.h>
 
 #endif
 namespace Ui {
