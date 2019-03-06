@@ -1,0 +1,5 @@
+dependencies/husky/husky_bringup
+/home/nvidia/MarsRover2019/Workspace/devel/.private/husky_bringup/share/husky_bringup/cmake/husky_bringupConfig.cmake /home/nvidia/MarsRover2019/Workspace/devel/share/husky_bringup/cmake/husky_bringupConfig.cmake
+/home/nvidia/MarsRover2019/Workspace/devel/.private/husky_bringup/share/husky_bringup/cmake/husky_bringupConfig-version.cmake /home/nvidia/MarsRover2019/Workspace/devel/share/husky_bringup/cmake/husky_bringupConfig-version.cmake
+/home/nvidia/MarsRover2019/Workspace/devel/.private/husky_bringup/etc/catkin/profile.d/50.husky_find_mag_config.sh /home/nvidia/MarsRover2019/Workspace/devel/etc/catkin/profile.d/50.husky_find_mag_config.sh
+/home/nvidia/MarsRover2019/Workspace/devel/.private/husky_bringup/lib/pkgconfig/husky_bringup.pc /home/nvidia/MarsRover2019/Workspace/devel/lib/pkgconfig/husky_bringup.pc

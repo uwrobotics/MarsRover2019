@@ -1,0 +1,4 @@
+dependencies/pointgrey_camera_driver/pointgrey_camera_description
+/home/nvidia/MarsRover2019/Workspace/devel/.private/pointgrey_camera_description/share/pointgrey_camera_description/cmake/pointgrey_camera_descriptionConfig-version.cmake /home/nvidia/MarsRover2019/Workspace/devel/share/pointgrey_camera_description/cmake/pointgrey_camera_descriptionConfig-version.cmake
+/home/nvidia/MarsRover2019/Workspace/devel/.private/pointgrey_camera_description/share/pointgrey_camera_description/cmake/pointgrey_camera_descriptionConfig.cmake /home/nvidia/MarsRover2019/Workspace/devel/share/pointgrey_camera_description/cmake/pointgrey_camera_descriptionConfig.cmake
+/home/nvidia/MarsRover2019/Workspace/devel/.private/pointgrey_camera_description/lib/pkgconfig/pointgrey_camera_description.pc /home/nvidia/MarsRover2019/Workspace/devel/lib/pkgconfig/pointgrey_camera_description.pc

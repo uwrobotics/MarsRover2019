@@ -3,8 +3,9 @@
 
 #ifndef Q_MOC_RUN
 
-#include <QWidget>
 #include "sensor_msgs/Image.h"
+#include <QWidget>
+#include <cost_map/Costmap.h>
 #include <ros/ros.h>
 
 #endif
@@ -19,13 +20,15 @@ public:
   explicit CameraViewWidget(QWidget *parent = nullptr);
   ~CameraViewWidget();
   void subscribe(ros::NodeHandle &guiHandle, std::string imageTopic,
-                 bool bDepthImg = false);
+                 bool bDepthImg = false, bool bCostmap = false);
   void imageCallback(const sensor_msgs::Image::ConstPtr &msg);
+  void costmapCallback(const cost_map::CostmapConstPtr &msg);
 
 private:
   Ui::CameraViewWidget *ui;
   ros::Subscriber sub;
   bool mbDepthImg;
+  bool mbCostmap;
 
   // protected:
   // void resizeEvent(QResizeEvent *);
