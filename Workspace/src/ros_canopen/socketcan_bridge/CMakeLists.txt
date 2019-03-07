@@ -96,8 +96,8 @@ install(
     include/${PROJECT_NAME}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
 )
-
-if(CATKIN_ENABLE_TESTING)
+if(false)
+#if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
   find_package(roslint REQUIRED)
 

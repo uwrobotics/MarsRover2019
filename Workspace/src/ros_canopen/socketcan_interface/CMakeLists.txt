@@ -91,7 +91,8 @@ install(
     ${PROJECT_NAME}_plugin.xml
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
-if(CATKIN_ENABLE_TESTING)
+if(false)
+#if(CATKIN_ENABLE_TESTING)
 
   catkin_add_gtest(${PROJECT_NAME}-test_dummy_interface
     test/test_dummy_interface.cpp
