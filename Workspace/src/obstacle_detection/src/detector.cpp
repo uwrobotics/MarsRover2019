@@ -39,7 +39,7 @@ public:
 
   static void leftImageCallback(const sensor_msgs::Image::ConstPtr &msg) {
     ROS_INFO("color image size: %d\n", msg->step * msg->height);
-    ROS_INFO("%d", sizeof(uint8_t) * leftImageWidth * leftImageHeight * 3);
+    ROS_INFO("%lu", sizeof(uint8_t) * leftImageWidth * leftImageHeight * 3);
     std::memcpy(leftImage, (&msg->data[0]),
                 sizeof(uint8_t) * leftImageWidth * leftImageHeight * 3);
     ;
@@ -229,7 +229,7 @@ int main(int argc, char **argv) {
       ROS_INFO("num: %d", i);
       ROS_INFO("X: %9.6f", xdisplacement);
       ROS_INFO("Z: %9.6f", depth);
-      ROS_INFO("D: %9.6f", diameters[i]);
+      ROS_INFO("D: %9.6u", diameters[i]);
     }
 
     obstaclePub.publish(dataArray);
