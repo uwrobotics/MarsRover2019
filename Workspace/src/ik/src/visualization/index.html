@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>IK Visualization</title>
+
+	<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+	
+	<div id="dForm">
+		<input type="file" id="fileInput" onchange="handleFiles(this.files)" />
+		<div id="dropbox">Click to choose file (or just drag)</div>
+		<div id="error"></div>
+	</div>
+
+	<div id="dCanvas">
+		<canvas id="canvas" width="1000px" height="750px"></canvas>
+		<h3 id="nFrame">0</h3>
+	</div>
+
+	<script src="vis.js"></script>
+	<script src="setup.js"></script>
+</body>
+</html>
