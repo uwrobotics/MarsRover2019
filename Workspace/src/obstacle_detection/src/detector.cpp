@@ -2,15 +2,16 @@
 #include "std_msgs/String.h"
 #include "sensor_msgs/Image.h"
 #include "sensor_msgs/CameraInfo.h"
-//#include <opencv4/opencv2/core.hpp>
-//#include <opencv4/opencv2/saliency.hpp>
-//#include <opencv4/opencv2/imgproc/imgproc.hpp>
-//#include <opencv4/opencv2/highgui/highgui.hpp>
-
+#include <opencv4/opencv2/core.hpp>
+#include <opencv4/opencv2/saliency.hpp>
+#include <opencv4/opencv2/imgproc/imgproc.hpp>
+#include <opencv4/opencv2/highgui/highgui.hpp>
+/*
 #include <opencv2/core.hpp>
 #include <opencv2/saliency.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
+*/
 #include "../include/detector.h"
 #include "obstacle_detection/obstacleDataArray.h"
 #include "obstacle_detection/obstacleData.h"
@@ -153,9 +154,9 @@ int main(int argc, char **argv)
 		//Image to Saliency: https://github.com/fpuja/opencv_contrib/blob/saliencyModuleDevelop/modules/saliency/samples/computeSaliency.cpp	
 		cv::Mat depthMapNormalized;
 		cv::normalize(depthMap, depthMapNormalized, 0 ,1, cv::NORM_MINMAX, CV_32FC1);
-		cv::namedWindow("Left Image", cv::WINDOW_AUTOSIZE);
-		cv::imshow("Left Image", depthMapNormalized);
-		cv::waitKey(10000);
+		//cv::namedWindow("Left Image", cv::WINDOW_AUTOSIZE);
+		//cv::imshow("Left Image", depthMapNormalized);
+		//cv::waitKey(10000);
 		//cv::Ptr<cv::saliency::StaticSaliencySpectralResidual> saliencyAlgorithm = cv::saliency::create("SPECTRAL_RESIDUAL");
 		cv::Ptr<cv::saliency::StaticSaliencySpectralResidual> saliencyAlgorithm = cv::saliency::StaticSaliencySpectralResidual::create(/*"SPECTRAL_RESIDUAL"*/);
 		if( saliencyAlgorithm == NULL){
