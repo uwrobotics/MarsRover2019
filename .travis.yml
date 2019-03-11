@@ -7,6 +7,14 @@ cache:
   directories:
     - $HOME/.ccache
 
+notifications:
+  email:
+    recipients:
+      - melvin.wang@uwaterloo.ca
+      - tommeredith14@gmail.com
+    on_success: change
+    on_failure: always
+
 # configure the build environment(s)
 # https://github.com/ros-industrial/industrial_ci/blob/master/doc/index.rst#variables-you-can-configure
 env:
