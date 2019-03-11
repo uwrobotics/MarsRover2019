@@ -1,9 +1,9 @@
 #ifndef CONSOLE_MESSAGE
 #define CONSOLE_MESSAGE
 
-#include <string>
+#include <ros/ros.h>
+#include <std_msgs/String.h>
 #include <console_message/console_msg.h>
-#include <ros/node_handle.h>
 
 class ConsoleMessage{
 
