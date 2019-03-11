@@ -1,1 +1,1 @@
-- git: { local-name: '../sim_dependencies/husky', uri: 'https://github.com/husky/husky.git', version: 'kinetic-devel' }
+- git: { local-name: 'sim_dependencies/husky', uri: 'https://github.com/husky/husky.git', version: 'kinetic-devel' }
