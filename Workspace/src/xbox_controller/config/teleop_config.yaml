@@ -1,0 +1,78 @@
+#  Index  Button name on the actual controller
+#
+#    0    A
+#    1    B
+#    2    X
+#    3    Y
+#    4    LB
+#    5    RB
+#    6    back
+#    7    start
+#    8    power
+#    9    Button stick left
+#    10   Button stick right
+#
+#  Table of index number of /joy.axes:
+#  Index    Axis name on the actual controller
+#
+#    0    Left/Right Axis stick left
+#    1    Up/Down Axis stick left
+#    2    LT
+#    3    Left/Right Axis stick right
+#    4    Up/Down Axis stick right
+#    5    RT
+#    6    cross key left/right
+#    7    cross key up/down
+
+
+dr_axis_linear: 1  # Left thumb stick vertical
+dr_scale_linear: 0.7
+dr_scale_linear_turbo: 1.5
+
+dr_axis_angular: 0  # Left thumb stick horizontal
+dr_scale_angular: 3.0
+
+dr_enable_turbo_button: 5 # Right bumper button
+
+#### arm control ####
+ik_enable_button: 3
+fk_enable_button: 4
+
+## general arm controls
+#arm_axis_turntable: 6 # Left/right cross
+#arm_scale_turntable: 5 # deg/s
+#
+#arm_axis_wristroll: 3 # Left/right right joy
+#arm_scale_wristroll: 5 # deg/s
+#
+#arm_axis_claw: 7 # Up/down cross
+#arm_scale_claw: 5 # cm/s
+
+arm_gen_axes: {turntable: 6, wristroll: 3, claw: 7} # L/R cross, L/R R joy, U/D cross
+arm_gen_scales: {turntable: 5, wristroll: 5, claw: 5} # deg/s, deg/s, cm/s
+
+## ik controls
+#ik_axis_fwd: 0 # Left/right left joy
+#ik_scale_fwd: 5 # cm/s
+#
+#ik_axis_up: 1 # Up/down left joy
+#ik_scale_up: 5 # cm/s
+#
+#ik_axis_theta: 4 # up/down right joy
+#ik_scale_theta: 5 # deg/s
+
+ik_axes: {fwd: 0, up: 1, theta: 4} # R/L L joy, U/D L joy, U/D R joy
+ik_scales: {fwd: -5, up: 5, theta: 5} # cm/s, cm/s, deg/s
+
+## fk controls
+#fk_axis_shoulder: 0 # Left/right left joy
+#fk_scale_shoulder: 5 # cm/s
+#
+#fk_axis_elbow: 1 # Up/down left joy
+#fk_scale_elbow: 5 # cm/s
+#
+#fk_axis_wrist: 4 # up/down right joy
+#fk_scale_wrist: 5 # deg/s
+
+fk_axes: {shoulder: 0, elbow: 1, wrist: 4} # U/D L joy, R/L L joy, U/D R joy
+fk_scales: {shoulder: 5, elbow: 5, wrist: 5} # cm/s, cm/s, deg/s

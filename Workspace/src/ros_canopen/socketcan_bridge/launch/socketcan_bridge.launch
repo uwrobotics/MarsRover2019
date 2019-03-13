@@ -1,0 +1,11 @@
+<launch>
+    
+    <!-- CAN Transceiver -->
+    <node pkg="socketcan_bridge" type="socketcan_bridge_node" name="socketcan_bridge_node" respawn="false" output="screen">
+    
+        <!-- rosparam tag inside node tag to make the params private as required -->
+        <rosparam file="$(find socketcan_bridge)/config/can_config.yaml"/>
+    
+    </node>
+
+</launch>

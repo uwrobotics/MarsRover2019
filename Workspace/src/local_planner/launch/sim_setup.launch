@@ -1,0 +1,7 @@
+<launch>
+    <!-- param name = "debug" value = "true" type = "bool" / -->
+
+    <include file="$(find simulation)/launch/simulation_full.launch" />
+    <!--include file="$(find occupancy_grid)/launch/occupancy_grid_sim.launch" /-->
+
+</launch>
