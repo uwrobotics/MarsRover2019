@@ -207,7 +207,7 @@ catkin_package()
 add_executable(joy_to_twist src/drive_lis_sub.cpp)
 #add_executable(emergency_stop src/e_stop.cpp)
 #target_link_libraries(state_select ${catkin_LIBRARIES})
-add_dependencies(joy_to_twist ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} arm_interface_generate_messages)
+add_dependencies(joy_to_twist ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(joy_to_twist ${catkin_LIBRARIES})
 #target_link_libraries(emergency_stop ${catkin_LIBRARIES})
 
