@@ -3,7 +3,7 @@
 #include <ros/ros.h>
 #include <sensor_msgs/NavSatFix.h>
 
-#include <console_message.h>
+#include <console_message/console_message.h>
 #include <console_message/console_msg.h>
 #include <robot_localization/SetDatum.h>
 #include <tf/tf.h>

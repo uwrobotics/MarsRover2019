@@ -303,13 +303,23 @@ alternate-background-color: rgb(136, 138, 133);</string>
          <property name="currentIndex">
           <number>0</number>
          </property>
+         <widget class="QWidget" name="tabCostmap">
+          <attribute name="title">
+           <string>CostMap</string>
+          </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout_26">
+           <item>
+            <widget class="CameraViewWidget" name="costmapWidget" native="true"/>
+           </item>
+          </layout>
+         </widget>
          <widget class="QWidget" name="tabWrist">
           <attribute name="title">
            <string>Wrist Cam</string>
           </attribute>
           <layout class="QVBoxLayout" name="verticalLayout_22">
            <item>
-            <widget class="CameraViewWidget" name="widget_4" native="true"/>
+            <widget class="CameraViewWidget" name="wristCamWidget" native="true"/>
            </item>
           </layout>
          </widget>
@@ -490,7 +500,7 @@ alternate-background-color: rgb(136, 138, 133);</string>
           <string notr="true">color: rgb(136, 138, 133);</string>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>2</number>
          </property>
          <widget class="QWidget" name="tabAutonomy">
           <attribute name="title">

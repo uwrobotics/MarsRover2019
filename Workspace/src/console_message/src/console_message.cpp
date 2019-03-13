@@ -1,7 +1,4 @@
-#include "console_message.h"
-#include <ros/ros.h>
-#include <std_msgs/String.h>
-#include <cstring>
+#include <console_message/console_message.h>
 
 
 //Questions and future plans:

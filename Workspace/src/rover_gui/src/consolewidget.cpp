@@ -1,5 +1,5 @@
 #include "consolewidget.hpp"
-#include <console_message.h>
+#include <console_message/console_message.h>
 ConsoleWidget::ConsoleWidget(QWidget *parent) : QPlainTextEdit(parent) {}
 
 ConsoleWidget::~ConsoleWidget() {}
