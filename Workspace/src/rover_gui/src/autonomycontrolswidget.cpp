@@ -14,8 +14,12 @@ AutonomyControlsWidget::AutonomyControlsWidget(QWidget *parent)
 AutonomyControlsWidget::~AutonomyControlsWidget() { delete ui; }
 
 void AutonomyControlsWidget::Init(ros::NodeHandle &nh) {
-  mPub = nh.advertise<geometry_msgs::Pose2D>("/goal/utm", 1);
-  mPoseSub = nh.subscribe(UTM_POSE_TOPIC, 1,
+  std::string utm_pos_topic, utm_goal_topic;
+  ROS_ASSERT(ros::param::get("UTM_POSE_TOPIC", utm_pos_topic));
+  ROS_ASSERT(ros::param::get("UTM_GOAL_TOPIC", utm_goal_topic));
+  
+  mPub = nh.advertise<geometry_msgs::Pose2D>(utm_goal_topic, 1);
+  mPoseSub = nh.subscribe(utm_pos_topic, 1,
                           &AutonomyControlsWidget::PoseCallback, this);
 }
 

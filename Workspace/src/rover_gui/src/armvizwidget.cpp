@@ -287,9 +287,13 @@ armvizwidget::~armvizwidget() { delete ui; }
 
 bool armvizwidget::Init(ros::NodeHandle &nh) {
   avNh = &nh;
-  actualPoseSub = nh.subscribe(ARM_POSE_TOPIC_ACTUAL, 1,
+  std::string arm_pos_topic_actual, arm_pos_topic_desired;
+  ROS_ASSERT(ros::param::get("ARM_POSE_TOPIC_ACTUAL", arm_pos_topic_actual));
+  ROS_ASSERT(ros::param::get("ARM_POSE_TOPIC_DESIRED", arm_pos_topic_desired));
+
+  actualPoseSub = nh.subscribe(arm_pos_topic_actual, 1,
                                &armvizwidget::actualArmPosCallback, this);
-  desiredPoseSub = nh.subscribe(ARM_POSE_TOPIC_DESIRED, 1,
+  desiredPoseSub = nh.subscribe(arm_pos_topic_desired, 1,
                                 &armvizwidget::desiredArmPosCallback, this);
 }
 

@@ -1,0 +1,8 @@
+<launch>
+
+
+	<arg name="guiConfig" default="$(find rover_gui)/cfg/rover_gui_cfg.yaml"/>
+	<rosparam command="load" file="$(arg guiConfig)"/>
+
+	<node pkg="rover_gui" type="rover_gui" name="rover_gui" output="screen"/>
+</launch>

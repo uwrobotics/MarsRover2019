@@ -91,8 +91,12 @@ MapWidget::~MapWidget() { delete ui; }
 
 bool MapWidget::Init(ros::NodeHandle &nh) {
   mpNh = &nh;
-  mPoseSub = nh.subscribe(UTM_POSE_TOPIC, 1, &MapWidget::PoseCallback, this);
-  mGoalSub = nh.subscribe("/goal/utm", 1, &MapWidget::GoalCallback, this);
+  std::string utm_pos_topic, utm_goal_topic;
+  ROS_ASSERT(ros::param::get("UTM_POSE_TOPIC", utm_pos_topic));
+  ROS_ASSERT(ros::param::get("UTM_GOAL_TOPIC", utm_goal_topic));
+
+  mPoseSub = nh.subscribe(utm_pos_topic, 1, &MapWidget::PoseCallback, this);
+  mGoalSub = nh.subscribe(utm_goal_topic, 1, &MapWidget::GoalCallback, this);
 }
 
 void MapWidget::PoseCallback(geometry_msgs::Pose2DConstPtr receivedMsg) {
