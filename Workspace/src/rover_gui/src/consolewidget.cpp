@@ -5,7 +5,10 @@ ConsoleWidget::ConsoleWidget(QWidget *parent) : QPlainTextEdit(parent) {}
 ConsoleWidget::~ConsoleWidget() {}
 
 void ConsoleWidget::Init(ros::NodeHandle &nh) {
-  mSub = nh.subscribe("/console_msgs", 100,
+  std::string console_msgs_topic;
+  ROS_ASSERT(ros::param::get("CONSOLE_MSGS_TOPIC", console_msgs_topic));
+
+  mSub = nh.subscribe(console_msgs_topic, 100,
                       &ConsoleWidget::ConsoleMessageCallback, this);
 }
 
