@@ -50,7 +50,7 @@ class MapReader{
 
 		static void depthMapCallback(const sensor_msgs::Image::ConstPtr& msg)
 		{
-			//std::memcpy(depthMap, (&msg->data[0]), sizeof(float) * mapWidth * mapHeight);;
+			std::memcpy(depthMap, (&msg->data[0]), sizeof(float) * depthMapWidth * depthMapHeight);
 			depthMapWidth = msg->width;
 			depthMapHeight = msg->height;
 		}
@@ -195,7 +195,7 @@ int main(int argc, char **argv)
 		}
 
 		//get the diameters
-		std::vector<unsigned int> diameters(contours.size());
+		std::vector<float> diameters(contours.size());
 		for( int i = 0; i<contours.size(); i++){
 			int area = cv::contourArea(contours[i], false);
 			diameters[i] = sqrt(4 * area/3.14159265358979323846); //equivalent diameter of circle of same area as contour
