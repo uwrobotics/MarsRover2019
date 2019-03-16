@@ -187,19 +187,29 @@ int main(int argc, char **argv)
 
 		// find contours
 		cv::findContours( canny_output, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE,cv::Point(0, 0) );
-
+			
+		//clean contours for 0-area contours
+		for(auto it = contours.begin(); it != contours.end();){
+			if(cv::contourArea(*it) == 0){
+				it = contours.erase(it);
+			}
+			else{
+				it++;
+			}
+		}
 		// get the moments
 		std::vector<cv::Moments> mu(contours.size());
 		for( int i = 0; i<contours.size(); i++ ){ 
 			mu[i] = cv::moments( contours[i], false ); 
 		}
-
+		
 		//get the diameters
 		std::vector<float> diameters(contours.size());
 		for( int i = 0; i<contours.size(); i++){
 			int area = cv::contourArea(contours[i], false);
 			diameters[i] = sqrt(4 * area/3.14159265358979323846); //equivalent diameter of circle of same area as contour
 		}
+		
 
 		// get the centroid of figures.
 		std::vector<cv::Point2f> mc(contours.size());
@@ -210,8 +220,8 @@ int main(int argc, char **argv)
 		//vector of msgs pattern: https://answers.ros.org/question/60614/how-to-publish-a-vector-of-unknown-length-of-structs-in-ros/	
 		obstacle_detection::obstacleDataArray dataArray;
  		for(int i = 0; i < mc.size(); i++){
-			double depth = depthMap.at<double>(mc[i].x,mc[i].y);//get the depth of each centroid	
-			double xdisplacement = (mc[i].x - d.getDepthMapWidth()/2)*depth/focalLength; 
+			double depth = depthMap.at<double>(mc[i].y,mc[i].x);//get the depth of each centroid	
+			double xdisplacement = (mc[i].x - d.getLeftImageWidth()/2)*depth/focalLength; 
 			obstacle_detection::obstacleData obstacle;
 			obstacle.x = xdisplacement;
 			obstacle.z = depth;
@@ -219,8 +229,8 @@ int main(int argc, char **argv)
  			dataArray.obstacles.push_back(obstacle);	
 			ROS_INFO("num: %d", i);			
 			ROS_INFO("X: %9.6f", xdisplacement);
-			ROS_INFO("Z: %9.6f", depth);
-			ROS_INFO("D: %9.6f", diameters[i]);
+			ROS_INFO("Depth: %9.6f", depth);
+			ROS_INFO("Diameter: %9.6f", diameters[i]);
 		}		
 
 		obstaclePub.publish(dataArray);
