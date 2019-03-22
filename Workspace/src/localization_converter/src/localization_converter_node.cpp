@@ -3,6 +3,8 @@
 #include <ros/ros.h>
 #include <sensor_msgs/NavSatFix.h>
 
+#include <console_message/console_message.h>
+#include <console_message/console_msg.h>
 #include <robot_localization/SetDatum.h>
 #include <tf/tf.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
@@ -56,6 +58,8 @@ int main(int argc, char **argv) {
   ros::Publisher mapPub =
       nh.advertise<geometry_msgs::Pose2D>("/localization/pose_map", 1);
 
+  ConsoleMessage::Initialize(nh);
+
   ros::Rate loopRate(10);
 
   // Wait until we get coord so we can manually set datum
@@ -80,8 +84,11 @@ int main(int argc, char **argv) {
   request.request.geo_pose.orientation.w = 1.0;
 
   ROS_INFO("Setting Datum");
+  ConsoleMessage::SendMessage("Localization setting datum");
   if (!datumClient.call(request)) {
     ROS_ERROR("SetDatum failed");
+    ConsoleMessage::SendMessage("Localization datum set failed",
+                                ConsoleMessage::ERROR);
     return -1;
   }
 

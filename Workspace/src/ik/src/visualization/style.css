@@ -1,0 +1,50 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: darkslategray;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+}
+
+#fileInput {
+  display: none;
+}
+
+#dropbox {
+  user-select: none;
+  font-family: sans-serif;
+  background-color: darkcyan;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 300px;
+  height: 300px;
+}
+
+#dropbox:hover {
+  background-color: teal;
+  cursor: pointer;
+}
+
+#dCanvas {
+  display: none;
+}
+
+#canvas {
+  background-color: tomato;
+}
+
+#error {
+  background-color:tomato;
+  padding: 20px;
+  margin-top: 20px;
+  visibility: hidden;
+}
