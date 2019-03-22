@@ -4,7 +4,7 @@
 #include <opencv2/core/core.hpp>
 
 // Localization code
-#include "include/cost_map/cost_map_localization.h"
+#include "include/cost_map/localization.h"
 #include <cv_bridge/cv_bridge.h>
 #include <geometry_msgs/Pose2D.h>
 #include <geometry_msgs/Twist.h>

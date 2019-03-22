@@ -2,6 +2,9 @@
 // Author: Jordan Juravsky
 // Date created: Nov. 3, 2018
 
+#ifndef LOCALIZATION_H
+#define LOCALIZATION_H
+
 #include <iostream>
 #include <opencv2/core/core.hpp>
 
@@ -11,3 +14,5 @@ void localization_update(cv::Mat &cost_map, double delta_x, double delta_y,
 void scale_map(cv::Mat &cost_map, double scale_factor);
 void translate_map(cv::Mat &cost_map, double delta_x, double delta_y);
 void rotate_map(cv::Mat &cost_map, double angle);
+
+#endif
