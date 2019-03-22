@@ -17,7 +17,6 @@
 */
 
 
-<<<<<<< HEAD
 //Inspired from: https://stackoverflow.com/a/16083336/8245487
 //And : https://github.com/stereolabs/zed-ros-wrapper/blob/master/tutorials/zed_depth_sub_tutorial/src/zed_depth_sub_tutorial.cpp
 class MapReader{
@@ -109,7 +108,6 @@ int MapReader::leftImageHeight;
 int MapReader::depthMapWidth;
 int MapReader::depthMapHeight;
 
-<<<<<<< HEAD
 int main(int argc, char **argv)
 {
 	/**
