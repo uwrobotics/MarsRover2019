@@ -221,6 +221,10 @@ int main(int argc, char **argv)
 		obstacle_detection::obstacleDataArray dataArray;
  		for(int i = 0; i < mc.size(); i++){
 			double depth = depthMap.at<double>(mc[i].y,mc[i].x);//get the depth of each centroid	
+			if(depth > 100){ //if we have grabbed a visual artifact way in the distance, ignore it
+				break;
+			}
+			
 			double xdisplacement = (mc[i].x - d.getLeftImageWidth()/2)*depth/focalLength; 
 			obstacle_detection::obstacleData obstacle;
 			obstacle.x = xdisplacement;
