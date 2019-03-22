@@ -1,0 +1,10 @@
+<!-- joint control -->
+
+<launch>
+  <rosparam command="load"
+            file="$(find antenna_sim_description)/com_base_station/config/joints.yaml"
+            ns="antenna_sim_joint_state_controller" />
+            
+  <node name="antenna_sim_controller_spawner" pkg="controller_manager" type="spawner"
+    args="antenna_sim_joint_state_controller"/>
+</launch>

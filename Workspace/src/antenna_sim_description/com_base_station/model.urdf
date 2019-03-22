@@ -1,0 +1,123 @@
+<?xml version="1.0"?>
+<robot name="com_base_station">
+<!--   <link name="base_link">
+    <visual>
+      <origin rpy="1.57 0 0"/>
+      <geometry>
+      	<mesh filename="package://antenna_sim_description/com_base_station/meshes/tripod.dae"/>
+      </geometry>
+    </visual>
+  </link>
+
+  <link name="antenna_base">
+  	<visual>
+  		<origin rpy="1.57 0 0.4" xyz="0.05 -0.05 0.80"/>
+  		<geometry>
+  			<mesh filename="package://antenna_sim_description/com_base_station/meshes/antenna_base.dae"/>
+  		</geometry>
+  	</visual>
+  </link>
+
+  <joint name="tripod_to_base" type="fixed">
+  	<parent link = "base_link"/>
+  	<child link="antenna_base"/>
+  </joint>
+
+  <link name="antenna">
+  	<visual>
+  		<geometry>
+  			<mesh filename="package://antenna_sim_description/com_base_station/meshes/Antenna.STL" scale="0.001 0.001 0.001"/>
+  		</geometry>
+  	</visual>
+  </link>
+
+  <joint name="antenna_base_to_antenna" type="continuous">
+  	<origin rpy="1.57 0 0" xyz="0 0 0"/>
+  	<axis xyz="0 1 0"/>
+  	<parent link="antenna_base"/>
+  	<child link="antenna"/>
+  </joint> -->
+
+  <link name="base_link">
+  	<visual>
+  		<origin xyz="0 0 0"/>
+  		<geometry>
+  			<mesh filename="package://antenna_sim_description/com_base_station/meshes/_tripod.dae"/>
+  		</geometry>
+  	</visual>
+
+  	<inertial>
+     <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="35"/>
+      <inertia ixx="1.849155" ixy="-0.000354" ixz="-0.154188" iyy="1.662671" iyz="0.003292" izz="0.802239"/>
+   </inertial>
+
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+      	<mesh filename="package://antenna_sim_description/com_base_station/meshes/_tripod.dae"/>
+<!--        <cylinder radius="1" length="0.5"/> -->
+     </geometry>
+    </collision>
+
+  </link>
+
+  <link name="antenna_base">
+  	<visual>
+  		<origin xyz="0 0 1.175"/>
+  		<geometry>
+  			<mesh filename="package://antenna_sim_description/com_base_station/meshes/_antenna_base.dae"/>
+  		</geometry>
+  	</visual>
+
+  	<inertial>
+      <origin rpy="0 0 0" xyz="0 0 1.175"/>
+      <mass value="0.0001"/>
+      <inertia ixx="1e-08" ixy="0" ixz="0" iyy="1e-08" iyz="0" izz="1e-08"/>
+    </inertial>
+
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+      	<mesh filename="package://antenna_sim_description/com_base_station/meshes/_antenna_base.dae"/>
+     </geometry>
+    </collision>
+
+  </link>
+
+   <joint name="base_link_to_antenna_base" type="fixed">
+  	<parent link="base_link"/>
+  	<child link="antenna_base"/>
+  </joint>
+
+  <link name="antenna">
+  	<visual>
+  		<geometry>
+  			<mesh filename="package://antenna_sim_description/com_base_station/meshes/_antenna.dae"/>
+  		</geometry>
+  	</visual>
+
+  	<inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="0.0001"/>
+      <inertia ixx="1e-08" ixy="0" ixz="0" iyy="1e-08" iyz="0" izz="1e-08"/>
+    </inertial>
+
+  </link>
+
+  <joint name="antenna_base_to_antenna" type="continuous">
+  	<origin rpy="0 0 0" xyz="0 0 1.625"/>
+  	<axis xyz="0 0 1"/>
+  	<parent link="antenna_base"/>
+  	<child link="antenna"/>
+
+  </joint>
+
+</robot>
+
+<!-- plugin needed to control robot using ros -->
+<gazebo>
+  <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+    <robotNamespace></robotNamespace>
+  </plugin>
+</gazebo>
