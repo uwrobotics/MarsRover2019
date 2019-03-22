@@ -13,26 +13,20 @@ project(obstacle_detection)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
-<<<<<<< HEAD
-=======
   #OpenCV
->>>>>>> origin/master
   #image_geometry
   #cv_bridge
   std_msgs
   message_generation
 )
 
-<<<<<<< HEAD
 ##https://stackoverflow.com/questions/37561156/how-to-correctly-link-opencv3-under-ros-indigo-using-cmake
 set(CMAKE_PREFIX_PATH "/usr/local/lib")
 find_package(OpenCV 4.0.1 REQUIRED)
 set(OpenCV_INCLUDE_DIRS "/usr/local/include/opencv4/")
 
 
-=======
 find_package(OpenCV REQUIRED)
->>>>>>> origin/master
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
