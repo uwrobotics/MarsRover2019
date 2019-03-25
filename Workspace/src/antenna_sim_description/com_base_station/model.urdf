@@ -64,14 +64,14 @@
 
   <link name="antenna_base">
   	<visual>
-  		<origin xyz="0 0 1.175"/>
+  		<origin xyz="0 0 0.675"/>
   		<geometry>
   			<mesh filename="package://antenna_sim_description/com_base_station/meshes/_antenna_base.dae"/>
   		</geometry>
   	</visual>
 
   	<inertial>
-      <origin rpy="0 0 0" xyz="0 0 1.175"/>
+      <origin rpy="0 0 0" xyz="0 0 0.675"/>
       <mass value="0.0001"/>
       <inertia ixx="1e-08" ixy="0" ixz="0" iyy="1e-08" iyz="0" izz="1e-08"/>
     </inertial>
@@ -106,18 +106,28 @@
   </link>
 
   <joint name="antenna_base_to_antenna" type="continuous">
-  	<origin rpy="0 0 0" xyz="0 0 1.625"/>
+  	<origin rpy="0 0 0" xyz="0 0 1.125"/>
   	<axis xyz="0 0 1"/>
   	<parent link="antenna_base"/>
   	<child link="antenna"/>
-
+    <limit effort="30" velocity="1.0"/>
   </joint>
 
-</robot>
+  <transmission name="antenna_rotation">
+    <type>transmission_interface/SimpleTransmission</type>
+    <actuator name="$antenna_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+    <joint name="antenna_base_to_antenna">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+  </transmission>
 
 <!-- plugin needed to control robot using ros -->
 <gazebo>
   <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-    <robotNamespace></robotNamespace>
+    <robotNamespace>/</robotNamespace>
   </plugin>
 </gazebo>
+
+</robot>
