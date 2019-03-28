@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+
+<launch>
+    <include file="$(find simulation)/launch/simulation_full.launch"/>
+
+    <!-- Spawn antenna into Gazebo -->
+<!--     <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" output="screen" args="-file $(find antenna_sim_description)/com_base_station/model.urdf -urdf -x 6.5 -y -6.5 -z 0 -model antenna" />
+
+    <arg name="model" default="$(find antenna_sim_description)/com_base_station/model.urdf"/>
+	<param name="robot_description" command="$(find xacro)/xacro inorder $(arg model)" /> -->
+
+	<!-- rviz stuff -->
+<!-- 	<arg name="rvizconfig" default="$(find urdf_tutorial)/rviz/urdf.rviz" />
+	<arg name="gui" default="true" />
+	<param name="use_gui" value="$(arg gui)"/>
+	<node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" />
+	<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+	<node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" /> -->
+
+<!-- 	<rosparam command="load"
+    	file="$(find antenna_sim_description)/com_base_station/config/joints.yaml"
+    	ns="antenna_sim_joint_state_controller" />
+
+ 	<rosparam command="load"
+    file="$(find antenna_sim_description)/com_base_station/config/antenna.yaml"
+    ns="antenna_sim_antenna_controller" />
+            
+  	<node name="antenna_sim_controller_spawner" pkg="controller_manager" type="spawner"
+    args="antenna_sim_joint_state_controller
+    	  antenna_sim_antenna_controller"/> -->
+
+   	<!-- launch nodes needed to control antenna -->
+   	<node name="calc_angle" pkg="antenna" type="calc_angle_node"/>
+   	<node name="sim_control" pkg="antenna" type="sim_control_node"/>
+
+</launch>

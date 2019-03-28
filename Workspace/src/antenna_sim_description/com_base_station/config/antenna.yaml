@@ -1,2 +1,16 @@
 type: "position_controllers/JointPositionController"
+# type: "velocity_controllers/JointTrajectoryController"
 joint: antenna_base_to_antenna
+# pid: {p: 100.0, i: 0.01, d: 10.0}
+
+# antenna_robot:
+#   # Publish all joint states -----------------------------------
+#   # joint_state_controller:
+#   #   type: joint_state_controller/JointStateController
+#   #   publish_rate: 50  
+  
+#   # Position Controllers ---------------------------------------
+#   joint1_position_controller:
+#     type: velocity_controllers/JointTrajectoryController
+#     joint: antenna_base_to_antenna
+#     pid: {p: 100.0, i: 0.01, d: 10.0}

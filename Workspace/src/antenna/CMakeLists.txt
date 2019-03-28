@@ -198,3 +198,6 @@ target_link_libraries(listener ${catkin_LIBRARIES})
 
 add_executable(calc_angle_node src/calc_angle.cpp)
 target_link_libraries(calc_angle_node ${catkin_LIBRARIES})
+
+add_executable(sim_control_node src/sim_control.cpp)
+target_link_libraries(sim_control_node ${catkin_LIBRARIES})

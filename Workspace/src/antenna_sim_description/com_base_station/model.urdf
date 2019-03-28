@@ -110,13 +110,14 @@
   	<axis xyz="0 0 1"/>
   	<parent link="antenna_base"/>
   	<child link="antenna"/>
-    <limit effort="30" velocity="1.0"/>
+    <limit effort="30" velocity="0.5"/>
   </joint>
 
   <transmission name="antenna_rotation">
     <type>transmission_interface/SimpleTransmission</type>
     <actuator name="$antenna_motor">
       <mechanicalReduction>1</mechanicalReduction>
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
     </actuator>
     <joint name="antenna_base_to_antenna">
       <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
@@ -126,7 +127,7 @@
 <!-- plugin needed to control robot using ros -->
 <gazebo>
   <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-    <robotNamespace>/</robotNamespace>
+    <robotNamespace>/antenna_robot</robotNamespace>
   </plugin>
 </gazebo>
 

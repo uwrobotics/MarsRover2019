@@ -95,8 +95,8 @@ void rover_loc_filtered_callback(const nav_msgs::Odometry::ConstPtr& msg) {
     rover_y = msg->pose.pose.position.y;
     
     // random fixed antenna location for now
-    antenna_x = 0;
-    antenna_y = 0;
+    antenna_x = -6.5;
+    antenna_y = -6.5;
     
     // convert quaternion orientation to just 2D yaw (don't really need this if using relative angles)
     tf::Quaternion q(
@@ -120,6 +120,11 @@ void rover_loc_filtered_callback(const nav_msgs::Odometry::ConstPtr& msg) {
     //Get rover's angle from the east-west axis
     double rover_angle_from_east = atan(diff_y/diff_x) * 180 / M_PI; // Convert to degrees
     ROS_INFO ("rover_angle_from_east: %f", rover_angle_from_east);
+
+    // publish angle for pi to use
+    std_msgs::Float32 angle_msg;
+    angle_msg.data = rover_angle_from_east;
+    angle_publisher.publish(angle_msg);
 }
 
 int main (int argc, char *argv[])
