@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.12)
 project(socketcan_bridge)
 
 add_compile_options(-std=c++11)
@@ -9,6 +9,8 @@ find_package(catkin REQUIRED
     roscpp
     socketcan_interface
 )
+find_package(Boost REQUIRED)
+
 
 catkin_package(
   INCLUDE_DIRS
