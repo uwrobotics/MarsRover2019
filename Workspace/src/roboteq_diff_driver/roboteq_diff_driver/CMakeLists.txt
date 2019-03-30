@@ -16,6 +16,7 @@ include_directories(
 )
 
 add_executable(${PROJECT_NAME}_driver src/driver.cpp)
+add_dependencies(${PROJECT_NAME}_driver ${catkin_EXPORTED_TARGETS})
 target_link_libraries(${PROJECT_NAME}_driver ${catkin_LIBRARIES})
 set_target_properties(${PROJECT_NAME}_driver PROPERTIES OUTPUT_NAME driver PREFIX "")
 
