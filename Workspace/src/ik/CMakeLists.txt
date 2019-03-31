@@ -9,7 +9,7 @@ find_package(
   std_msgs
 )
 
-
+find_package(Eigen3 REQUIRED)
 
 
 ###########
@@ -21,7 +21,7 @@ find_package(
 
 
 catkin_package(
-        INCLUDE_DIRS include
+        INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIRS}
         LIBRARIES ik
         CATKIN_DEPENDS roscpp std_msgs
         #       DEPENDS system_lib
@@ -29,7 +29,9 @@ catkin_package(
 
 include_directories(
         include
+        include/ik
   ${catkin_INCLUDE_DIRS}
+        ${EIGEN3_INCLUDE_DIRS}
 )
 ## Declare a C++ library
 add_library(${PROJECT_NAME}
@@ -40,6 +42,9 @@ add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EX
 
 #add_executable(ik_node src/main.cpp)
 #target_link_libraries(ik_node ${catkin_LIBRARIES})
+
+add_executable(ik_test src/ik_test.cpp src/Roboarm.cpp)
+target_link_libraries(ik_test ${catkin_LIBRARIES})
 
 #target_link_libraries(ik_lib ${catkin_LIBRARIES})
 
