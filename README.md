@@ -8,8 +8,18 @@ To get all required dependencies, navigate to the project root directory and run
 ```
 ./install_dependencies.sh
 ```
-Put all future dependencies in the dependencies.rosinstall file
+Put all future non-rosdep dependencies in the dependencies.rosinstall file
 
+# Build
+We recommend using the `catkin build` command from the `catkin_tools` package to build your workspace,  instead of using `catkin_make`. `catkin_tools` as a whole is more reliable and predictable, as it builds each package in isolation. It is also what our CI uses.
+
+To install `catkin_tools`, run the following commands:
+```
+sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu `lsb_release -sc` main" > /etc/apt/sources.list.d/ros-latest.list'
+wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
+sudo apt update
+sudo apt-get install python-catkin-tools
+```
 
 # Simulation
 Ensure that all submodules are loaded, and that the husky submodule is on the kinetic-devel branch.

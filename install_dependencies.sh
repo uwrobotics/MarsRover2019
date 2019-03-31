@@ -5,7 +5,8 @@ sudo rosdep init
 rosdep update
 
 cd Workspace/src
-rosinstall --catkin . ../../uwrt_rover.rosinstall
+rosinstall --catkin .. ../../uwrt_rover.rosinstall
+rm ../CMakeLists.txt
 rosdep install --from-paths . --ignore-src -r --rosdistro kinetic -y
 
 echo "Dependencies installed"
