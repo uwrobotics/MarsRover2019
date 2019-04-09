@@ -9,7 +9,7 @@
 using namespace cv;
 using namespace std;
 
-sensor_msgs::NavSatFixConstPtr pNavSatOrigin = nullptr;
+geometry_msgs::Pose2DConstPtr curr = nullptr;
 
 void utmPubCallback(geometry_msgs::Pose2DConstPtr msg) { 
 	curr = msg; 
@@ -23,6 +23,9 @@ int main(int argc, char **argv) {
 	ros::init(argc, argv, "direction_node");
 	ros::NodeHandle nh;
 
+	double heading = 0;
+	//latA, longA, latB, longB, X, Y,
+	
 	ros::Subscriber utmSub = nh.subscribe<geometry_msgs::Pose2D>("/localization/pose_utm", 1 utmPubCallback);
 	ros::Subscriber imgSub = nh.subscribe<>("zed/rgb/image_rect_color", 25, rgbImageCallback)
 	ros::NodeHandle zed/rgb/image_rect_color;
@@ -31,23 +34,25 @@ int main(int argc, char **argv) {
     		return -1;
   	}
 
+	
+	heading = curr->theta;
 
 	//need to determine rate at which we want to update co-ords
 
 	ros::Rate loopRate(10);
 
-	double latA, longA, latB, longB, X, Y, theta = 0;
+	double theta = 0;
+	
+	//double latA = ; 
+	//double longA = ; 
+	//double latB = ; 
+	//double longB = ;
 
-	double latA = ; 
-	double longA = ; 
-	double latB = ; 
-	double longB = ;
-
-	double X = cos(latB) * sin(longB-longA);
-	double Y = cos(latA) * sin(latB) - sin(latA) * cos(latB) * cos(longB-longA);
+	//double X = cos(latB) * sin(longB-longA);
+	//double Y = cos(latA) * sin(latB) - sin(latA) * cos(latB) * cos(longB-longA);
 
 	//this is the bearing in degrees, 0 is north, 90 is east, 180 is south, 270 is west
-	double theta = atan2(X, Y);
+	//double theta = atan2(X, Y);
 
 
 
