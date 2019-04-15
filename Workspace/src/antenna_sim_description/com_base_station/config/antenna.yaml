@@ -1,15 +1,15 @@
-type: "effort_controllers/JointTrajectoryController"
+type: "position_controllers/JointPositionController"
 # type: "velocity_controllers/JointTrajectoryController"
 joint: antenna_base_to_antenna
 # pid: {p: 100.0, i: 0.01, d: 10.0}
-joints: [antenna_base_to_antenna]
+# joints: [antenna_base_to_antenna]
 
-antenna_robot/gazebo_ros_control: 
-  pid_gains:
-    antenna_base_to_antenna:
-      p: 100.0
-      i: 0.01
-      d: 10.0
+# antenna_robot/gazebo_ros_control: 
+#   pid_gains:
+#     antenna_base_to_antenna:
+#       p: 100.0
+#       i: 0.01
+#       d: 10.0
 
 
 # antenna_robot:

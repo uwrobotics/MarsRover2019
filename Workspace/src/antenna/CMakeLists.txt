@@ -7,7 +7,7 @@ project(antenna)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED roscpp rospy std_msgs genmsg)
+find_package(catkin REQUIRED roscpp rospy std_msgs)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -37,11 +37,11 @@ find_package(catkin REQUIRED roscpp rospy std_msgs genmsg)
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
+#add_message_files(
+  #  FILES
 #   Message1.msg
 #   Message2.msg
-# )
+#)
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -97,6 +97,7 @@ catkin_package(
 #  LIBRARIES antenna
 #  CATKIN_DEPENDS other_catkin_pkg
 #  DEPENDS system_lib
+#	CATKIN_DEPENDS message_runtime
 )
 
 ###########
@@ -187,14 +188,6 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
-
-add_executable(talker src/talker.cpp)
-target_link_libraries(talker ${catkin_LIBRARIES})
-#add_dependencies(talker beginner_tutorials_generate_messages_cpp)
-
-add_executable(listener src/listener.cpp)
-target_link_libraries(listener ${catkin_LIBRARIES})
-#add_dependencies(listener beginner_tutorials_generate_messages_cpp)
 
 add_executable(calc_angle_node src/calc_angle.cpp)
 target_link_libraries(calc_angle_node ${catkin_LIBRARIES})

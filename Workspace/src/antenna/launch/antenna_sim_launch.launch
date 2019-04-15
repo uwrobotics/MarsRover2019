@@ -29,8 +29,8 @@
     args="antenna_sim_joint_state_controller
     	  antenna_sim_antenna_controller"/> -->
 
-   	<!-- launch nodes needed to control antenna -->
-   	<node name="calc_angle" pkg="antenna" type="calc_angle_node"/>
-   	<node name="sim_control" pkg="antenna" type="sim_control_node"/>
+<!-- launch nodes needed to control antenna -->
+<node name="calc_angle" pkg="antenna" type="calc_angle_node"/>
+<node name="sim_control" pkg="antenna" type="sim_control_node"/>
 
 </launch>

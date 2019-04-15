@@ -113,7 +113,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
   </group>
 
   <group ns="antenna_robot">
-    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" output="screen" args="-file $(find antenna_sim_description)/com_base_station/model.urdf -urdf -x 6.5 -y -6.5 -z 0 -model antenna" />
+    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" output="screen" args="-file $(find antenna_sim_description)/com_base_station/model.urdf -urdf -x 6.5 -y -6.5 -z 0 -Y -1.57079 -model antenna" />
 
     <arg name="model" default="$(find antenna_sim_description)/com_base_station/model.urdf"/>
     <param name="robot_description" command="$(find xacro)/xacro --inorder $(arg model)" />

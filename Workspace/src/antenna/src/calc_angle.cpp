@@ -95,7 +95,7 @@ void rover_loc_filtered_callback(const nav_msgs::Odometry::ConstPtr& msg) {
     rover_y = msg->pose.pose.position.y;
     
     // random fixed antenna location for now
-    antenna_x = -6.5;
+    antenna_x = 6.5;
     antenna_y = -6.5;
     
     // convert quaternion orientation to just 2D yaw (don't really need this if using relative angles)
@@ -117,13 +117,13 @@ void rover_loc_filtered_callback(const nav_msgs::Odometry::ConstPtr& msg) {
     ROS_INFO ("Antenna_x: %f,     Antenna_y: %f", antenna_x, antenna_y);
     ROS_INFO ("Diff_x: %f,     Diff_y: %f", diff_x, diff_y);
     
-    //Get rover's angle from the east-west axis
-    double rover_angle_from_east = atan(diff_y/diff_x) * 180 / M_PI; // Convert to degrees
-    ROS_INFO ("rover_angle_from_east: %f", rover_angle_from_east);
+    //Get rover's angle, atan2 returns positive angle with 0 being right, increasing CCW (east)
+    double target_antenna_angle = atan2(diff_y, diff_x) * 180 / M_PI; // Convert to degrees
+    ROS_INFO ("rover_angle_from_east: %f", target_antenna_angle);
 
     // publish angle for pi to use
     std_msgs::Float32 angle_msg;
-    angle_msg.data = rover_angle_from_east;
+    angle_msg.data = target_antenna_angle;
     angle_publisher.publish(angle_msg);
 }
 
@@ -144,7 +144,7 @@ int main (int argc, char *argv[])
 //    ros::Subscriber antenna_sub = node_handle.subscribe("antenna/fix", 1, antenna_loc_callback);
 //    ros::Subscriber rover_sub = node_handle.subscribe("/navsat/fix", 1, rover_loc_callback);
 
-    ros::Rate loop_rate(10); // 20Hz update rate
+    ros::Rate loop_rate(10); // 10Hz update rate
     while (ros::ok())
     {
         loop_rate.sleep();
