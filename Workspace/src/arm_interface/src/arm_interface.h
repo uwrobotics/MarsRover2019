@@ -9,17 +9,19 @@
 #include <std_msgs/String.h>
 #include <stdbool.h>
 
-class ArmControlService
+class ArmControlInterface
 {
     public:
 
-        ArmControl()
-        : m_targetAnglesPublisher(NULL)
+        ArmControl(float dT)
+        : m_dT(dT)
+        , m_targetAnglesPublisher(NULL)
         , m_actualJointPossPublisher(NULL)
         , m_targetAnglesCanPublisher(NULL)
         , m_canIds(NULL)
         , m_isReady(false)
         , m_isFirstRun(true)
+
         {
             ikControl = new Roboarm(s_linkLengths, s_defaultAngles);
         }
@@ -36,7 +38,11 @@ class ArmControlService
 
         void ArmCmdCallback(arm_interface::ArmCmdConstPtr msg)
         {
-
+            ROS_INFO("received arm cmnd msg");
+            for (int i = 0; i < 6; i++)
+            {
+                armCmdVels[i] = msg->data_points[i];
+            }
         }
 
         void CanCallback(can_msgs::FrameConstPtr msg)
@@ -46,7 +52,19 @@ class ArmControlService
             m_actualJointPoss[jointId] = *(double *)(msg->data.data());
 
             // Check if received initial position for all
-            m_isReady = std::all_of(m_jointsReady.cbegin(), m_jointsReady.cend(), [](bool i){ return i == true; }
+            if(! m_isReady)
+            {
+                m_isReady = std::all_of(m_jointsReady.cbegin(), m_jointsReady.cend(), [](bool i){ return i == true; }
+            }
+        }
+
+        bool SetMode(arm_interface::SetMode::Request  &req, arm_interface::SetMode::Response &res)
+        {
+            m_currentMode = req.mode;
+            res.mode = m_currentMode;
+            ROS_INFO("request: req=%d, res=%d", req.mode, res.mode);
+
+            return true;
         }
 
         void Run()
@@ -60,43 +78,46 @@ class ArmControlService
             {
                 InitializePositions();
             }
+
             // Process service requests and run
+
             switch(m_currentMode)
             {
-                case s_modeIkNone:
-                    RunIkNone();
+                case s_modeOpenLoop:
+                    RunOpenLoop(armCmdVels);
                     break;
                 case s_modeIkVel:
-                    RunIkVel();
+                    RunIkVel(armCmdVels);
                     break;
                 case s_modeIkPos:
-                    RunIkPos();
+                    RunIkPos(armCmdVels);
                     break;
                 default:
                     break;
             }
-            PublishCan();
 
+            PublishCan();
         }
 
 
         void SetPublishers(
-            const ros::Publisher *targetAnglesPublisher,
+            const ros::Publisher *desiredAnglesPublisher,
             const ros::Publisher *actualAnglesPublisher,
             const ros::Publisher *canPublisher
             )
         {
-            m_targetAnglesPublisher = targetAnglesPublisher;
+            m_desiredAnglesPublisher = desiredAnglesPublisher;
             m_actualJointPossPublisher = actualAnglesPublisher;
             m_canPublisher = canPublisher;
         }
 
 
     private:
-        bool double dT;
+        bool double m_dT; // time step
+
         bool m_isReady;
         bool m_isFirstRun;
-        ros::Publisher *m_targetAnglesPublisher;
+        ros::Publisher *m_desiredAnglesPublisher;
         ros::Publisher *m_actualJointPossPublisher;
         ros::Publisher *m_canPublisher;
 
@@ -118,6 +139,7 @@ class ArmControlService
                                                         // 5: claw position
         std::vector<double> m_actualJointPos(s_numJoints); // Actual angles
         std::vector<double> m_actualEndEffectorPos(numEndEffectorPos); // Actual angles
+        std::vector<double> m_armCmdVels(s_numJoints); // commands
         std::vector<double> m_canCmds(s_numJoints); // commands
 
         static const double s_linkLengths[] = {35.56, 40.64, 30.48};
@@ -125,8 +147,6 @@ class ArmControlService
                            -15.0 * M_PI / 180};
 
         Roboarm *ikControl; // ik controls
-
-        int m_currentMode; // arm mode
 
         // Arm joints indexes
         // General
@@ -149,10 +169,11 @@ class ArmControlService
         size_t *m_canIds;
 
         // Arm control modes
-        static const size_t s_modeIkNone = 0x00;
-        static const size_t s_modeIkVel = 0x01;
-        static const size_t s_modeIkPos = 0x02;
+        static const u_int8_t s_modeOpenLoop = 0x00;
+        static const u_int8_t s_modeIkVel = 0x01;
+        static const u_int8_t s_modeIkPos = 0x02;
 
+        u_int8_t m_currentMode; // arm mode
 
         static const int s_dlc = 8; //not sure about this
 
@@ -194,7 +215,7 @@ class ArmControlService
             outPos[2] = linkAngles[0] + linkAngles[1] + linkAngles[2];
         }
 
-        void RunIkNone(std::vector<double> fkCmdVels)
+        void RunOpenLoop(std::vector<double> fkCmdVels)
         {
             m_canIds = s_velCtrlCanIds;
 
