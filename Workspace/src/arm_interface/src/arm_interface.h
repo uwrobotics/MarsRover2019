@@ -13,20 +13,26 @@ class ArmControlInterface
 {
     public:
 
-        ArmControl(float dT)
+        ArmControlInterface(float dT)
         : m_dT(dT)
-        , m_targetAnglesPublisher(NULL)
-        , m_actualJointPossPublisher(NULL)
-        , m_targetAnglesCanPublisher(NULL)
-        , m_canIds(NULL)
+        , m_desiredAnglesPublisher(NULL)
+        , m_actualAnglesPublisher(NULL)
+        , m_canPublisher(NULL)
         , m_isReady(false)
         , m_isFirstRun(true)
-
         {
-            ikControl = new Roboarm(s_linkLengths, s_defaultAngles);
+            ikControl = new Roboarm((double *)s_linkLengths, (double *)s_defaultAngles);
+
+            m_jointsReady = std::vector<bool> (s_numJoints, false);
+            m_desiredEndEffectorPos = std::vector<double> (s_numJoints, 0);
+            m_desiredJointPos = std::vector<double> (s_numJoints, 0);
+            m_actualJointPos = std::vector<double> (s_numJoints, 0);
+            m_actualEndEffectorPos = std::vector<double> (s_numEndEffectorPos, 0);
+            m_armCmdVels = std::vector<double> (s_numJoints, 0);
+            m_canCmds = std::vector<double> (s_numJoints, 0);
         }
 
-        ~ArmControl()
+        ~ArmControlInterface()
         {
             delete ikControl;
         }
@@ -38,32 +44,33 @@ class ArmControlInterface
 
         void ArmCmdCallback(arm_interface::ArmCmdConstPtr msg)
         {
-            ROS_INFO("received arm cmnd msg");
+            ROS_INFO("Received Arm Cmd msg");
             for (int i = 0; i < 6; i++)
             {
-                armCmdVels[i] = msg->data_points[i];
+                m_armCmdVels[i] = msg->data_points[i];
             }
         }
 
         void CanCallback(can_msgs::FrameConstPtr msg)
         {
+            ROS_INFO("Received Can Cmd msg");
             size_t jointId = msg->id - s_jointIdBase;
             m_jointsReady[jointId] = true;
-            m_actualJointPoss[jointId] = *(double *)(msg->data.data());
+            m_actualJointPos[jointId] = *(double *)(msg->data.data());
 
             // Check if received initial position for all
-            if(! m_isReady)
+            if(!m_isReady)
             {
-                m_isReady = std::all_of(m_jointsReady.cbegin(), m_jointsReady.cend(), [](bool i){ return i == true; }
+                m_isReady = std::all_of(m_jointsReady.cbegin(), m_jointsReady.cend(), [](bool i){ return i == true; });
             }
         }
 
-        bool SetMode(arm_interface::SetMode::Request  &req, arm_interface::SetMode::Response &res)
+        bool SetMode(arm_interface::arm_mode::Request& req, arm_interface::arm_mode::Response& res)
         {
             m_currentMode = req.mode;
             res.mode = m_currentMode;
             ROS_INFO("request: req=%d, res=%d", req.mode, res.mode);
-
+            ROS_INFO("mode set to %s", s_modes[m_currentMode]);
             return true;
         }
 
@@ -71,12 +78,14 @@ class ArmControlInterface
         {
             if(!m_isReady)
             {
+                ROS_INFO("Not ready");
                 return;
             }
 
             if (m_isFirstRun)
             {
                 InitializePositions();
+                m_isFirstRun = false;
             }
 
             // Process service requests and run
@@ -84,13 +93,13 @@ class ArmControlInterface
             switch(m_currentMode)
             {
                 case s_modeOpenLoop:
-                    RunOpenLoop(armCmdVels);
+                    RunOpenLoop(m_armCmdVels);
                     break;
                 case s_modeIkVel:
-                    RunIkVel(armCmdVels);
+                    RunIkVel(m_armCmdVels);
                     break;
                 case s_modeIkPos:
-                    RunIkPos(armCmdVels);
+                    RunIkPos(m_armCmdVels);
                     break;
                 default:
                     break;
@@ -101,56 +110,57 @@ class ArmControlInterface
 
 
         void SetPublishers(
-            const ros::Publisher *desiredAnglesPublisher,
-            const ros::Publisher *actualAnglesPublisher,
-            const ros::Publisher *canPublisher
+            ros::Publisher *desiredAnglesPublisher,
+            ros::Publisher *actualAnglesPublisher,
+            ros::Publisher *canPublisher
             )
         {
             m_desiredAnglesPublisher = desiredAnglesPublisher;
-            m_actualJointPossPublisher = actualAnglesPublisher;
+            m_actualAnglesPublisher = actualAnglesPublisher;
             m_canPublisher = canPublisher;
         }
 
 
     private:
-        bool double m_dT; // time step
+        float m_dT; // time step
 
         bool m_isReady;
         bool m_isFirstRun;
         ros::Publisher *m_desiredAnglesPublisher;
-        ros::Publisher *m_actualJointPossPublisher;
+        ros::Publisher *m_actualAnglesPublisher;
         ros::Publisher *m_canPublisher;
 
-        static const size_t s_jointIdBase = 0x500;
-        static const size_t s_numJoints = 6;
-        static const size_t s_numEndEffectorPos = 3;
-        std::vector<bool> m_jointsReady(s_numJoints, false);
+        Roboarm *ikControl; // ik controls
+        
+        std::vector<bool> m_jointsReady; // come back
         // To do: remove angles from positions to remove overlap
-        std::vector<double> m_desiredEndEffectotPos(numEndEffectorPos); // Desired angles/pos  in degrees/cm
+        std::vector<double> m_desiredEndEffectorPos; // Desired angles/pos  in degrees/cm
                                                         // 0: end effector x position
                                                         // 1: end effector y position
                                                         // 2: end effector theta angle / wrist pitch
-        std::vector<double> m_desiredJointPos(s_numJoints); // Desired angles in degrees
+        std::vector<double> m_desiredJointPos; // Desired angles in degrees
                                                         // 0: turn table angle
                                                         // 1: shoulder angle
                                                         // 2: elbow angle
                                                         // 3: wrist pitch angle
                                                         // 4: wrist Roll angle
                                                         // 5: claw position
-        std::vector<double> m_actualJointPos(s_numJoints); // Actual angles
-        std::vector<double> m_actualEndEffectorPos(numEndEffectorPos); // Actual angles
-        std::vector<double> m_armCmdVels(s_numJoints); // commands
-        std::vector<double> m_canCmds(s_numJoints); // commands
+        std::vector<double> m_actualJointPos; // Actual angles
+        std::vector<double> m_actualEndEffectorPos; // Actual angles
+        std::vector<double> m_armCmdVels; // commands
+        std::vector<double> m_canCmds; // commands
 
-        static const double s_linkLengths[] = {35.56, 40.64, 30.48};
-        static const double s_defaultAngles[] = {45.0 * M_PI / 180, -30.0 * M_PI / 180,
+        const double s_linkLengths[3] = {35.56, 40.64, 30.48};
+        const double s_defaultAngles[3] = {45.0 * M_PI / 180, -30.0 * M_PI / 180,
                            -15.0 * M_PI / 180};
 
-        Roboarm *ikControl; // ik controls
+        static const size_t s_jointIdBase = 0x500;
+        static const size_t s_numJoints = 6;
+        static const size_t s_numEndEffectorPos = 3;
 
         // Arm joints indexes
         // General
-        static const int s_turntableIdx = 0
+        static const int s_turntableIdx = 0;
         static const int s_shoulderIdx = 1;
         static const int s_elbowIdx = 2;
         static const int s_wristPitchIdx = 3;
@@ -162,22 +172,21 @@ class ArmControlInterface
         static const int s_endEffectorYIdx = 1;
         static const int s_endEffectorThetaIdx = 2;
 
-        static const size_t s_numModeIds = 4;
-        static const size_t s_modeCanIds[] = {0x301, 0x302, 0x304, 0x400};
-        static const size_t s_ctrlCanIds[] = {0x301, 0x303, 0x305, 0x401, 0x402, 0x403};
-=
-        size_t *m_canIds;
+        static const int s_numModeIds = 4;
+        const int s_modeCanIds[4] = {0x301, 0x302, 0x304, 0x400};
+        const int s_ctrlCanIds[6] = {0x301, 0x303, 0x305, 0x401, 0x402, 0x403};
 
         // Arm control modes
         static const u_int8_t s_modeOpenLoop = 0x00;
         static const u_int8_t s_modeIkVel = 0x01;
         static const u_int8_t s_modeIkPos = 0x02;
+        const std::string s_modes [3] = {"Open loop", "IK Velocity", "IK Position"};
 
         u_int8_t m_currentMode; // arm mode
 
         static const int s_dlc = 8; //not sure about this
 
-        void InitializePositons()
+        void InitializePositions()
         {
             double outPos[3];
             double linkAngles[3] = {
@@ -187,13 +196,13 @@ class ArmControlInterface
                                 };
             CalculateFk(linkAngles, outPos);
 
-            m_desiredJointPos[s_turntableIdx] = m_actualJointPoss[s_turntableIdx];
-            m_desiredJointPos[s_wristRollIdx] = m_actualJointPoss[s_wristRollIdx];
-            m_desiredJointPos[s_clawIdx] = m_actualJointPoss[s_clawIdx];
+            m_desiredJointPos[s_turntableIdx] = m_actualJointPos[s_turntableIdx];
+            m_desiredJointPos[s_wristRollIdx] = m_actualJointPos[s_wristRollIdx];
+            m_desiredJointPos[s_clawIdx] = m_actualJointPos[s_clawIdx];
 
-            m_desiredEndEffectotPos[s_endEffectorXIdx] = outPos[s_endEffectorXIdx];
-            m_desiredEndEffectotPos[s_endEffectorYIdx] = outPos[s_endEffectorXIdx];
-            m_desiredEndEffectotPos[s_endEffectorThetaIdx] = outPos[s_endEffectorXIdx];
+            m_desiredEndEffectorPos[s_endEffectorXIdx] = outPos[s_endEffectorXIdx];
+            m_desiredEndEffectorPos[s_endEffectorYIdx] = outPos[s_endEffectorXIdx];
+            m_desiredEndEffectorPos[s_endEffectorThetaIdx] = outPos[s_endEffectorXIdx];
         }
 
         void CalculateFk(double linkAngles[3], double outPos[3]) {
@@ -217,8 +226,6 @@ class ArmControlInterface
 
         void RunOpenLoop(std::vector<double> fkCmdVels)
         {
-            m_canIds = s_velCtrlCanIds;
-
             m_canCmds[s_turntableIdx] = fkCmdVels[s_turntableIdx];
             m_canCmds[s_wristRollIdx] = fkCmdVels[s_wristRollIdx];
             m_canCmds[s_clawIdx] = fkCmdVels[s_clawIdx];
@@ -229,8 +236,6 @@ class ArmControlInterface
 
         void RunIkVel(std::vector<double> ikCmdVels)
         {
-            m_canIds = s_velCtrlCanIds;
-
             // TODO ik integration
             double endEffectorSpeed[] = {
                                             // To do: better naming for indexes
@@ -243,18 +248,18 @@ class ArmControlInterface
                                         m_actualJointPos[s_elbowIdx] * M_PI / 180,
                                         m_actualJointPos[s_wristPitchIdx] * M_PI / 180
                                      };
-            if (ikControl.calculateVelocities(endEffectorSpeed, currentAngles))
+            if (ikControl->calculateVelocities(endEffectorSpeed, currentAngles))
             {
                 ROS_INFO("ik succeeded");
                 for (int i = 0; i < 3; i++)
                 {
-                    ROS_INFO("joint: %f", ikControl.linkVelocities[i]);
-                    if (ikControl.linkVelocities[i] > 5.0 * M_PI / 180) {
+                    ROS_INFO("joint: %f", ikControl->linkVelocities[i]);
+                    if (ikControl->linkVelocities[i] > 5.0 * M_PI / 180) {
 
-                        double divisor = ikControl.linkVelocities[i] / (5.0 * M_PI / 180);
-                        ikControl.linkVelocities[0] /= divisor;
-                        ikControl.linkVelocities[1] /= divisor;
-                        ikControl.linkVelocities[2] /= divisor;
+                        double divisor = ikControl->linkVelocities[i] / (5.0 * M_PI / 180);
+                        ikControl->linkVelocities[0] /= divisor;
+                        ikControl->linkVelocities[1] /= divisor;
+                        ikControl->linkVelocities[2] /= divisor;
                     }
                 }
             } else {
@@ -264,15 +269,13 @@ class ArmControlInterface
             m_canCmds[s_turntableIdx] = ikCmdVels[s_turntableIdx];
             m_canCmds[s_wristRollIdx] = ikCmdVels[s_wristRollIdx];
             m_canCmds[s_clawIdx] = ikCmdVels[s_clawIdx];
-            m_canCmds[s_shoulderIdx] = ikControl.linkVelocities[s_endEffectorXIdx] * 180 / M_PI;
-            m_canCmds[s_elbowIdx] = ikControl.linkVelocities[s_endEffectorYIdx] * 180 / M_PI;
-            m_canCmds[s_wristPitchIdx] = ikControl.linkVelocities[s_endEffectorThetaIdx] * 180 / M_PI;
+            m_canCmds[s_shoulderIdx] = ikControl->linkVelocities[s_endEffectorXIdx] * 180 / M_PI;
+            m_canCmds[s_elbowIdx] = ikControl->linkVelocities[s_endEffectorYIdx] * 180 / M_PI;
+            m_canCmds[s_wristPitchIdx] = ikControl->linkVelocities[s_endEffectorThetaIdx] * 180 / M_PI;
         }
 
         void RunIkPos(std::vector<double> ikCmdVels)
         {
-            m_canIds = s_posCtrlCanIds;
-
             m_desiredEndEffectorPos[s_endEffectorXIdx] += ikCmdVels[s_shoulderIdx] * m_dT;
             m_desiredEndEffectorPos[s_endEffectorYIdx] += ikCmdVels[s_elbowIdx] * m_dT;
             m_desiredEndEffectorPos[s_endEffectorThetaIdx] += ikCmdVels[s_wristPitchIdx] * m_dT;
@@ -289,7 +292,7 @@ class ArmControlInterface
                                         m_actualJointPos[s_wristPitchIdx] * M_PI / 180
                                      };
             double anglesOut[s_numEndEffectorPos];
-            if (ikControl.calculatePositionIK(endEffectorPos, currentAngles, anglesOut)
+            if (ikControl->calculatePositionIK(endEffectorPos, currentAngles, anglesOut))
             {
                 ROS_INFO("ik succeeded");
                 for (int i = 0; i < s_numEndEffectorPos; i++)
@@ -321,9 +324,9 @@ class ArmControlInterface
             //  Calculate actual positions
             double outPos[3];
             double linkAngles[3] = {
-                                        m_actualJointPoss[s_shoulderIdx] * M_PI / 180,
-                                        m_actualJointPoss[s_elbowIdx] * M_PI / 180,
-                                        m_actualJointPoss[s_wristPitchIdx] * M_PI / 180
+                                        m_actualJointPos[s_shoulderIdx] * M_PI / 180,
+                                        m_actualJointPos[s_elbowIdx] * M_PI / 180,
+                                        m_actualJointPos[s_wristPitchIdx] * M_PI / 180
                                 };
             CalculateFk(linkAngles, outPos);
 
@@ -346,8 +349,8 @@ class ArmControlInterface
             {
                 canMsg.id = s_ctrlCanIds[i];
                 *(double *)(canMsg.data.data()) = m_canCmds[i];
-                m_canPublisher.publish(canMsg);
+                m_canPublisher->publish(canMsg);
             }
         }
 
-}
+};

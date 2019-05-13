@@ -1,7 +1,6 @@
+#include <arm_interface/arm_mode.h>
 #include <arm_interface/ArmCmd.h>
 #include <can_msgs/Frame.h>
-#include <cmath>
-#include <ik/Roboarm.h>
 #include <ros/ros.h>
 #include <std_msgs/Float64MultiArray.h>
 #include <std_msgs/Int32.h>
@@ -24,7 +23,7 @@ int main(int argc, char **argv) {
 
   ArmControlInterface armCtrlInterface(dT);
 
-  ros::ServiceServer service = nh.advertiseService("set_mode", &armCtrlInterface::SetMode, &armCtrlInterface);
+  ros::ServiceServer service = nh.advertiseService("/arm_interface/mode_service", &ArmControlInterface::SetMode, &armCtrlInterface);
 
   ros::Publisher desAnglesPub = nh.advertise<std_msgs::Float64MultiArray>("/arm_interface/desired_joint_angles", 1);
   ros::Publisher actAnglesPub = nh.advertise<std_msgs::Float64MultiArray>("/arm_interface/actual_joint_angles", 1);
@@ -33,10 +32,10 @@ int main(int argc, char **argv) {
   std::vector<ros::Subscriber> canSubs(6);
   for (int i = 0; i < 6; i++)
   {
-    canSubs[i] = nh.subscribe(canTopics[i], 1, &armCtrlInterface::CanCallback, &armCtrlInterface);
+    canSubs[i] = nh.subscribe(canTopics[i], 1, &ArmControlInterface::CanCallback, &armCtrlInterface);
   }
 
-  ros::Subscriber armCmdSub = nh.subscribe("/arm_interface/arm_cmd", 1,  &armCtrlInterface::ArmCmdCallback, &armCtrlInterface));
+  ros::Subscriber armCmdSub = nh.subscribe("/arm_interface/arm_cmd", 1,  &ArmControlInterface::ArmCmdCallback, &armCtrlInterface);
 
   armCtrlInterface.SetPublishers(&desAnglesPub, &actAnglesPub, &canPub);
 
@@ -52,4 +51,5 @@ int main(int argc, char **argv) {
   }
 
   return 0;
+
 }
