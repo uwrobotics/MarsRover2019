@@ -42,8 +42,7 @@ struct TeleopTwistJoy::Impl {
 
   int dr_enable_button;
   int dr_enable_turbo_button;
-  int ik_enable_button;
-  int fk_enable_button;
+  int arm_enable_button;
 
   std::map<std::string, int> dr_axis_linear_map;
   std::map<std::string, double> dr_scale_linear_map;
@@ -55,7 +54,8 @@ struct TeleopTwistJoy::Impl {
 
   // Arm maps
   std::map<std::string, int> arm_gen_axes_map;
-  std::map<std::string, double> arm_gen_scale_map;
+  std::map<std::string, double> arm_gen_scale_fk_map;
+  std::map<std::string, double> arm_gen_scale_ik_map;
   std::map<std::string, int> ik_axes_map;
   std::map<std::string, double> ik_scale_map;
   std::map<std::string, int> fk_axes_map;
@@ -114,16 +114,22 @@ TeleopTwistJoy::TeleopTwistJoy(ros::NodeHandle *nh, ros::NodeHandle *nh_param) {
                             pimpl_->dr_scale_angular_map["yaw"]);
   }
 
-  if (!nh_param->getParam("ik_enable_button", pimpl_->ik_enable_button)) {
-    ROS_ERROR("FAILED");
-  }
-  if (!nh_param->getParam("fk_enable_button", pimpl_->fk_enable_button)) {
+  //if (!nh_param->getParam("ik_enable_button", pimpl_->ik_enable_button)) {
+  //  ROS_ERROR("FAILED");
+  //}
+  //if (!nh_param->getParam("fk_enable_button", pimpl_->fk_enable_button)) {
+  // ROS_ERROR("FAILED");
+  //}
+  if (!nh_param->getParam("arm_enable_button", pimpl_->arm_enable_button)) {
     ROS_ERROR("FAILED");
   }
   if (!nh_param->getParam("arm_gen_axes", pimpl_->arm_gen_axes_map)) {
     ROS_ERROR("FAILED");
   }
-  if (!nh_param->getParam("arm_gen_scales", pimpl_->arm_gen_scale_map)) {
+  if (!nh_param->getParam("arm_gen_fk_scales", pimpl_->arm_gen_scale_fk_map)) {
+    ROS_ERROR("FAILED");
+  }
+  if (!nh_param->getParam("arm_gen_ik_scales", pimpl_->arm_gen_scale_ik_map)) {
     ROS_ERROR("FAILED");
   }
   if (!nh_param->getParam("ik_axes", pimpl_->ik_axes_map)) {
@@ -143,10 +149,12 @@ TeleopTwistJoy::TeleopTwistJoy(ros::NodeHandle *nh, ros::NodeHandle *nh_param) {
                  pimpl_->dr_enable_button);
   ROS_INFO_COND_NAMED(pimpl_->dr_enable_turbo_button >= 0, "TeleopTwistJoy",
                       "Turbo on button %i.", pimpl_->dr_enable_turbo_button);
-  ROS_INFO_NAMED("TeleopTwistJoy", "Teleop ik enable button %i.",
-                 pimpl_->ik_enable_button);
-  ROS_INFO_NAMED("TeleopTwistJoy", "Teleop fk enable button %i.",
-                 pimpl_->fk_enable_button);
+//  ROS_INFO_NAMED("TeleopTwistJoy", "Teleop ik enable button %i.",
+//                 pimpl_->ik_enable_button);
+//  ROS_INFO_NAMED("TeleopTwistJoy", "Teleop fk enable button %i.",
+//                 pimpl_->fk_enable_button);
+  ROS_INFO_NAMED("TeleopTwistJoy", "Teleop arm enable button %i.",
+                 pimpl_->arm_enable_button);
 
   for (auto &pair : pimpl_->dr_axis_linear_map) {
     ROS_INFO_NAMED("TeleopTwistJoy", "Linear axis %s on %i at scale %f.",
@@ -169,9 +177,10 @@ TeleopTwistJoy::TeleopTwistJoy(ros::NodeHandle *nh, ros::NodeHandle *nh_param) {
   }
 
   for (auto &pair : pimpl_->arm_gen_axes_map) {
-    ROS_INFO_NAMED("TeleopTwistJoy", "General arm axis %s on %i at scale %f.",
+    ROS_INFO_NAMED("TeleopTwistJoy", "General arm fk axis %s on %i at fk scale %f and ik scale %f.",
                    pair.first.c_str(), pair.second,
-                   pimpl_->arm_gen_scale_map[pair.first]);
+                   pimpl_->arm_gen_scale_fk_map[pair.first],
+                   pimpl_->arm_gen_scale_ik_map[pair.first]);
   }
   for (auto &pair : pimpl_->ik_axes_map) {
     ROS_INFO_NAMED("TeleopTwistJoy", "IK axis %s on %i at scale %f.",
@@ -261,62 +270,120 @@ void TeleopTwistJoy::Impl::joyCallback(
   }
 
 
-  if (joy_msg->buttons[fk_enable_button]) {
-    arm_cmd_msg.ik_status = false;
+//  if (joy_msg->buttons[fk_enable_button]) {
+//    arm_cmd_msg.ik_status = false;
+//    if (arm_gen_axes_map.find("turntable") != arm_gen_axes_map.end()) {
+//      arm_cmd_msg.data_points[0] =
+//          joy_msg->axes[arm_gen_axes_map["turntable"]] *
+//          arm_gen_scale_map["turntable"];
+//    }
+//    if (arm_gen_axes_map.find("wristroll") != arm_gen_axes_map.end()) {
+//      arm_cmd_msg.data_points[4] =
+//          joy_msg->axes[arm_gen_axes_map["wristroll"]] *
+//          arm_gen_scale_map["wristroll"];
+//    }
+//    if (arm_gen_axes_map.find("claw") != arm_gen_axes_map.end()) {
+//      arm_cmd_msg.data_points[5] =
+//          joy_msg->axes[arm_gen_axes_map["claw"]] * arm_gen_scale_map["claw"];
+//    }
+//    if (fk_axes_map.find("shoulder") != fk_axes_map.end()) {
+//      arm_cmd_msg.data_points[1] =
+//          joy_msg->axes[fk_axes_map["shoulder"]] * fk_scale_map["shoulder"];
+//    }
+//    if (fk_axes_map.find("elbow") != fk_axes_map.end()) {
+//      arm_cmd_msg.data_points[2] =
+//          joy_msg->axes[fk_axes_map["elbow"]] * fk_scale_map["elbow"];
+//    }
+//    if (fk_axes_map.find("wrist") != fk_axes_map.end()) {
+//      arm_cmd_msg.data_points[3] =
+//          joy_msg->axes[fk_axes_map["wrist"]] * fk_scale_map["wrist"];
+//    }
+//    arm_control_pub.publish(arm_cmd_msg);
+//    sent_arm_disable_msg = false;
+//  } else if (joy_msg->buttons[ik_enable_button]) {
+//    arm_cmd_msg.ik_status = true;
+//    if (arm_gen_axes_map.find("turntable") != arm_gen_axes_map.end()) {
+//      arm_cmd_msg.data_points[0] =
+//          joy_msg->axes[arm_gen_axes_map["turntable"]] *
+//          arm_gen_scale_map["turntable"];
+//    }
+//    if (arm_gen_axes_map.find("wristroll") != arm_gen_axes_map.end()) {
+//      arm_cmd_msg.data_points[4] =
+//          joy_msg->axes[arm_gen_axes_map["wristroll"]] *
+//          arm_gen_scale_map["wristroll"];
+//    }
+//    if (arm_gen_axes_map.find("claw") != arm_gen_axes_map.end()) {
+//      arm_cmd_msg.data_points[5] =
+//          joy_msg->axes[arm_gen_axes_map["claw"]] * arm_gen_scale_map["claw"];
+//    }
+//    if (ik_axes_map.find("fwd") != ik_axes_map.end()) {
+//      arm_cmd_msg.data_points[1] =
+//          joy_msg->axes[ik_axes_map["fwd"]] * ik_scale_map["fwd"];
+//    }
+//    if (ik_axes_map.find("up") != ik_axes_map.end()) {
+//      arm_cmd_msg.data_points[2] =
+//          joy_msg->axes[ik_axes_map["up"]] * ik_scale_map["up"];
+//    }
+//    if (ik_axes_map.find("theta") != ik_axes_map.end()) {
+//      arm_cmd_msg.data_points[3] =
+//          joy_msg->axes[ik_axes_map["theta"]] * ik_scale_map["theta"];
+//    }
+//    arm_control_pub.publish(arm_cmd_msg);
+//    sent_arm_disable_msg = false;
+//  } else {
+//    // When enable button is released, immediately send a single no-motion
+//    // command
+//    // in order to stop the robot.
+//    if (!sent_arm_disable_msg) {
+//      arm_control_pub.publish(arm_cmd_msg);
+//      sent_arm_disable_msg = true;
+//    }
+//  }
+  if (joy_msg->buttons[arm_enable_button]) {
     if (arm_gen_axes_map.find("turntable") != arm_gen_axes_map.end()) {
-      arm_cmd_msg.data_points[0] =
+      arm_cmd_msg.fk_arm_cmds[0] =
           joy_msg->axes[arm_gen_axes_map["turntable"]] *
-          arm_gen_scale_map["turntable"];
+          arm_gen_scale_fk_map["turntable"];
+      arm_cmd_msg.ik_arm_cmds[0] =
+          joy_msg->axes[arm_gen_axes_map["turntable"]] *
+          arm_gen_scale_ik_map["turntable"];
     }
     if (arm_gen_axes_map.find("wristroll") != arm_gen_axes_map.end()) {
-      arm_cmd_msg.data_points[4] =
+      arm_cmd_msg.fk_arm_cmds[4] =
           joy_msg->axes[arm_gen_axes_map["wristroll"]] *
-          arm_gen_scale_map["wristroll"];
+          arm_gen_scale_fk_map["wristroll"];
+      arm_cmd_msg.ik_arm_cmds[4] =
+          joy_msg->axes[arm_gen_axes_map["wristroll"]] *
+          arm_gen_scale_ik_map["wristroll"];
     }
     if (arm_gen_axes_map.find("claw") != arm_gen_axes_map.end()) {
-      arm_cmd_msg.data_points[5] =
-          joy_msg->axes[arm_gen_axes_map["claw"]] * arm_gen_scale_map["claw"];
+      arm_cmd_msg.fk_arm_cmds[5] =
+          joy_msg->axes[arm_gen_axes_map["claw"]] * arm_gen_scale_fk_map["claw"];
+      arm_cmd_msg.ik_arm_cmds[5] =
+          joy_msg->axes[arm_gen_axes_map["claw"]] * arm_gen_scale_ik_map["claw"];
     }
     if (fk_axes_map.find("shoulder") != fk_axes_map.end()) {
-      arm_cmd_msg.data_points[1] =
+      arm_cmd_msg.fk_arm_cmds[1] =
           joy_msg->axes[fk_axes_map["shoulder"]] * fk_scale_map["shoulder"];
     }
     if (fk_axes_map.find("elbow") != fk_axes_map.end()) {
-      arm_cmd_msg.data_points[2] =
+      arm_cmd_msg.fk_arm_cmds[2] =
           joy_msg->axes[fk_axes_map["elbow"]] * fk_scale_map["elbow"];
     }
     if (fk_axes_map.find("wrist") != fk_axes_map.end()) {
-      arm_cmd_msg.data_points[3] =
+      arm_cmd_msg.fk_arm_cmds[3] =
           joy_msg->axes[fk_axes_map["wrist"]] * fk_scale_map["wrist"];
     }
-    arm_control_pub.publish(arm_cmd_msg);
-    sent_arm_disable_msg = false;
-  } else if (joy_msg->buttons[ik_enable_button]) {
-    arm_cmd_msg.ik_status = true;
-    if (arm_gen_axes_map.find("turntable") != arm_gen_axes_map.end()) {
-      arm_cmd_msg.data_points[0] =
-          joy_msg->axes[arm_gen_axes_map["turntable"]] *
-          arm_gen_scale_map["turntable"];
-    }
-    if (arm_gen_axes_map.find("wristroll") != arm_gen_axes_map.end()) {
-      arm_cmd_msg.data_points[4] =
-          joy_msg->axes[arm_gen_axes_map["wristroll"]] *
-          arm_gen_scale_map["wristroll"];
-    }
-    if (arm_gen_axes_map.find("claw") != arm_gen_axes_map.end()) {
-      arm_cmd_msg.data_points[5] =
-          joy_msg->axes[arm_gen_axes_map["claw"]] * arm_gen_scale_map["claw"];
-    }
     if (ik_axes_map.find("fwd") != ik_axes_map.end()) {
-      arm_cmd_msg.data_points[1] =
+      arm_cmd_msg.ik_arm_cmds[1] =
           joy_msg->axes[ik_axes_map["fwd"]] * ik_scale_map["fwd"];
     }
     if (ik_axes_map.find("up") != ik_axes_map.end()) {
-      arm_cmd_msg.data_points[2] =
+      arm_cmd_msg.ik_arm_cmds[2] =
           joy_msg->axes[ik_axes_map["up"]] * ik_scale_map["up"];
     }
     if (ik_axes_map.find("theta") != ik_axes_map.end()) {
-      arm_cmd_msg.data_points[3] =
+      arm_cmd_msg.ik_arm_cmds[3] =
           joy_msg->axes[ik_axes_map["theta"]] * ik_scale_map["theta"];
     }
     arm_control_pub.publish(arm_cmd_msg);
