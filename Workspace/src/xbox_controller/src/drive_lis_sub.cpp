@@ -121,28 +121,28 @@ TeleopTwistJoy::TeleopTwistJoy(ros::NodeHandle *nh, ros::NodeHandle *nh_param) {
   // ROS_ERROR("FAILED");
   //}
   if (!nh_param->getParam("arm_enable_button", pimpl_->arm_enable_button)) {
-    ROS_ERROR("FAILED");
+    ROS_ERROR("arm_enable_button FAILED");
   }
   if (!nh_param->getParam("arm_gen_axes", pimpl_->arm_gen_axes_map)) {
-    ROS_ERROR("FAILED");
+    ROS_ERROR("arm_gen_axes FAILED");
   }
   if (!nh_param->getParam("arm_gen_fk_scales", pimpl_->arm_gen_scale_fk_map)) {
-    ROS_ERROR("FAILED");
+    ROS_ERROR("arm_gen_fk_scales FAILED");
   }
   if (!nh_param->getParam("arm_gen_ik_scales", pimpl_->arm_gen_scale_ik_map)) {
-    ROS_ERROR("FAILED");
+    ROS_ERROR("arm_gen_ik_scales FAILED");
   }
   if (!nh_param->getParam("ik_axes", pimpl_->ik_axes_map)) {
-    ROS_ERROR("FAILED");
+    ROS_ERROR("ik_axes FAILED");
   }
   if (!nh_param->getParam("ik_scales", pimpl_->ik_scale_map)) {
-    ROS_ERROR("FAILED");
+    ROS_ERROR("ik_scales FAILED");
   }
   if (!nh_param->getParam("fk_axes", pimpl_->fk_axes_map)) {
-    ROS_ERROR("FAILED");
+    ROS_ERROR("fk_axes FAILED");
   }
   if (!nh_param->getParam("fk_scales", pimpl_->fk_scale_map)) {
-    ROS_ERROR("FAILED");
+    ROS_ERROR("fk_scales FAILED");
   }
 
   ROS_INFO_NAMED("TeleopTwistJoy", "Teleop drive enable button %i.",

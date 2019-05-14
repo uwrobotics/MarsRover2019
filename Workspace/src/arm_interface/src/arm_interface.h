@@ -14,7 +14,7 @@ class ArmControlInterface {
 public:
   ArmControlInterface(float dT)
       : m_dT(dT), m_desiredAnglesPublisher(NULL), m_actualAnglesPublisher(NULL),
-        m_canPublisher(NULL), m_isReady(false), m_isFirstRun(true) {
+        m_canPublisher(NULL), m_isReady(false), m_isFirstRun(true), m_currentMode(s_modeOpenLoop) {
     ikControl = new Roboarm((double *)s_linkLengths, (double *)s_defaultAngles);
 
     m_jointsReady = std::vector<bool>(s_numJoints, false);
@@ -98,6 +98,7 @@ public:
     }
 
     PublishCan();
+    PublishAngles();
   }
 
   void SetPublishers(ros::Publisher *desiredAnglesPublisher,

@@ -1,6 +1,4 @@
 #include "arm_interface.h"
-#include <arm_interface/ArmCmd.h>
-#include <can_msgs/Frame.h>
 #include <ros/ros.h>
 #include <std_msgs/Float64MultiArray.h>
 #include <std_msgs/Int32.h>
