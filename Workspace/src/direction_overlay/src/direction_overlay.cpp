@@ -46,10 +46,15 @@ void imageCallback(const sensor_msgs::Image::ConstPtr& image){
       return;
     }
 
+    // Test Code
+    heading = heading - 1.5; //Decrementing heading for testing
+    if (heading >= 0)
+    	heading = fmod(heading, 360.0); 
+    else
+	heading = 360 + heading;
+    // -------------------------------
+
     // Variables for the compass scale
-    heading = heading + 1.5; //Incrementing heading for testing
-    heading = fmod(heading, 360.0);
-    //float heading = 10;
     int lineThickness = 2;
     int scale = 2;
     int tallHeight = round(image->height * 0.06);
