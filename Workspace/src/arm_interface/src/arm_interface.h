@@ -13,7 +13,7 @@
 class ArmControlInterface {
 public:
   ArmControlInterface(float dT)
-      : m_dT(dT), m_desiredAnglesPublisher(NULL), m_actualAnglesPublisher(NULL),
+      : m_dT(dT), m_desiredAnglesPublisher(NULL), m_desiredPosPublisher(NULL), m_actualAnglesPublisher(NULL),
         m_canPublisher(NULL), m_isReady(false), m_isFirstRun(true), m_currentMode(s_modeOpenLoop) {
     ikControl = new Roboarm((double *)s_linkLengths, (double *)s_defaultAngles);
 
@@ -102,9 +102,11 @@ public:
   }
 
   void SetPublishers(ros::Publisher *desiredAnglesPublisher,
+                     ros::Publisher *desiredPosPublisher,
                      ros::Publisher *actualAnglesPublisher,
                      ros::Publisher *canPublisher) {
     m_desiredAnglesPublisher = desiredAnglesPublisher;
+    m_desiredPosPublisher = desiredPosPublisher;
     m_actualAnglesPublisher = actualAnglesPublisher;
     m_canPublisher = canPublisher;
   }
@@ -116,6 +118,8 @@ private:
   bool m_isFirstRun;
   ros::Publisher *m_desiredAnglesPublisher;
   ros::Publisher *m_actualAnglesPublisher;
+  ros::Publisher *m_desiredPosPublisher;
+  ros::Publisher *m_actualPosPublisher;
   ros::Publisher *m_canPublisher;
 
   Roboarm *ikControl; // ik controls
@@ -163,7 +167,7 @@ private:
   static const int s_endEffectorThetaIdx = 2;
 
   static const int s_numModeIds = 4;
-  const int s_modeCanIds[4] = {0x301, 0x302, 0x304, 0x400};
+  const int s_modeCanIds[4] = {0x300, 0x302, 0x304, 0x400};
   const int s_ctrlCanIds[6] = {0x301, 0x303, 0x305, 0x401, 0x402, 0x403};
 
   // Arm control modes
@@ -178,18 +182,18 @@ private:
 
   void InitializePositions() {
     double outPos[3];
-    double linkAngles[3] = {m_actualJointPos[s_shoulderIdx] * M_PI / 180,
+    double linkAngles[] = {m_actualJointPos[s_shoulderIdx] * M_PI / 180,
                             m_actualJointPos[s_elbowIdx] * M_PI / 180,
                             m_actualJointPos[s_wristPitchIdx] * M_PI / 180};
     CalculateFk(linkAngles, outPos);
 
-    m_desiredJointPos[s_turntableIdx] = m_actualJointPos[s_turntableIdx];
-    m_desiredJointPos[s_wristRollIdx] = m_actualJointPos[s_wristRollIdx];
-    m_desiredJointPos[s_clawIdx] = m_actualJointPos[s_clawIdx];
+    // m_desiredJointPos[s_turntableIdx] = m_actualJointPos[s_turntableIdx];
+    // m_desiredJointPos[s_wristRollIdx] = m_actualJointPos[s_wristRollIdx];
+    // m_desiredJointPos[s_clawIdx] = m_actualJointPos[s_clawIdx];
 
     m_desiredEndEffectorPos[s_endEffectorXIdx] = outPos[s_endEffectorXIdx];
-    m_desiredEndEffectorPos[s_endEffectorYIdx] = outPos[s_endEffectorXIdx];
-    m_desiredEndEffectorPos[s_endEffectorThetaIdx] = outPos[s_endEffectorXIdx];
+    m_desiredEndEffectorPos[s_endEffectorYIdx] = outPos[s_endEffectorYIdx];
+    m_desiredEndEffectorPos[s_endEffectorThetaIdx] = outPos[s_endEffectorThetaIdx] * 180 / M_PI;
   }
 
   void CalculateFk(double linkAngles[3], double outPos[3]) {
@@ -263,11 +267,11 @@ private:
     m_desiredEndEffectorPos[s_endEffectorThetaIdx] +=
         ikCmdVels[s_wristPitchIdx] * m_dT;
 
-    double endEffectorPos[s_numEndEffectorPos] = {
+    double endEffectorPos [] = {
         m_desiredEndEffectorPos[s_endEffectorXIdx],
         m_desiredEndEffectorPos[s_endEffectorYIdx],
         m_desiredEndEffectorPos[s_endEffectorThetaIdx] * M_PI / 180};
-    double currentAngles[s_numEndEffectorPos] = {
+    double currentAngles [] = {
         m_actualJointPos[s_shoulderIdx] * M_PI / 180,
         m_actualJointPos[s_elbowIdx] * M_PI / 180,
         m_actualJointPos[s_wristPitchIdx] * M_PI / 180};
@@ -321,6 +325,19 @@ private:
     msg.data.insert(msg.data.end(), m_actualJointPos.begin(),
                     m_actualJointPos.end());
     m_actualAnglesPublisher->publish(msg);
+
+
+    // Report angles and positions
+    // std_msgs::Float64MultiArray msg;
+    // msg.layout.dim.push_back(std_msgs::MultiArrayDimension());
+    msg.layout.dim[0].size = 3;
+    msg.layout.dim[0].stride = 1;
+    msg.layout.dim[0].label =
+        "angles"; // or whatever name you typically use to index vec1
+    msg.data.clear();
+    msg.data.insert(msg.data.end(), m_desiredEndEffectorPos.begin(),
+                    m_desiredEndEffectorPos.end());
+    m_desiredPosPublisher->publish(msg);
   }
 
   void PublishCan() {
@@ -331,6 +348,7 @@ private:
     for (int i = 0; i < s_numModeIds; i++) {
       canMsg.id = s_modeCanIds[i];
       *(int *)(canMsg.data.data()) = m_currentMode;
+      m_canPublisher->publish(canMsg);
     }
 
     for (int i = 0; i < s_numJoints; i++) {

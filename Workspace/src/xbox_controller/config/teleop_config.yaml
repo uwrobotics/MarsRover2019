@@ -49,9 +49,10 @@ arm_enable_button: 4
 #arm_axis_claw: 7 # Up/down cross
 #arm_scale_claw: 5 # cm/s
 
-arm_gen_axes: {turntable: 6, wristroll: 3, claw: 7} # L/R cross, L/R R joy, U/D cross
-arm_gen_scales_fk: {turntable: 1, wristroll: 1, claw: 1} # deg/s, deg/s, cm/s
-arm_gen_scales_ik: {turntable: 5, wristroll: 5, claw: 5} # deg/s, deg/s, cm/s
+# arm_gen_axes: {turntable: 6, wristroll: 3, claw: 7} # L/R cross, L/R R joy, U/D cross
+arm_gen_axes: {turntable: 0, wristroll: 3, claw: 2} # L/R cross, L/R R joy, U/D cross
+arm_gen_fk_scales: {turntable: 1, wristroll: 1, claw: 1} # deg/s, deg/s, cm/s
+arm_gen_ik_scales: {turntable: 5, wristroll: 5, claw: 5} # deg/s, deg/s, cm/s
 
 ## ik controls
 #ik_axis_fwd: 0 # Left/right left joy
@@ -63,7 +64,8 @@ arm_gen_scales_ik: {turntable: 5, wristroll: 5, claw: 5} # deg/s, deg/s, cm/s
 #ik_axis_theta: 4 # up/down right joy
 #ik_scale_theta: 5 # deg/s
 
-ik_axes: {fwd: 0, up: 1, theta: 4} # R/L L joy, U/D L joy, U/D R joy
+# ik_axes: {fwd: 0, up: 1, theta: 4} # R/L L joy, U/D L joy, U/D R joy
+ik_axes: {fwd: 7, up: 6, theta: 4} # R/L L joy, U/D L joy, U/D R joy
 ik_scales: {fwd: -5, up: 5, theta: 5} # cm/s, cm/s, deg/s
 
 ## fk controls
@@ -76,5 +78,6 @@ ik_scales: {fwd: -5, up: 5, theta: 5} # cm/s, cm/s, deg/s
 #fk_axis_wrist: 4 # up/down right joy
 #fk_scale_wrist: 5 # deg/s
 
-fk_axes: {shoulder: 0, elbow: 1, wrist: 4} # U/D L joy, R/L L joy, U/D R joy
+# fk_axes: {shoulder: 0, elbow: 1, wrist: 4} # U/D L joy, R/L L joy, U/D R joy
+fk_axes: {shoulder: 7, elbow: 6, wrist: 4} # U/D L joy, R/L L joy, U/D R joy
 fk_scales: {shoulder: 1, elbow: 1, wrist: 1} # cm/s, cm/s, deg/s

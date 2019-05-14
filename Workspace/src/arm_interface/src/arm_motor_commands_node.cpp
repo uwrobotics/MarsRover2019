@@ -28,6 +28,10 @@ int main(int argc, char **argv) {
       "/arm_interface/desired_joint_angles", 1);
   ros::Publisher actAnglesPub = nh.advertise<std_msgs::Float64MultiArray>(
       "/arm_interface/actual_joint_angles", 1);
+  ros::Publisher desPosPub = nh.advertise<std_msgs::Float64MultiArray>(
+      "/arm_interface/desired_pos", 1);
+  ros::Publisher actPosPub = nh.advertise<std_msgs::Float64MultiArray>(
+      "/arm_interface/actual_pos", 1);
   ros::Publisher canPub = nh.advertise<can_msgs::Frame>("/CAN_transmitter", 10);
 
   std::vector<ros::Subscriber> canSubs(6);
@@ -40,7 +44,7 @@ int main(int argc, char **argv) {
       nh.subscribe("/arm_interface/arm_cmd", 1,
                    &ArmControlInterface::ArmCmdCallback, &armCtrlInterface);
 
-  armCtrlInterface.SetPublishers(&desAnglesPub, &actAnglesPub, &canPub);
+  armCtrlInterface.SetPublishers(&desAnglesPub, &desPosPub, &actAnglesPub, &canPub);
 
   ros::Rate rate(freq);
 

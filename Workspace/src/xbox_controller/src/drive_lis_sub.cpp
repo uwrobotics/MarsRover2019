@@ -346,6 +346,8 @@ void TeleopTwistJoy::Impl::joyCallback(
       arm_cmd_msg.fk_arm_cmds[0] =
           joy_msg->axes[arm_gen_axes_map["turntable"]] *
           arm_gen_scale_fk_map["turntable"];
+      ROS_INFO("Msg val %f", joy_msg->axes[arm_gen_axes_map["turntable"]] );
+      ROS_INFO("Msg scale %f", arm_gen_scale_fk_map["turntable"] );
       arm_cmd_msg.ik_arm_cmds[0] =
           joy_msg->axes[arm_gen_axes_map["turntable"]] *
           arm_gen_scale_ik_map["turntable"];
