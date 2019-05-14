@@ -202,6 +202,8 @@ void TeleopTwistJoy::Impl::joyCallback(
   geometry_msgs::Twist cmd_vel_msg;
   arm_interface::ArmCmd arm_cmd_msg;
   arm_cmd_msg.data_points.resize(6);
+  arm_cmd_msg.fk_arm_cmds.resize(6);
+  arm_cmd_msg.ik_arm_cmds.resize(6);
 
   if (dr_enable_turbo_button >= 0 && joy_msg->buttons[dr_enable_turbo_button]) {
     if (dr_axis_linear_map.find("x") != dr_axis_linear_map.end()) {
@@ -389,6 +391,7 @@ void TeleopTwistJoy::Impl::joyCallback(
     arm_control_pub.publish(arm_cmd_msg);
     sent_arm_disable_msg = false;
   } else {
+    
     // When enable button is released, immediately send a single no-motion
     // command
     // in order to stop the robot.
