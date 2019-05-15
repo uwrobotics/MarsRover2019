@@ -64,7 +64,7 @@ public:
 
     // Reset positions if mode changed back to ik position
     if (m_currentMode == s_modeIkPos) {
-      m_isFirstRun = false;
+      InitializePositions();
     }
 
     return true;
@@ -76,10 +76,10 @@ public:
       return;
     }
 
-    if (m_isFirstRun) {
-      InitializePositions();
-      m_isFirstRun = false;
-    }
+    // if (m_isFirstRun) {
+    //   InitializePositions();
+    //   m_isFirstRun = false;
+    // }
 
     // Process service requests and run
 
@@ -181,6 +181,7 @@ private:
   static const int s_dlc = 8; // not sure about this
 
   void InitializePositions() {
+    ROS_INFO("INitializing position");
     double outPos[3];
     double linkAngles[] = {m_actualJointPos[s_shoulderIdx] * M_PI / 180,
                             m_actualJointPos[s_elbowIdx] * M_PI / 180,
@@ -253,11 +254,11 @@ private:
     m_canCmds[s_wristRollIdx] = ikCmdVels[s_wristRollIdx];
     m_canCmds[s_clawIdx] = ikCmdVels[s_clawIdx];
     m_canCmds[s_shoulderIdx] =
-        ikControl->linkVelocities[s_endEffectorXIdx] * 180 / M_PI;
+        ikControl->linkVelocities[0] * 180 / M_PI;
     m_canCmds[s_elbowIdx] =
-        ikControl->linkVelocities[s_endEffectorYIdx] * 180 / M_PI;
+        ikControl->linkVelocities[1] * 180 / M_PI;
     m_canCmds[s_wristPitchIdx] =
-        ikControl->linkVelocities[s_endEffectorThetaIdx] * 180 / M_PI;
+        ikControl->linkVelocities[2] * 180 / M_PI;
   }
 
   void RunIkPos(std::vector<double> ikCmdVels) {

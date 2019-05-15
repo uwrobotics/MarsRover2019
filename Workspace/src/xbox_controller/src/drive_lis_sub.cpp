@@ -126,10 +126,10 @@ TeleopTwistJoy::TeleopTwistJoy(ros::NodeHandle *nh, ros::NodeHandle *nh_param) {
   if (!nh_param->getParam("arm_gen_axes", pimpl_->arm_gen_axes_map)) {
     ROS_ERROR("arm_gen_axes FAILED");
   }
-  if (!nh_param->getParam("arm_gen_fk_scales", pimpl_->arm_gen_scale_fk_map)) {
+  if (!nh_param->getParam("arm_gen_scales_fk", pimpl_->arm_gen_scale_fk_map)) {
     ROS_ERROR("arm_gen_fk_scales FAILED");
   }
-  if (!nh_param->getParam("arm_gen_ik_scales", pimpl_->arm_gen_scale_ik_map)) {
+  if (!nh_param->getParam("arm_gen_scales_ik", pimpl_->arm_gen_scale_ik_map)) {
     ROS_ERROR("arm_gen_ik_scales FAILED");
   }
   if (!nh_param->getParam("ik_axes", pimpl_->ik_axes_map)) {
