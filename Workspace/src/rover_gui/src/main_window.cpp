@@ -28,6 +28,7 @@ MainWindow::MainWindow(int argc, char **argv, ros::NodeHandle &nh,
   // Initialize widgets
   ui.mapWidget->Init(mNh);
   ui.autonomyControlsWidget->Init(mNh);
+  ui.scienceControlsWidget->Init(mNh);
   ui.fovViewWidget->subscribe(mNh, "/tennis_ball_tracker/image");
   ui.drillCamViewWidget->subscribe(mNh, "/usb_cam1/image_raw");
   ui.clearanceCamView->subscribe(mNh, "/usb_cam2/image_raw");

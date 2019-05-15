@@ -1,0 +1,7 @@
+<launch>
+    <arg name="config_filepath" default="$(find science_interface)/config/science_config.yaml" />
+
+    <node pkg="science_interface" name="science_interface_node" type="science_interface_node">
+        <rosparam command="load" file="$(arg config_filepath)" />
+    </node>
+</launch>
