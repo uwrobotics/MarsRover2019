@@ -1,5 +1,5 @@
 # MarsRover2019
-[![Build Status](https://travis-ci.org/uwrobotics/MarsRover2019.svg?branch=master)](https://travis-ci.org/uwrobotics/MarsRover2019)
+[![Build Status](https://travis-ci.com/uwrobotics/MarsRover2019.svg?branch=master)](https://travis-ci.com/uwrobotics/MarsRover2019)
 
 All software for the 2019 UWRT Mars Rover 
 
