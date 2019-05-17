@@ -13,8 +13,8 @@ double targetAngleTheta, targetAngleY;
 ros::Publisher targetAnglesCanPub;
 ros::Subscriber targetAngleSub;
 
-size_t can_id_theta = 0x800;
-size_t can_id_y = 0x801;
+size_t can_id_theta = 0x700;
+size_t can_id_y = 0x701;
 
 void targetAnglesCallback(std_msgs::Pose2DConstPtr& msg) {
   ROS_INFO("received msg");
@@ -27,7 +27,7 @@ void CanInitialize() {
   can_msgs::Frame msg;
   msg.data[0] = 1;
   msg.dlc = 1;
-  msg.id = 0x800;
+  msg.id = 0x700;
   targetAnglesCanPub.publish(msg);
 }
 
