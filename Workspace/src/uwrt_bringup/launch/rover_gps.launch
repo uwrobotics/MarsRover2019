@@ -1,0 +1,8 @@
+<launch>
+	<node ns="rover" name="nmea_navsat_driver" pkg="nmea_navsat_driver" type="nmea_serial_driver" respawn="true">
+		<param name="baud" value="4800"/>
+
+		<!-- TODO: Change port -->
+		<param name="port" value="/dev/ttyUSB0"/> 
+	</node>
+</launch>
