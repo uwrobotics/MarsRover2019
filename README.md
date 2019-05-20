@@ -42,13 +42,13 @@ or you can bring it up and down manually:
 
 To enable/disable startup service:
 ```
-    $ sudo service myrobot start
-    $ sudo service myrobot stop
+    $ sudo service uwrt start
+    $ sudo service uwrt stop
 ```
 
 If the job rover is crashing on startup, view the logs:
 ```
-    $ sudo tail /var/log/upstart/myrobot.log -n 30
+    $ sudo tail /var/log/upstart/uwrt.log -n 30
 ```
 
 For more details, please read robot_upstart documentation.
