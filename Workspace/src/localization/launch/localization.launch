@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
   <include file="$(find localization)/launch/imu.launch"/>
-
+  <include file="$(find localization)/launch/rover_gps.launch"/>
 
   <node pkg="robot_localization" type="ekf_localization_node" name="rover_odom_localization">
     <rosparam command="load" file="$(find simulation)/config/rover_odom_localization.yaml" />
@@ -27,7 +27,7 @@
 
     <!-- input mapping -->
     <!--remap from="/imu/data" to=""/-->
-    <remap from="/gps/fix" to="/navsat/fix"/>
+    <remap from="/gps/fix" to="/rover/fix"/>
     <remap from="/odometry/filtered" to="/odometry/rover_gps_odom"/> <!-- it is looking for /odometry/filtered, we want /odometry/rover_gps_odom-->
     
     <!-- output mapping -->
