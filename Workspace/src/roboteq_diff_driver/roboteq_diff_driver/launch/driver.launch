@@ -13,11 +13,11 @@
     <!-- specify cmd_vel topic -->
     <param name="cmdvel_topic" value="cmd_vel" />
     <!-- specify port for roboteq controller -->
-    <param name="port_back" value="/dev/roboteq_back" />
+    <param name="port_back" value="/dev/uwrt-roboteq-back" />
     <!-- specify port for roboteq controller -->
-    <param name="port_right" value="/dev/roboteq_right" />
+    <param name="port_right" value="/dev/uwrt-roboteq-right" />
     <!-- specify port for roboteq controller -->
-    <param name="port_left" value="/dev/roboteq_left" />
+    <param name="port_left" value="/dev/uwrt-roboteq-left" />
     <!-- specify baud for roboteq controller -->
     <param name="baud" value="115200" />
     <!-- specify whether to use open-loop motor speed control (as opposed to closed-loop)-->
