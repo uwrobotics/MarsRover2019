@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
 <launch>
+  <include file="$(find localization)/launch/imu.launch"/>
+
 
   <node pkg="robot_localization" type="ekf_localization_node" name="rover_odom_localization">
     <rosparam command="load" file="$(find simulation)/config/rover_odom_localization.yaml" />
@@ -21,7 +23,7 @@
 
     <param name="frequency" value="5" />
     <param name="wait_for_datum" value="true" />
-    <rosparam param="datum">[49.9, 8.9, 0.0, map, base_link]</rosparam>
+    <!--rosparam param="datum">[49.9, 8.9, 0.0, map, base_link]</rosparam-->
 
     <!-- input mapping -->
     <!--remap from="/imu/data" to=""/-->
