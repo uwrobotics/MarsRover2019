@@ -1,0 +1,16 @@
+#Add the following entries to the bottom of every computer's hosts file (/etc/hosts)
+
+#900MHz UWRT
+192.168.9.100    jetson900
+
+192.168.9.200    melvin900
+192.168.9.201    haiyi900
+192.168.9.202    tom900
+
+#2.4GHZ UWRT
+192.168.24.100   jetson24
+192.168.24.101   pi24
+
+192.168.24.200   melvin24
+192.168.24.201   haiyi24
+192.168.24.202   tom24 
