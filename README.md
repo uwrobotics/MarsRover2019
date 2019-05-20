@@ -26,6 +26,33 @@ Ensure that all submodules are loaded, and that the husky submodule is on the ki
 Comment out the spawn_husky node in "husky/husky_gazebo/launch/spawn_husky.launch" and the GPS and IMU sensors in
 "husky/husky_description/urdf/husky.urdf.xacro".
 
+# Rover Setup
+The rover can be setup to start the ros software automatically when it boots. This is can be done using the robot_upstart package.
+
+
+To install:
+```
+    $ rosrun robot_upstart install uwrt_bringup/launch/rover.launch
+```
+
+This will create a job called ``uwrt`` on your machine, which launches
+base.launch. It will start automatically when you next start your machine,
+or you can bring it up and down manually:
+
+
+To enable/disable startup service:
+```
+    $ sudo service myrobot start
+    $ sudo service myrobot stop
+```
+
+If the job rover is crashing on startup, view the logs:
+```
+    $ sudo tail /var/log/upstart/myrobot.log -n 30
+```
+
+For more details, please read robot_upstart documentation.
+
 # Coding Standards
 For **C++** code, we follow the ROS coding guidelines. There is a `.clang_format` file that can automatically format your C++ code in the correct style.
 
