@@ -1,0 +1,4 @@
+<launch>
+	<incude file="$(find uwrt_bringup/launch/rover_gps.launch)"/>
+	<include file="$(find uwrt_bringup/launch/zed.launch)"/>
+</launch>
