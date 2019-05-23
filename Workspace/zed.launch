@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<launch>
-        <include file="$(find zed_wrapper)/launch/zed.launch">
-            <arg name="camera_model"            value="0" />
-            <arg name="resolution"          value="3" />
-            <arg name="frame_rate"      value="15" />
-            <arg name="verbose"             value="true" />
-        </include>
-</launch>

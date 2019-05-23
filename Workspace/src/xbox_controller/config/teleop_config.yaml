@@ -37,6 +37,7 @@ dr_enable_turbo_button: 5 # Right bumper button
 #### arm control ####
 ik_enable_button: 3
 fk_enable_button: 4
+arm_enable_button: 4
 
 ## general arm controls
 #arm_axis_turntable: 6 # Left/right cross
@@ -49,7 +50,8 @@ fk_enable_button: 4
 #arm_scale_claw: 5 # cm/s
 
 arm_gen_axes: {turntable: 6, wristroll: 3, claw: 7} # L/R cross, L/R R joy, U/D cross
-arm_gen_scales: {turntable: 5, wristroll: 5, claw: 5} # deg/s, deg/s, cm/s
+arm_gen_scales_fk: {turntable: 1, wristroll: 1, claw: 1} # deg/s, deg/s, cm/s
+arm_gen_scales_ik: {turntable: 5, wristroll: 5, claw: 5} # deg/s, deg/s, cm/s
 
 ## ik controls
 #ik_axis_fwd: 0 # Left/right left joy
@@ -75,4 +77,4 @@ ik_scales: {fwd: -5, up: 5, theta: 5} # cm/s, cm/s, deg/s
 #fk_scale_wrist: 5 # deg/s
 
 fk_axes: {shoulder: 0, elbow: 1, wrist: 4} # U/D L joy, R/L L joy, U/D R joy
-fk_scales: {shoulder: 5, elbow: 5, wrist: 5} # cm/s, cm/s, deg/s
+fk_scales: {shoulder: 1, elbow: 1, wrist: 1} # cm/s, cm/s, deg/s
