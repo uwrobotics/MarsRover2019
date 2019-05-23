@@ -9,7 +9,7 @@
 #include <sstream>
 #include <iostream>
 
-// Code to add precision to modify the precision of the to_string function
+// Modify the precision of the to_string function for flaots
 template <typename T> 
 std::string to_string_f(const T& val, const int n = 2){
     std::ostringstream out;
@@ -27,12 +27,17 @@ float heading = 0;
 image_transport::Publisher pubImage;
 image_transport::Subscriber subImage;
 
-/* Work in progress 
-geometry_msgs::Pose2DConstPtr curr = NULL;
+//geometry_msgs::Pose2DConstPtr curr = nullptr;
 
-void utmPubCallback(geometry_msgs::Pose2DConstPtr msg) { //Work in progress
-	curr = msg; 
-}*/
+
+void utmPubCallback(geometry_msgs::Pose2DConstPtr msg){
+	//curr = msg; 
+    heading = 90.0 - (msg->theta * 180 / (2 * M_PI));
+
+	if (heading < 0){ // Convert heading to a positive angle
+		heading = 360 + heading;	
+	} 
+}
 	
 
 void imageCallback(const sensor_msgs::Image::ConstPtr& image){
@@ -46,6 +51,7 @@ void imageCallback(const sensor_msgs::Image::ConstPtr& image){
       return;
     }
 
+	/*
     // Test Code
     heading = heading - 1.5; //Decrementing heading for testing
     if (heading >= 0)
@@ -53,6 +59,7 @@ void imageCallback(const sensor_msgs::Image::ConstPtr& image){
     else
 	heading = 360 + heading;
     // -------------------------------
+	*/
 
     // Variables for the compass scale
     int lineThickness = 2;
@@ -166,7 +173,7 @@ int main(int argc, char** argv){
     ros::NodeHandle n;
     image_transport::ImageTransport it_(n);
 
-    // Direction variables - work in progress -------------------------------------------
+    // Direction variables - work in progress/may not need -------------------------------------------
     //latA, longA, latB, longB, X, Y,
 
     //double theta = 0;
@@ -181,15 +188,23 @@ int main(int argc, char** argv){
 
     //this is the bearing in degrees, 0 is north, 90 is east, 180 is south, 270 is west
     //double theta = atan2(X, Y);
-
-    //ros::Subscriber utmSub = n.subscribe<geometry_msgs::Pose2D>("/localization/pose_utm", 1 utmPubCallback);
     // ----------------------------------------------------------------------------------
+
+    ros::Subscriber utmSub = n.subscribe<geometry_msgs::Pose2D>("/localization/pose_utm", 1, utmPubCallback);
 
     //subImage = it_.subscribe("/zed/left/image_rect_color", 1, imageCallback); //zed camera feed
     subImage = it_.subscribe("/camera/image_raw", 1, imageCallback); //testing with pointgrey camera
     pubImage = it_.advertise("/direction_overlay/image", 1);
     
-    ros::spin();
+	ros::Rate loopRate(30);
+
+	while (ros::ok()){
+		loopRate.sleep();
+		ros::spinOnce();
+	}
+	if (!ros::ok()){
+		return -1;	
+	}
 
     return 0;
 }
