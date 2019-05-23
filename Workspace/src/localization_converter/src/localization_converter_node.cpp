@@ -57,6 +57,8 @@ int main(int argc, char **argv) {
       nh.advertise<geometry_msgs::Pose2D>("/localization/pose_utm", 1);
   ros::Publisher mapPub =
       nh.advertise<geometry_msgs::Pose2D>("/localization/pose_map", 1);
+  ros::Publisher odomPub =
+      nh.advertise<geometry_msgs::Pose2D>("/localization/pose_odom", 1);
 
   ConsoleMessage::Initialize(nh);
 
@@ -101,6 +103,10 @@ int main(int argc, char **argv) {
     geometry_msgs::Pose2D mapPose;
     CreatePoseMsgForFrame("map", mapPose);
     mapPub.publish(mapPose);
+
+    geometry_msgs::Pose2D odomPose;
+    CreatePoseMsgForFrame("odom", odomPose);
+    odomPub.publish(odomPose);
 
     loopRate.sleep();
   }
