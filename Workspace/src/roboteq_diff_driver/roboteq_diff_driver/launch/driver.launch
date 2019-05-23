@@ -3,11 +3,13 @@
   <!-- publishes odom topic with base_link frame -->
   <!-- broadcasts odom->base_link transform -->
   <arg name="param" default="value" />
-  <node pkg="roboteq_diff_driver" type="driver" name="roboteq_diff_driver" output="screen">
+  <node pkg="roboteq_diff_driver" type="driver" name="roboteq_diff_driver" output="screen" respawn="true">
     <!-- enable broadcast of odom tf -->
     <param name="pub_odom_tf" value="true" />
     <!-- specify odom frame -->
     <param name="odom_frame" value="odom" />
+    <!-- specify odom topic -->
+    <param name="odom_topic" value="/roboteq/odom" />
     <!-- specify base frame -->
     <param name="base_frame" value="base_link" />
     <!-- specify cmd_vel topic -->
