@@ -1,0 +1,9 @@
+uint8 OPEN_LOOP=0
+uint8 IK_VEL=1
+uint8 IK_POS=2
+uint8 mode
+---
+uint8 OPEN_LOOP=0
+uint8 IK_VEL=1
+uint8 IK_POS=2
+uint8 mode

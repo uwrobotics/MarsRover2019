@@ -717,15 +717,9 @@ void MainNode::odom_publish()
   odom_last_time = nowtime;
 
 #ifdef _ODOM_DEBUG
-/*
-ROS_DEBUG("right: ");
-ROS_DEBUG(odom_encoder_right);
-ROS_DEBUG(" left: ");
-ROS_DEBUG(odom_encoder_left);
-ROS_DEBUG(" dt: ");
-ROS_DEBUG(dt);
-ROS_DEBUG("");
-*/
+
+ROS_DEBUG("right: %d left: %d dt: %f\n", odom_encoder_right, odom_encoder_left, dt );
+
 #endif
 
   // determine deltas of distance and angle
@@ -791,12 +785,12 @@ ROS_DEBUG("");
   odom_msg.pose.pose.position.y = odom_y;
   odom_msg.pose.pose.position.z = 0.0;
   odom_msg.pose.pose.orientation = quat;
-  odom_msg.twist.twist.linear.x = vx;
-  odom_msg.twist.twist.linear.y = vy;
+  odom_msg.twist.twist.linear.x = linear/dt;
+  odom_msg.twist.twist.linear.y = 0.0;
   odom_msg.twist.twist.linear.z = 0.0;
   odom_msg.twist.twist.angular.x = 0.0;
   odom_msg.twist.twist.angular.y = 0.0;
-  odom_msg.twist.twist.angular.z = vyaw;
+  odom_msg.twist.twist.angular.z = angular/dt;
   odom_pub.publish(odom_msg);
 
 }
