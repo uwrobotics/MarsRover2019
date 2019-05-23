@@ -6,6 +6,24 @@
 
 double jointAngles[6] = {0.0, 60, -30, -20, 0, 0};
 double jointVelocities[6] = {0.0};
+double jointModes[4] = {0.0};
+
+const int turntableIdx = 0;
+const int shoulderIdx = 1;
+const int elbowIdx = 2;
+const int endEffectorIdx = 3;
+const int wristPitchIdx = 3;
+const int wristRollIdx = 4;
+const int clawIdx = 5;
+
+constexpr int modeCanIds[4] = {0x300, 0x302, 0x304, 0x400};
+constexpr int ctrlCanIds[6] = {0x301, 0x303, 0x305, 0x401, 0x402, 0x403};
+
+const u_int8_t modeOpenLoop = 0x00;
+const u_int8_t modeIkVel = 0x01;
+const u_int8_t modeIkPos = 0x02;
+
+std::string joints[] = {"turntable", "shoulder", "elbow", "wrist_pitch", "wrist_roll", "claw"};
 
 std::string canTopics[] = {
     "/can/arm_joints/turntable", "/can/arm_joints/shoulder",
@@ -14,35 +32,64 @@ std::string canTopics[] = {
 
 ros::Publisher pubs[6];
 
+void setJoint(int jointIdx, int jointMode, const void *dataPtr)
+{
+  double data = *(double *)(dataPtr);
+  switch(jointMode)
+  {
+    case modeOpenLoop:
+      jointAngles[jointIdx] += data * 0.1;
+      ROS_INFO("Setting %s velocity %f", joints[jointIdx].c_str(), data);
+      break;
+    case modeIkVel:
+      jointAngles[jointIdx] += data * 0.1;
+      ROS_INFO("Setting %s velocity %f deg/s", joints[jointIdx].c_str(), data);
+      break;
+    case modeIkPos:
+      jointAngles[jointIdx] = data;
+      ROS_INFO("Setting %s position %f deg/s", joints[jointIdx].c_str(), data);
+      break;
+    default:
+      break;
+  }
+  ROS_INFO("shoulder set to %f", jointVelocities[shoulderIdx]);
+}
+
 void canCmdCallback(can_msgs::FrameConstPtr frame) {
   ROS_INFO("received %x", frame->id);
   switch (frame->id) {
-  case 0x301:
-    jointVelocities[0] = *(double *)(frame->data.data());
-    ROS_INFO("turntable set to %f", jointVelocities[0]);
-    break;
-  case 0x302:
-    jointVelocities[1] = *(double *)(frame->data.data());
-    ROS_INFO("shoulder set to %f", jointVelocities[1]);
-    break;
-  case 0x303:
-    jointVelocities[2] = *(double *)(frame->data.data());
-    ROS_INFO("elbow set to %f", jointVelocities[2]);
-    break;
-  case 0x401:
-    jointVelocities[3] = *(double *)(frame->data.data());
-    ROS_INFO("wristpitch set to %f", jointVelocities[3]);
-    break;
-  case 0x402:
-    jointVelocities[4] = *(double *)(frame->data.data());
-    ROS_INFO("wristroll set to %f", jointVelocities[4]);
-    break;
-  case 0x403:
-    jointVelocities[5] = *(double *)(frame->data.data());
-    ROS_INFO("claw set to %f", jointVelocities[5]);
-    break;
-  default:
-    break;
+    case modeCanIds[turntableIdx]:
+      jointModes[turntableIdx] = *(int *)(frame->data.data());
+      break;
+    case modeCanIds[shoulderIdx]:
+      jointModes[shoulderIdx] = *(int *)(frame->data.data());
+      break;
+    case modeCanIds[elbowIdx]:
+      jointModes[elbowIdx] = *(int *)(frame->data.data());
+      break;
+    case modeCanIds[endEffectorIdx]:
+      jointModes[endEffectorIdx] = *(int *)(frame->data.data());
+      break;
+    case ctrlCanIds[turntableIdx]:
+      setJoint(turntableIdx, jointModes[turntableIdx], frame->data.data());
+      break;
+    case ctrlCanIds[shoulderIdx]:
+      setJoint(shoulderIdx, jointModes[shoulderIdx], frame->data.data());
+      break;
+    case ctrlCanIds[elbowIdx]:
+      setJoint(elbowIdx, jointModes[elbowIdx], frame->data.data());
+      break;
+    case ctrlCanIds[wristPitchIdx]:
+      setJoint(wristPitchIdx, jointModes[endEffectorIdx], frame->data.data());
+      break;
+    case ctrlCanIds[wristRollIdx]:
+      setJoint(wristRollIdx, jointModes[endEffectorIdx], frame->data.data());
+      break;
+    case ctrlCanIds[clawIdx]:
+      setJoint(clawIdx, jointModes[endEffectorIdx], frame->data.data());
+      break;
+    default:
+      break;
   }
 }
 
@@ -70,9 +117,9 @@ int main(int argc, char **argv) {
 
   while (ros::ok()) {
     ros::spinOnce();
-    for (int i = 0; i < 6; i++) {
-      jointAngles[i] += jointVelocities[i] * 0.1;
-    }
+    // for (int i = 0; i < 6; i++) {
+    //   jointAngles[i] += jointVelocities[i] * 0.1;
+    // }
     PublishAngles();
     loopRate.sleep();
   }
