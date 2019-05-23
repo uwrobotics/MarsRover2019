@@ -500,7 +500,7 @@ alternate-background-color: rgb(136, 138, 133);</string>
           <string notr="true">color: rgb(136, 138, 133);</string>
          </property>
          <property name="currentIndex">
-          <number>2</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="tabAutonomy">
           <attribute name="title">
@@ -518,7 +518,7 @@ alternate-background-color: rgb(136, 138, 133);</string>
           </attribute>
           <layout class="QVBoxLayout" name="verticalLayout_19">
            <item>
-            <widget class="QWidget" name="widget_8" native="true"/>
+            <widget class="ArmControlsWidget" name="armControlsWidget" native="true"/>
            </item>
           </layout>
          </widget>
@@ -724,10 +724,16 @@ alternate-background-color: rgb(136, 138, 133);</string>
    <header>autonomycontrolswidget.hpp</header>
    <container>1</container>
   </customwidget>
-  <customwidget>
+   <customwidget>
    <class>ScienceControlsWidget</class>
    <extends>QWidget</extends>
    <header>sciencecontrolswidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ArmControlsWidget</class>
+   <extends>QWidget</extends>
+   <header>armcontrolswidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

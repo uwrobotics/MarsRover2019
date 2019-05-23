@@ -1,0 +1,8 @@
+#roboteq left
+SUBSYSTEMS=="usb", KERNEL=="ttyACM*", KERNELS=="7-1.1.2", ATTRS{idVendor}=="20d2", ATTRS{idProduct}=="5740", SYMLINK+="uwrt-roboteq-left", MODE:="0666"
+
+#roboteq right
+SUBSYSTEMS=="usb", KERNEL=="ttyACM*", KERNELS=="7-1.1.3", ATTRS{idVendor}=="20d2", ATTRS{idProduct}=="5740", SYMLINK+="uwrt-roboteq-right", MODE:="0666"
+
+#roboteq back
+SUBSYSTEMS=="usb", KERNEL=="ttyACM*", KERNELS=="7-1.1.1", ATTRS{idVendor}=="20d2", ATTRS{idProduct}=="5740", SYMLINK+="uwrt-roboteq-back", MODE:="0666"
