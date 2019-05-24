@@ -32,7 +32,7 @@ MainWindow::MainWindow(int argc, char **argv, ros::NodeHandle &nh,
   ui.fovViewWidget->subscribe(mNh, "/tennis_ball_tracker/image");
   ui.drillCamViewWidget->subscribe(mNh, "/usb_cam1/image_raw");
   ui.clearanceCamView->subscribe(mNh, "/usb_cam2/image_raw");
-  ui.depthViewWidget->subscribe(mNh, "/zed/depth/depth_registered", true);
+  ui.depthViewWidget->subscribe(mNh, "/zed/zed_node/depth/depth_registered", true);
   ui.consoleWidget->Init(mNh);
   ui.armviz->Init(mNh);
   ui.armControlsWidget->Init(mNh);

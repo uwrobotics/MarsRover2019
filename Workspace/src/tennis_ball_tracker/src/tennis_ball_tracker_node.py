@@ -86,7 +86,8 @@ def detectTennisBall(imageMsg):
 if __name__ == '__main__':
     rospy.init_node('tennis_ball_tracker', anonymous=True)
 
-    rospy.Subscriber("/zed/rgb/image_raw_color", Image, detectTennisBall)
+    rospy.Subscriber("/zed/zed_node/rgb/image_rect_color/compressed", Image, detectTennisBall)
+	#rospy.Subscriber("/zed/zed_node/rgb/image_rect_color", Image, detectTennisBall)
     pub = rospy.Publisher("/tennis_ball_tracker/image", Image, queue_size=1)
 
     while not rospy.is_shutdown():

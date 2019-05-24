@@ -192,8 +192,9 @@ int main(int argc, char** argv){
 
     ros::Subscriber utmSub = n.subscribe<geometry_msgs::Pose2D>("/localization/pose_utm", 1, utmPubCallback);
 
-    //subImage = it_.subscribe("/zed/left/image_rect_color", 1, imageCallback); //zed camera feed
-    subImage = it_.subscribe("/camera/image_raw", 1, imageCallback); //testing with pointgrey camera
+    subImage = it_.subscribe("/zed/zed_node/rgb/image_rect_color/compressed", 1, imageCallback); //zed camera feed
+	//subImage = it_.subscribe("/zed/zed_node/rgb/image_rect_color", 1, imageCallback); //zed camera feed
+    //subImage = it_.subscribe("/camera/image_raw", 1, imageCallback); //testing with pointgrey camera
     pubImage = it_.advertise("/direction_overlay/image", 1);
     
 	ros::Rate loopRate(30);
