@@ -9,7 +9,9 @@ transmitter_interface: "can0"
 
 #fiter for acceptable ids 
 can_ids: [0x500, 0x501, 0x502, 0x503, 0x504, 0x505,
-          0x510, 0x511, 0x512, 0x513, 0x514, 0x515, 0x516, 0x517, 0x518]
+          0x510, 0x511, 0x512, 0x513, 0x514, 0x515, 0x516, 0x517, 0x518,
+          0x520, 0x521,
+          0x530, 0x531, 0x532]
 # Topics
 # in ROS, dictionaries must have string keys
 ids_to_topics: {"0x500": "/can/arm_joints/turntable",
@@ -26,7 +28,12 @@ ids_to_topics: {"0x500": "/can/arm_joints/turntable",
                 "0x515": "/can/science/funnel",
                 "0x516": "/can/science/sensor_mount",
                 "0x517": "/can/science/temperature",
-                "0x518": "/can/science/moisture"}
+                "0x518": "/can/science/moisture",
+                "0x520": "/can/science/ultrasonic_left",
+                "0x521": "/can/science/ultrasonic_right",
+                "0x530": "/can/safety/current_sensor_1",
+                "0x531": "/can/safety/current_sensor_2"}
+                "0x532": "/can/safety/current_sensor_3"}
 
 #can_ids:          {"301": "shoulderEncoder",
 #                         "302": "elbowEncoder",
