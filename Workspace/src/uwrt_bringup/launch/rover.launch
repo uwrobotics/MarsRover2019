@@ -1,11 +1,9 @@
 <launch>
 	<arg name="node_respawn" default ="true" />
 
-	<include file="$(find roboteq_diff_driver)/launch/driver.launch">
-		<arg name="respawn" value="$(arg node_respawn)" />
-	</include>
+	<node name="enable_can_script" pkg="socketcan_bridge" type="enable_jetson_tx2_can.sh"/>
 
-        <include file="$(find uwrt_bringup)/launch/depth_camera.launch">
+	<include file="$(find roboteq_diff_driver)/launch/driver.launch">
 		<arg name="respawn" value="$(arg node_respawn)" />
 	</include>
 
@@ -17,6 +15,10 @@
 		<arg name="respawn" value="$(arg node_respawn)" />
 	</include>
 
+<!--        <include file="$(find uwrt_bringup)/launch/depth_camera.launch">
+                <arg name="respawn" value="$(arg node_respawn)" />
+        </include>
+-->
 	<node name="direction_overlay" pkg="direction_overlay" type="direction_overlay" output="screen" respawn="$(arg respawn)"/>
 
 	<node name="console_message" pkg="console_message" type="console_message" output="screen" respawn="$(arg respawn)"/>

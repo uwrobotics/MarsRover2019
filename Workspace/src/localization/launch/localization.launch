@@ -10,17 +10,17 @@
     <arg name="respawn" value="$(arg respawn)" />
   </include>
 
-  <node pkg="robot_localization" type="ekf_localization_node" name="rover_odom_localization" required="true" respawn="$(arg respawn)">
+  <node pkg="robot_localization" type="ekf_localization_node" name="rover_odom_localization" respawn="$(arg respawn)">
     <rosparam command="load" file="$(find simulation)/config/rover_odom_localization.yaml" />
     <remap from="/odometry/filtered" to="/odometry/rover_odom" />  
   </node>
 
-  <node pkg="robot_localization" type="ekf_localization_node" name="rover_gps_odom_localization" required="true" respawn="$(arg respawn)">
+  <node pkg="robot_localization" type="ekf_localization_node" name="rover_gps_odom_localization" respawn="$(arg respawn)">
     <rosparam command="load" file="$(find simulation)/config/rover_gps_odom_localization.yaml" />
     <remap from="/odometry/filtered" to="/odometry/rover_gps_odom" />
   </node>
 
-  <node pkg="robot_localization" type="navsat_transform_node" name="rover_navsat_transform" required="true" output="screen" respawn="$(arg respawn)">
+  <node pkg="robot_localization" type="navsat_transform_node" name="rover_navsat_transform" output="screen" respawn="$(arg respawn)">
     <param name="magnetic_declination_radians" value="0"/>
     <param name="yaw_offset" value="1.5707963"/>
     <param name="broadcast_utm_transform" value="true"/>
