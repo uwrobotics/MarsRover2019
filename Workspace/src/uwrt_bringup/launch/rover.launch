@@ -15,12 +15,12 @@
 		<arg name="respawn" value="$(arg node_respawn)" />
 	</include>
 
-<!--        <include file="$(find uwrt_bringup)/launch/depth_camera.launch">
+        <include file="$(find uwrt_bringup)/launch/depth_camera.launch">
                 <arg name="respawn" value="$(arg node_respawn)" />
         </include>
--->
-	<node name="direction_overlay" pkg="direction_overlay" type="direction_overlay" output="screen" respawn="$(arg respawn)"/>
 
-	<node name="console_message" pkg="console_message" type="console_message" output="screen" respawn="$(arg respawn)"/>
+	<node name="direction_overlay" pkg="direction_overlay" type="direction_overlay" output="screen" respawn="$(arg node_respawn)"/>
+
+	<node name="console_message" pkg="console_message" type="console_message" output="screen" respawn="$(arg node_respawn)"/>
 
 </launch>
