@@ -4,7 +4,7 @@
 #include <signal.h>
 #include <string>
 #include <sstream>
-
+#include <algorithm>
 
 #define DELTAT(_nowtime,_thentime) ((_thentime>_nowtime)?((0xffffffff-_thentime)+_nowtime):(_nowtime-_thentime))
 
@@ -274,8 +274,15 @@ ROS_DEBUG_STREAM("cmdvel speed right: " << right_speed << " left: " << left_spee
   if (open_loop)
   {
     // motor power (scale 0-1000)
-    int32_t right_power = right_speed / wheel_circumference * 60.0 / 82.0 * 1000.0;
-    int32_t left_power = left_speed / wheel_circumference * 60.0 / 82.0 * 1000.0;
+    int32_t right_power = right_speed / wheel_circumference * 60.0 / 300.0 * 1000.0;
+    int32_t left_power = left_speed / wheel_circumference * 60.0 / 300.0 * 1000.0;
+
+    right_power = std::max(-1000, right_power);
+    right_power = std::min(1000, right_power);
+    left_power = std::max(-1000, left_power);
+    left_power = std::min(1000, left_power);
+
+
 #ifdef _CMDVEL_DEBUG
 ROS_INFO_STREAM("cmdvel power right: " << right_power << " left: " << left_power);
 #endif
