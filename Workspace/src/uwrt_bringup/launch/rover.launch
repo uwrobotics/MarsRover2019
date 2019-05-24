@@ -1,4 +1,5 @@
 <launch>
 	<incude file="$(find localization)/launch/localization.launch"/>
-	<include file="$(find uwrt_bringup)/launch/zed.launch"/>
+	<include file="$(find uwrt_bringup)/launch/depth_camera.launch"/>
+	<include file="$(find uwrt_bringup)>
 </launch>
