@@ -22,24 +22,25 @@ uint8_t num_of_antenna_pings = 0;
 
 ros::Publisher angle_publisher;
 
-//void antenna_loc_callback(const sensor_msgs::NavSatFix::ConstPtr& ptr)
-//{
-//    // Average the first few fixes to get a more accurate permanent location of the antenna
-//    if (num_of_antenna_pings < MAX_ANTENNA_FIXES)
-//    {
-//        ROS_INFO("Received antenna location topic");
-//        std::string UTMZone;
-//        double utm_east, utm_north;
-//        RobotLocalization::NavsatConversions::LLtoUTM(ptr->latitude, ptr->longitude,
-//                utm_north, utm_east, UTMZone); // Converts lat/long to UTM east/west
+// using GPS on base station
+void antenna_loc_callback(const sensor_msgs::NavSatFix::ConstPtr& ptr)
+{
+   // Average the first few fixes to get a more accurate permanent location of the antenna
+   if (num_of_antenna_pings < MAX_ANTENNA_FIXES)
+   {
+       ROS_INFO("Received antenna location topic");
+       std::string UTMZone;
+       double utm_east, utm_north;
+       RobotLocalization::NavsatConversions::LLtoUTM(ptr->latitude, ptr->longitude,
+               utm_north, utm_east, UTMZone); // Converts lat/long to UTM east/west
 
-//        antenna_x_sum += utm_east;
-//        antenna_y_sum += utm_north;
+       antenna_x_sum += utm_east;
+       antenna_y_sum += utm_north;
 
-//        antenna_x = antenna_x_sum / ++num_of_antenna_pings;
-//        antenna_y = antenna_y_sum / num_of_antenna_pings;
-//    }
-//}
+       antenna_x = antenna_x_sum / ++num_of_antenna_pings;
+       antenna_y = antenna_y_sum / num_of_antenna_pings;
+   }
+}
 
 // utm version
 void rover_loc_utm_callback(const geometry_msgs::Pose2D::ConstPtr& msg)
@@ -90,41 +91,50 @@ void rover_loc_utm_callback(const geometry_msgs::Pose2D::ConstPtr& msg)
 void rover_loc_filtered_callback(const nav_msgs::Odometry::ConstPtr& msg) {
 //     ROS_INFO("Position-> x: [%f], y: [%f], z: [%f]", msg->pose.pose.position.x,msg->pose.pose.position.y, msg->pose.pose.position.z);
 //     ROS_INFO("Orientation-> x: [%f], y: [%f], z: [%f], w: [%f]", msg->pose.pose.orientation.x, msg->pose.pose.orientation.y, msg->pose.pose.orientation.z, msg->pose.pose.orientation.w);
-    
-    rover_x = msg->pose.pose.position.x;
-    rover_y = msg->pose.pose.position.y;
-    
-    // random fixed antenna location for now
-    antenna_x = 6.5;
-    antenna_y = -6.5;
-    
-    // convert quaternion orientation to just 2D yaw (don't really need this if using relative angles)
-    tf::Quaternion q(
-        msg->pose.pose.orientation.x,
-        msg->pose.pose.orientation.y,
-        msg->pose.pose.orientation.z,
-        msg->pose.pose.orientation.w
-    );
-    tf::Matrix3x3 m(q);
-    double roll, pitch, yaw;
-    m.getRPY(roll, pitch, yaw);
-    ROS_INFO("Yaw: [%f]", yaw);
-    
-    // Get vector of robot's position relative to Antenna
-    double diff_x = rover_x - antenna_x;
-    double diff_y = rover_y - antenna_y;
-    ROS_INFO ("Rover_x: %f,     Rover_y: %f", rover_x, rover_y);
-    ROS_INFO ("Antenna_x: %f,     Antenna_y: %f", antenna_x, antenna_y);
-    ROS_INFO ("Diff_x: %f,     Diff_y: %f", diff_x, diff_y);
-    
-    //Get rover's angle, atan2 returns positive angle with 0 being right, increasing CCW (east)
-    double target_antenna_angle = atan2(diff_y, diff_x) * 180 / M_PI; // Convert to degrees
-    ROS_INFO ("rover_angle_from_east: %f", target_antenna_angle);
 
-    // publish angle for pi to use
-    std_msgs::Float32 angle_msg;
-    angle_msg.data = target_antenna_angle;
-    angle_publisher.publish(angle_msg);
+	if (num_of_antenna_pings == 0)
+    {
+        ROS_DEBUG("No antenna ping received yet");
+        // Haven't received antenna location yet, do nothing
+        return;
+	}
+
+	else {
+	    rover_x = msg->pose.pose.position.x;
+	    rover_y = msg->pose.pose.position.y;
+	    
+	    // random fixed antenna location for testing
+	    // antenna_x = 6.5;
+	    // antenna_y = -6.5;
+	    
+	    // convert quaternion orientation to just 2D yaw (don't really need this if using relative angles)
+	    tf::Quaternion q(
+	        msg->pose.pose.orientation.x,
+	        msg->pose.pose.orientation.y,
+	        msg->pose.pose.orientation.z,
+	        msg->pose.pose.orientation.w
+	    );
+	    tf::Matrix3x3 m(q);
+	    double roll, pitch, yaw;
+	    m.getRPY(roll, pitch, yaw);
+	    ROS_INFO("Yaw: [%f]", yaw);
+	    
+	    // Get vector of robot's position relative to Antenna
+	    double diff_x = rover_x - antenna_x;
+	    double diff_y = rover_y - antenna_y;
+	    ROS_INFO ("Rover_x: %f,     Rover_y: %f", rover_x, rover_y);
+	    ROS_INFO ("Antenna_x: %f,     Antenna_y: %f", antenna_x, antenna_y);
+	    ROS_INFO ("Diff_x: %f,     Diff_y: %f", diff_x, diff_y);
+	    
+	    //Get rover's angle, atan2 returns positive angle with 0 being right, increasing CCW (east)
+	    double target_antenna_angle = atan2(diff_y, diff_x) * 180 / M_PI; // Convert to degrees
+	    ROS_INFO ("rover_angle_from_east: %f", target_antenna_angle);
+
+	    // publish angle for pi to use
+	    std_msgs::Float32 angle_msg;
+	    angle_msg.data = target_antenna_angle;
+	    angle_publisher.publish(angle_msg);
+	}
 }
 
 int main (int argc, char *argv[])
@@ -141,7 +151,10 @@ int main (int argc, char *argv[])
 
     // publish angle
     angle_publisher = node_handle.advertise<std_msgs::Float32>("/antenna/rover_angle_from_east", 10);
-//    ros::Subscriber antenna_sub = node_handle.subscribe("antenna/fix", 1, antenna_loc_callback);
+
+    // subscribe to antenna location (fixed)
+    ros::Subscriber antenna_sub = node_handle.subscribe("antenna/fix", 1, antenna_loc_callback);
+
 //    ros::Subscriber rover_sub = node_handle.subscribe("/navsat/fix", 1, rover_loc_callback);
 
     ros::Rate loop_rate(10); // 10Hz update rate
