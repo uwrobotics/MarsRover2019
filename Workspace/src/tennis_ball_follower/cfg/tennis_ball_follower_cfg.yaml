@@ -1,0 +1,7 @@
+rad_thres: 50.0 # image pixel 
+arrival_count_thres: 5 
+lost_count_thres: 5
+angular_turn_rate: 0.2 # rad /s 
+linear_rate: 0.4 # m/s
+#img_width: ???
+#img_height: ???
