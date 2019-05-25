@@ -1,0 +1,9 @@
+float32 auger_height
+float32 auger_speed
+float32 centrifuge_speed
+bool centrifuge_on
+int32 centrifuge_pos
+bool funnel_open
+bool sensors_mount_deployed
+float32 temperature
+float32 moisture
