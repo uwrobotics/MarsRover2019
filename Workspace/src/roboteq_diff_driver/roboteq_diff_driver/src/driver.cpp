@@ -4,7 +4,7 @@
 #include <signal.h>
 #include <string>
 #include <sstream>
-
+#include <algorithm>
 
 #define DELTAT(_nowtime,_thentime) ((_thentime>_nowtime)?((0xffffffff-_thentime)+_nowtime):(_nowtime-_thentime))
 
@@ -179,7 +179,10 @@ protected:
   double track_width;
   int encoder_ppr;
   int encoder_cpr;
-
+  int kp;
+  int ki;
+  int kd;	
+  float gear_ratio;
 };
 
 MainNode::MainNode() : 
@@ -211,7 +214,10 @@ MainNode::MainNode() :
   wheel_circumference(0),
   track_width(0),
   encoder_ppr(0),
-  encoder_cpr(0)
+  encoder_cpr(0),
+  kp(10),
+  ki(80),
+  kd(0)
 {
 
 
@@ -245,6 +251,14 @@ MainNode::MainNode() :
   ROS_INFO_STREAM("encoder_ppr: " << encoder_ppr);
   nhLocal.param("encoder_cpr", encoder_cpr, 3600);
   ROS_INFO_STREAM("encoder_cpr: " << encoder_cpr);
+  nhLocal.param("kp", kp, 10);
+  ROS_INFO_STREAM("kp: " << kp);
+  nhLocal.param("ki", ki, 80);
+  ROS_INFO_STREAM("ki: " << ki);
+  nhLocal.param("kd", kd, 0);
+  ROS_INFO_STREAM("kd: " << kd);
+  nhLocal.param("gear_ratio", gear_ratio, 15.25f);
+  ROS_INFO_STREAM("gear_ratio: " << gear_ratio);
 
 }
 
@@ -274,8 +288,15 @@ ROS_DEBUG_STREAM("cmdvel speed right: " << right_speed << " left: " << left_spee
   if (open_loop)
   {
     // motor power (scale 0-1000)
-    int32_t right_power = right_speed / wheel_circumference * 60.0 / 82.0 * 1000.0;
-    int32_t left_power = left_speed / wheel_circumference * 60.0 / 82.0 * 1000.0;
+    int32_t right_power = right_speed / wheel_circumference * 60.0 / 300.0 * 1000.0;
+    int32_t left_power = left_speed / wheel_circumference * 60.0 / 300.0 * 1000.0;
+
+    right_power = std::max(-1000, right_power);
+    right_power = std::min(1000, right_power);
+    left_power = std::max(-1000, left_power);
+    left_power = std::min(1000, left_power);
+
+
 #ifdef _CMDVEL_DEBUG
 ROS_INFO_STREAM("cmdvel power right: " << right_power << " left: " << left_power);
 #endif
@@ -288,9 +309,9 @@ ROS_INFO_STREAM("cmdvel power right: " << right_power << " left: " << left_power
   }
   else
   {
-    // motor speed (rpm)
-    int32_t right_rpm = right_speed / wheel_circumference * 60.0;
-    int32_t left_rpm = left_speed / wheel_circumference * 60.0;
+    // motor speed (ppm)
+    int32_t right_rpm = right_speed / wheel_circumference * gear_ratio  * 60.0;
+    int32_t left_rpm = left_speed / wheel_circumference * gear_ratio  * 60.0;
 #ifdef _CMDVEL_DEBUG
 ROS_DEBUG_STREAM("cmdvel rpm right: " << right_rpm << " left: " << left_rpm);
 #endif
@@ -346,14 +367,14 @@ void MainNode::cmdvel_setup(serial::Serial& controller)
   }
 
   // set motor amps limit (5 A * 10)
-  controller.write("^ALIM 1 50\r");
-  controller.write("^ALIM 2 50\r");
+  controller.write("^ALIM 1 100\r");
+  controller.write("^ALIM 2 100\r");
 
   // set max speed (rpm) for relative speed commands
 //  controller.write("^MXRPM 1 82\r");
 //  controller.write("^MXRPM 2 82\r");
-  controller.write("^MXRPM 1 100\r");
-  controller.write("^MXRPM 2 100\r");
+  controller.write("^MXRPM 1 4500\r");
+  controller.write("^MXRPM 2 4500\r");
 
   // set max acceleration rate (200 rpm/s * 10)
 //  controller.write("^MAC 1 2000\r");
@@ -366,12 +387,26 @@ void MainNode::cmdvel_setup(serial::Serial& controller)
   controller.write("^MDEC 2 20000\r");
 
   // set PID parameters (gain * 10)
-  controller.write("^KP 1 10\r");
-  controller.write("^KP 2 10\r");
-  controller.write("^KI 1 80\r");
-  controller.write("^KI 2 80\r");
-  controller.write("^KD 1 0\r");
-  controller.write("^KD 2 0\r");
+  std::stringstream pid_cmd;
+  pid_cmd << "^KP 1 " << kp << "\r";
+  controller.write(pid_cmd.str());
+  pid_cmd.str("");
+  pid_cmd << "^KP 2 " << kp << "\r";
+  controller.write(pid_cmd.str());
+
+  pid_cmd.str("");
+  pid_cmd << "^KI 1 " << ki << "\r";
+  controller.write(pid_cmd.str());
+  pid_cmd.str("");
+  pid_cmd << "^KI 2 " << ki << "\r";
+  controller.write(pid_cmd.str());
+
+  pid_cmd.str("");
+  pid_cmd << "^KD 1 " << kd << "\r";
+  controller.write(pid_cmd.str());
+  pid_cmd.str("");
+  pid_cmd << "^KD 2 " << kd << "\r";
+  controller.write(pid_cmd.str());
 
   // set encoder mode (18 for feedback on motor1, 34 for feedback on motor2)
   controller.write("^EMOD 1 18\r");
