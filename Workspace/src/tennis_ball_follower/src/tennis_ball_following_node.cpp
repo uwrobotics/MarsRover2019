@@ -8,6 +8,7 @@
 #include "sensor_msgs/Image.h"
 #include "std_msgs/Bool.h"
 #include <tennis_ball_tracker/TennisBallTracker.h>
+#include <std_srvs/SetBool.h>
 #include <cmath>
 
 class BallFollower{
@@ -22,6 +23,7 @@ private:
 	ros::Publisher velPub;
 	ros::Publisher ballArrivedPub;
 	ros::Publisher ballLostPub;
+	ros::ServiceServer enabledServer;
 	int imgWidth, imgHeight;
 	float imagCenterX, imagCenterY;
 	float radThres, angularTurnRate, linearRate;
@@ -30,6 +32,9 @@ private:
 	bool hasBeenDetected;
 	void ballPosCallback(tennis_ball_tracker::TennisBallTrackerConstPtr ball_detect);
 	void imgCallback(sensor_msgs::ImageConstPtr image);
+	bool enableAndCheckSrvCallback(std_srvs::SetBoolRequest &req, std_srvs::SetBoolResponse &resp);
+	bool bArrived;
+	bool bEnabled;
 };
 
 BallFollower::BallFollower(){
@@ -42,6 +47,9 @@ BallFollower::BallFollower(){
 	nh_param.param("img_width", imgWidth, 10);
 	nh_param.param("img_height", imgHeight, 10);
 
+	bArrived = false;
+	bEnabled = false;
+
 	arrivalCount = lostCount = 0;
 	hasBeenDetected = false;
 
@@ -53,9 +61,23 @@ BallFollower::BallFollower(){
 	}
 
 	posSub = nh.subscribe("/tennis_ball_tracker/detection", 1, &BallFollower::ballPosCallback, this);
-	velPub = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 1, true);
+	velPub = nh.advertise<geometry_msgs::Twist>("/tennis_ball_follower/cmd_vel", 1, true);
 	ballArrivedPub = nh.advertise<std_msgs::Bool>("/arrived", 1, true);
 	ballLostPub = nh.advertise<std_msgs::Bool>("/ball_lost", 1, true);
+	enabledServer = nh.advertiseService("/tennis_ball_follower/set_enabled", &BallFollower::enableAndCheckSrvCallback, this);
+}
+
+bool BallFollower::enableAndCheckSrvCallback(std_srvs::SetBoolRequest &req, std_srvs::SetBoolResponse &resp) {
+    bEnabled = req.data;
+	if (bEnabled) {
+		resp.success = bArrived;
+	} else {
+		resp.success = false;
+		bArrived = false;
+		hasBeenDetected = false;
+		arrivalCount = lostCount = 0;
+	}
+	return true;
 }
 
 void BallFollower::ballPosCallback(tennis_ball_tracker::TennisBallTrackerConstPtr ball_detect){

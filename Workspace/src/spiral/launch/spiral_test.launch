@@ -1,0 +1,9 @@
+<launch>
+    <arg name="spiralConfig" default="$(find spiral)/cfg/spiral_cfg.yaml"/>
+    <rosparam command="load" file="$(arg spiralConfig)"/>
+
+    <node pkg="spiral" type="spiral_node" name="spiral_node">
+        <remap from="/spiral/cmd_vel" to="/cmd_vel"/>
+    </node>
+
+</launch>
