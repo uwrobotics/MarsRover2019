@@ -16,7 +16,7 @@ public:
 
   virtual geometry_msgs::Twist
   CalculateBestVelocity(const geometry_msgs::Twist &curVel,
-                        double headingToGoal, double distToGoal);
+                        double headingToGoal, double sqrDistToGoal);
 
 protected:
   const RobotParams_t *m_pRobotParams;

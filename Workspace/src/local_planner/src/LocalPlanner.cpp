@@ -14,13 +14,13 @@ CLocalPlanner::CLocalPlanner(ros::NodeHandle *pNh,
       m_pPoseSub(nullptr), m_pOdometrySub(nullptr), m_pVelPub(nullptr),
       m_robotParams(robotParams), m_bVelReceived(false), m_bVelocityReady(true),
       m_pVelPubThread(nullptr), m_bGoalReached(false), m_bGoalInRange(false),
-      m_bEnabled(true) {
+      m_bEnabled(true), m_bHasGoal(false) {
 
   // subscribe to the goal gps coord
-  std::string goal_gps_topic = "/goal/utm";
-  ros::param::get("/local_planner/goal_gps_topic", goal_gps_topic);
-  m_pGoalGpsSub = new ros::Subscriber(m_pNh->subscribe(
-      goal_gps_topic, 1, &CLocalPlanner::GoalGPSCallback, this));
+  //std::string goal_gps_topic = "/goal/utm";
+  //ros::param::get("/local_planner/goal_gps_topic", goal_gps_topic);
+  //m_pGoalGpsSub = new ros::Subscriber(m_pNh->subscribe(
+  //    goal_gps_topic, 1, &CLocalPlanner::GoalGPSCallback, this));
 
   // subscribe to the pose
   std::string pose_topic = "/localization/pose_utm";
@@ -35,22 +35,37 @@ CLocalPlanner::CLocalPlanner(ros::NodeHandle *pNh,
       odometry_topic, 1, &CLocalPlanner::OdometryCallback, this));
 
   // subscribe to the enable message
-  std::string enable_topic = "/local_planner/enable";
-  ros::param::get("/local_planner/enable_topic", enable_topic);
-  m_pEnableSub = new ros::Subscriber(
-      m_pNh->subscribe(enable_topic, 1, &CLocalPlanner::EnableCallback, this));
+  //std::string enable_topic = "/local_planner/enable";
+  //ros::param::get("/local_planner/enable_topic", enable_topic);
+  //m_pEnableSub = new ros::Subscriber(
+  //    m_pNh->subscribe(enable_topic, 1, &CLocalPlanner::EnableCallback, this));
+
+  // services
+  std::string goal_gps_service = "/local_planner/set_goal";
+  ros::param::get("/local_planner/goal_gps_service", goal_gps_service);
+  m_goalSrv = m_pNh->advertiseService(goal_gps_service, &CLocalPlanner::SetGoalSrvCallback, this);
+
+  std::string status_req_service = "/local_planner/request_status";
+  ros::param::get("/local_planner/status_req_service", status_req_service);
+  m_statusReqSrv = m_pNh->advertiseService(status_req_service, &CLocalPlanner::StatusRequestSrvCallback, this);
+
+  std::string set_enabled_service = "/local_planner/set_enabled";
+  ros::param::get("/local_planner/set_enabled_service", set_enabled_service);
+  m_setEnabledSrv = m_pNh->advertiseService(set_enabled_service, &CLocalPlanner::SetEnabledSrvCallback, this);
+
+
 
   // velocity publisher
-  std::string velocity_topic = "/local_planner_cmd_vel";
+  std::string velocity_topic = "/local_planner/cmd_vel";
   ros::param::get("/local_planner/velocity_out_topic", velocity_topic);
   m_pVelPub = new ros::Publisher(
       m_pNh->advertise<geometry_msgs::Twist>(velocity_topic, 1));
 
-  // status publisher
-  std::string status_topic = "/local_planner/status";
-  ros::param::get("/local_planner/status_topic", status_topic);
-  m_pStatusPub = new ros::Publisher(
-      m_pNh->advertise<local_planner::LocalPlannerStatus>(status_topic, 1));
+  // // status publisher
+  // std::string status_topic = "/local_planner/status";
+  // ros::param::get("/local_planner/status_topic", status_topic);
+  // m_pStatusPub = new ros::Publisher(
+  //     m_pNh->advertise<local_planner::LocalPlannerStatus>(status_topic, 1));
 
   // goal distance thresholds
   m_goalReachedDistThresh = 1.0;
@@ -67,37 +82,43 @@ CLocalPlanner::CLocalPlanner(ros::NodeHandle *pNh,
 }
 
 // Callback for when a new goal gps coord is received.
-void CLocalPlanner::GoalGPSCallback(geometry_msgs::Pose2DConstPtr pGoalMsg) {
-  m_pGoalUtm = std::move(pGoalMsg);
+bool CLocalPlanner::SetGoalSrvCallback(local_planner::SetGoalRequest& req, local_planner::SetGoalResponse& resp) {
+  m_goalUtm = req.goal;
+  m_bHasGoal = true;
 
+  //std::unique_lock<std::mutex> lock(m_velMutex);
   m_bGoalReached = false;
   m_bGoalInRange = false;
-
+  m_bVelocityReady = false;
   if (m_pCurPoseUtm) {
-    std::unique_lock<std::mutex> lock(m_velMutex);
     m_distToGoal =
-        (m_pCurPoseUtm->y - m_pGoalUtm->y) *
-            (m_pCurPoseUtm->y - m_pGoalUtm->y) +
-        (m_pCurPoseUtm->x - m_pGoalUtm->x) * (m_pCurPoseUtm->x - m_pGoalUtm->x);
-    lock.unlock();
-    double globOrient = atan2(-(m_pGoalUtm->x - m_pCurPoseUtm->x),
-                              m_pGoalUtm->y - m_pCurPoseUtm->y);
-    m_orientationToGoal = globOrient - m_pCurPoseUtm->theta;
+        (m_pCurPoseUtm->y - m_goalUtm.y) *
+            (m_pCurPoseUtm->y - m_goalUtm.y) +
+        (m_pCurPoseUtm->x - m_goalUtm.x) * (m_pCurPoseUtm->x - m_goalUtm.x);
+  //   lock.unlock();
+  //   double globOrient = atan2(-(m_goalUtm.x - m_pCurPoseUtm->x),
+  //                             m_goalUtm.y - m_pCurPoseUtm->y);
+  //   m_orientationToGoal = globOrient - m_pCurPoseUtm->theta;
   }
-
-  ROS_INFO("New goal: x=%f, y=%f", m_pGoalUtm->x, m_pGoalUtm->y);
+  //lock.unlock();
+  ROS_INFO("New goal: x=%f, y=%f", m_goalUtm.x, m_goalUtm.y);
+  resp.ack = true;
+  return true;
 }
 
 // Callback for when an enable command is received.
-void CLocalPlanner::EnableCallback(std_msgs::BoolConstPtr pEnableMsg) {
-  m_bEnabled = pEnableMsg->data;
+bool CLocalPlanner::SetEnabledSrvCallback(std_srvs::SetBoolRequest &req, std_srvs::SetBoolResponse &resp) {
+  m_bEnabled = req.data;
   if (!m_bEnabled) {
-    std::unique_lock<std::mutex> lock(m_velMutex);
+    // std::unique_lock<std::mutex> lock(m_velMutex);
     m_bVelocityReady = false;
     m_bGoalReached = false;
     m_bGoalInRange = false;
-    lock.unlock();
+    m_bHasGoal = false;
+    // lock.unlock();
   }
+  resp.success = true;
+  return true;
 }
 //
 void CLocalPlanner::CurPoseCallback(geometry_msgs::Pose2DConstPtr pPoseMsg) {
@@ -108,16 +129,16 @@ void CLocalPlanner::CurPoseCallback(geometry_msgs::Pose2DConstPtr pPoseMsg) {
            m_pCurPoseUtm->y, m_pCurPoseUtm->theta);
 
   // calculate the current relative orientation of the goal
-  if (m_pGoalUtm) {
+  if (m_bHasGoal) {
     std::unique_lock<std::mutex> lock(m_velMutex);
     m_distToGoal =
-        (m_pCurPoseUtm->y - m_pGoalUtm->y) *
-            (m_pCurPoseUtm->y - m_pGoalUtm->y) +
-        (m_pCurPoseUtm->x - m_pGoalUtm->x) * (m_pCurPoseUtm->x - m_pGoalUtm->x);
+        (m_pCurPoseUtm->y - m_goalUtm.y) *
+            (m_pCurPoseUtm->y - m_goalUtm.y) +
+        (m_pCurPoseUtm->x - m_goalUtm.x) * (m_pCurPoseUtm->x - m_goalUtm.x);
     lock.unlock();
 
-    double globOrient = atan2((m_pGoalUtm->y - m_pCurPoseUtm->y),
-                              m_pGoalUtm->x - m_pCurPoseUtm->x);
+    double globOrient = atan2((m_goalUtm.y - m_pCurPoseUtm->y),
+                              m_goalUtm.x - m_pCurPoseUtm->x);
 
     m_orientationToGoal = globOrient - m_pCurPoseUtm->theta;
     if (m_orientationToGoal > M_PI) {
@@ -149,21 +170,26 @@ void CLocalPlanner::OdometryCallback(nav_msgs::Odometry::ConstPtr odometry) {
   count = (count + 1) % 1;
 }
 
+bool CLocalPlanner::StatusRequestSrvCallback(local_planner::StatusRequestRequest& req, local_planner::StatusRequestResponse& resp) {
+  std::unique_lock<std::mutex> lock(m_velMutex);
+  resp.status.distanceToGoal = sqrt(m_distToGoal);
+
+  resp.status.goalReached = m_bGoalReached;
+  resp.status.goalInRange = m_bGoalInRange;
+  lock.unlock();
+  return true;
+}
+
 // Velocity publisher thread: continually publish the desired velocity so the
 // rover keeps moving
 void CLocalPlanner::VelocityPublisher() {
   ros::Rate rate(10);
   while (ros::ok()) {
-    local_planner::LocalPlannerStatus statusMsg;
-
     std::unique_lock<std::mutex> lock(m_velMutex);
 
     bool bGoalReached = m_bGoalReached;
-    bool bGoalInRange = m_bGoalInRange;
 
-    statusMsg.distanceToGoal = sqrt(m_distToGoal);
-
-    if (m_bVelocityReady) {
+    if (m_bEnabled && m_bVelocityReady) {
       geometry_msgs::Twist vel = m_targetVel;
       lock.unlock();
 
@@ -181,17 +207,13 @@ void CLocalPlanner::VelocityPublisher() {
       lock.unlock();
     }
 
-    statusMsg.goalReached = bGoalReached;
-    statusMsg.goalInRange = bGoalInRange;
-
-    m_pStatusPub->publish(statusMsg);
     rate.sleep();
   }
 }
 
 void CLocalPlanner::UpdateVelocity() {
   // Make sure we have the information requiredd for planning
-  if (!m_bEnabled || !m_bVelReceived || !m_pCurPoseUtm || !m_pGoalUtm) {
+  if (!m_bEnabled || !m_bVelReceived || !m_pCurPoseUtm || !m_bHasGoal) {
     ROS_INFO("not performing local planner: not ready");
     return;
   }
@@ -199,8 +221,8 @@ void CLocalPlanner::UpdateVelocity() {
   // check if we've already reached the goal
   std::unique_lock<std::mutex> lock(m_velMutex);
   m_distToGoal =
-      (m_pCurPoseUtm->y - m_pGoalUtm->y) * (m_pCurPoseUtm->y - m_pGoalUtm->y) +
-      (m_pCurPoseUtm->x - m_pGoalUtm->x) * (m_pCurPoseUtm->x - m_pGoalUtm->x);
+      (m_pCurPoseUtm->y - m_goalUtm.y) * (m_pCurPoseUtm->y - m_goalUtm.y) +
+      (m_pCurPoseUtm->x - m_goalUtm.x) * (m_pCurPoseUtm->x - m_goalUtm.x);
   if (m_distToGoal < m_goalSearchDistThresh * m_goalSearchDistThresh) {
     ROS_INFO("Goal in range, start searching");
     m_bGoalInRange = true;

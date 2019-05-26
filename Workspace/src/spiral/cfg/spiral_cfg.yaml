@@ -1,0 +1,7 @@
+spiral/vMax: 0.5
+spiral/wMin: 0.1
+spiral/vStart: 0.0
+spiral/wStart: 1.00
+spiral/vDecay : 0.9950
+spiral/wDecay: 0.9960
+
