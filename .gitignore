@@ -62,3 +62,6 @@ CATKIN_IGNORE
 
 # VS Code
 .vscode/
+
+#JetBrains
+.idea/
