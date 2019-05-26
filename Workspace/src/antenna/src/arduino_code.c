@@ -18,7 +18,6 @@ void loop() {
     // extract data from input
     // 1st bit = valid or not -> 0 means turn off motor, 1 means motor will be on
     // 2nd bit = direction (0 = CW, 1 = CCW)
-    // rest of bits = speed (b/t 0 and 255)
 
     if (dataStr[0] == '0')
     {
@@ -32,9 +31,9 @@ void loop() {
       
       // turn motor CW
       if (dataStr[1] = '0') {
-        digitalWrite(inB, LOW);
         digitalWrite(inA, HIGH);
-        
+        digitalWrite(inB, LOW);
+      
         analogWrite(motorSpeed, speed);
       }
       // otherwise turn CCW
