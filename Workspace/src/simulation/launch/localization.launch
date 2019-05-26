@@ -17,6 +17,7 @@
     <param name="broadcast_utm_transform" value="true"/>
     <param name="broadcast_utm_as_parent_frame" value="true"/>
     <param name="publish_filtered_gps" value="true" />
+    <param name="broadcast_utm_as_parent_frame" value="true" />
 
     <param name="frequency" value="5" />
     <param name="wait_for_datum" value="true" />

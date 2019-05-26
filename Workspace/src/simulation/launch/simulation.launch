@@ -3,8 +3,8 @@
      change all instances of "model://husky" to the directory of your husky folder -->
 
 <launch>
-  <!-- arg name="world_name" default="$(find simulation)/launch/simulation_worlds/sar_world.world"/ -->
-  <arg name="world_name" default="$(find simulation)/launch/simulation_worlds/simple_world.world"/>
+  <arg name="world_name" default="$(find simulation)/launch/simulation_worlds/sar_world.world"/>
+  <!-- arg name="world_name" default="$(find simulation)/launch/simulation_worlds/simple_world.world"/ -->
   <!-- arg name="world_name" default="/opt/ros/kinetic/share/hector_gazebo_worlds/worlds/rolling_landscape_120m.world"/ -->
 
   <arg name="laser_enabled" default="false"/>

@@ -1,0 +1,12 @@
+<launch>
+    <!-- param name = "debug" value = "true" type = "bool" / -->
+    <!-- param name = "PCL2TopicName" value = "/duo3d_camera/depth/points" type = "str" / -->
+    <arg name="roverConfig" default="$(find local_planner)/cfg/local_planner_rover_cfg.yaml"/>
+    <rosparam command="load" file="$(arg roverConfig)"/>
+
+    <node pkg="local_planner" type="local_planner" name="local_planner" output="screen">
+    </node>
+
+
+
+</launch>
