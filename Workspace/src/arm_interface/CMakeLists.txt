@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
   can_msgs
   ik
+  console_message
 )
 
 #find_package(ik REQUIRED)
