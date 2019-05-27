@@ -179,7 +179,7 @@ private:
   static const int s_endEffectorYIdx = 1;
   static const int s_endEffectorThetaIdx = 2;
 
-  static const int s_numModeIds = 4;
+  static const int s_numModeIds = 5;
   const int s_modeCanIds[5] = {0x300, 0x302, 0x304, 0x400, 0x403};
   const int s_ctrlCanIds[6] = {0x301, 0x303, 0x305, 0x401, 0x402, 0x404};
 
