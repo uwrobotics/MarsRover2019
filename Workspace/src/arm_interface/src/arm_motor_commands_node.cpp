@@ -15,6 +15,7 @@ int main(int argc, char **argv) {
   ros::init(argc, argv, "arm_motor_commands");
   ros::NodeHandle nh;
 
+  ConsoleMessage::Initialize(nh);
   int freq = 5;
   float dT = 1.0 / freq;
 

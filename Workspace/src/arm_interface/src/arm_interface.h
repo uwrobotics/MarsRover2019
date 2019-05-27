@@ -9,6 +9,7 @@
 #include <std_msgs/Int32.h>
 #include <std_msgs/String.h>
 #include <stdbool.h>
+#include <console_message/console_message.h>
 
 class ArmControlInterface {
 public:
@@ -62,10 +63,22 @@ public:
     ROS_INFO("request: req=%d, res=%d", req.mode, res.mode);
     ROS_INFO("mode set to %s", s_modes[m_currentMode].c_str());
 
+    can_msgs::Frame canMsg;
+    canMsg.dlc = 1;
+    // Publish modes
+    for (int i = 0; i < s_numModeIds; i++) {
+      canMsg.id = s_modeCanIds[i];
+      // *(int *)(canMsg.data.data()) = m_currentMode;
+      canMsg.data[0] = m_currentMode;
+      m_canPublisher->publish(canMsg);
+    }
+
     // Reset positions if mode changed back to ik position
-    if (m_currentMode == s_modeIkPos) {
+    if (m_currentMode == arm_interface::arm_modeRequest::IK_POS) {
       InitializePositions();
     }
+
+    ConsoleMessage::SendMessage("Switched arm interface to " + s_modes[m_currentMode] + " mode");
 
     return true;
   }
@@ -84,13 +97,13 @@ public:
     // Process service requests and run
 
     switch (m_currentMode) {
-    case s_modeOpenLoop:
+    case arm_interface::arm_modeRequest::OPEN_LOOP:
       RunOpenLoop(m_fkArmCmdVels);
       break;
-    case s_modeIkVel:
+    case arm_interface::arm_modeRequest::IK_VEL:
       RunIkVel(m_ikArmCmdVels);
       break;
-    case s_modeIkPos:
+    case arm_interface::arm_modeRequest::IK_POS:
       RunIkPos(m_ikArmCmdVels);
       break;
     default:
@@ -167,8 +180,8 @@ private:
   static const int s_endEffectorThetaIdx = 2;
 
   static const int s_numModeIds = 4;
-  const int s_modeCanIds[4] = {0x300, 0x302, 0x304, 0x400};
-  const int s_ctrlCanIds[6] = {0x301, 0x303, 0x305, 0x401, 0x402, 0x403};
+  const int s_modeCanIds[5] = {0x300, 0x302, 0x304, 0x400, 0x403};
+  const int s_ctrlCanIds[6] = {0x301, 0x303, 0x305, 0x401, 0x402, 0x404};
 
   // Arm control modes
   static const u_int8_t s_modeOpenLoop = 0x00;
@@ -181,7 +194,7 @@ private:
   static const int s_dlc = 8; // not sure about this
 
   void InitializePositions() {
-    ROS_INFO("INitializing position");
+    ROS_INFO("Initializing position");
     double outPos[3];
     double linkAngles[] = {m_actualJointPos[s_shoulderIdx] * M_PI / 180,
                             m_actualJointPos[s_elbowIdx] * M_PI / 180,
@@ -248,6 +261,8 @@ private:
       }
     } else {
       ROS_INFO("ik failed");
+      ConsoleMessage::SendMessage("IK Calculation failed -- switch to PWM mode and flex elbow", ConsoleMessage::WARN);
+      ikControl->linkVelocities[0] = ikControl->linkVelocities[1] = ikControl->linkVelocities[2] = 0;
     }
 
     m_canCmds[s_turntableIdx] = ikCmdVels[s_turntableIdx];
@@ -285,6 +300,10 @@ private:
       }
     } else {
       ROS_INFO("ik failed");
+      ConsoleMessage::SendMessage("IK Calculation failed -- switch to PWM mode and flex elbow", ConsoleMessage::WARN);
+      anglesOut[0] = currentAngles[0];
+      anglesOut[1] = currentAngles[1];
+      anglesOut[2] = currentAngles[2];
     }
 
     m_desiredJointPos[s_turntableIdx] += ikCmdVels[s_turntableIdx] * m_dT;
@@ -344,13 +363,6 @@ private:
   void PublishCan() {
     can_msgs::Frame canMsg;
     canMsg.dlc = s_dlc;
-
-    // Publish modes
-    for (int i = 0; i < s_numModeIds; i++) {
-      canMsg.id = s_modeCanIds[i];
-      *(int *)(canMsg.data.data()) = m_currentMode;
-      m_canPublisher->publish(canMsg);
-    }
 
     for (int i = 0; i < s_numJoints; i++) {
       canMsg.id = s_ctrlCanIds[i];
