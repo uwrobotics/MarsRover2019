@@ -1,6 +1,5 @@
 ## USB port
-port: /dev/imu
-
+port: /dev/uwrt-imu
 
 ##### Calibration ####
 ### accelerometer
