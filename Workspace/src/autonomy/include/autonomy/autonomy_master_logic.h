@@ -66,6 +66,7 @@ private:
 
   /// Publishers ///
   ros::Publisher m_canPub;
+  ros::Publisher m_successPub;
   //ros::Publisher *m_pTargetGpsPub;
   //ros::Publisher *m_pLocalPlannerEnablePub;
   // TODO: tennisball interface
