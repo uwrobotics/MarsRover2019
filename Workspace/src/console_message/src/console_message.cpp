@@ -27,19 +27,12 @@ void ConsoleMessage::Initialize(ros::NodeHandle &nh) {
 }
 
 void ConsoleMessage::SendMessage(std::string msg_text, eLevels level) {
-ROS_INFO("alive 1");
 	console_message::console_msg msg;
-	ROS_INFO("alive 2");
 	msg.message = msg_text;
-	ROS_INFO("alive 3");
 	msg.level = level;
-	ROS_INFO("alive 4");
 	msg.sender = ros::this_node::getName();
-	ROS_INFO("alive 5");
 	msg.time = ros::Time::now().toSec();
 
-	ROS_INFO("alive 6");
 	s_pPub->publish(msg);
-	ROS_INFO("alive 7");
 
 }

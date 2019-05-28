@@ -26,10 +26,12 @@ private:
   ros::Publisher mPub;
   ros::Subscriber mPoseSub;
   geometry_msgs::Pose2D mLastPoseUtm;
+  ros::Publisher mStopPub;
 
 public Q_SLOTS:
   void on_latLonButton_pressed();
   void on_distHeadingButton_pressed();
+  void on_stopButton_pressed();
 };
 
 #endif // AUTONOMYCONTROLSWIDGET_HPP

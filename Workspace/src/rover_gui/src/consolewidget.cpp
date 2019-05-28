@@ -31,6 +31,6 @@ void ConsoleWidget::ConsoleMessageCallback(
   }
   this->setCurrentCharFormat(tf);
   std::string consoleStr =
-      strLevel + "[" + std::to_string(msg->time) + "] -- " + msg->message;
+      strLevel + "[" + std::to_string(msg->time) + "] [" + msg->sender + "] -- " + msg->message;
   this->appendPlainText(QString::fromStdString(consoleStr));
 }
