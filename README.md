@@ -53,6 +53,20 @@ If the job rover is crashing on startup, view the logs:
 
 For more details, please read robot_upstart documentation.
 
+# Other Dependencies Needed on Rover
+ZED_ROS 
+ZED SDK
+FLIR_Spinnaker_SDK
+FLIR_camera_driver
+Pointgrey_camera_driver
+FLIR_flycapture2_sdk
+
+For Camera Issues, see:
+* https://www.flir.ca/support/products/blackfly-s-usb3#Overview
+* https://www.flir.ca/support-center/iis/machine-vision/application-note/understanding-usbfs-on-linux/
+* https://www.flir.ca/support-center/iis/machine-vision/application-note/diagnosing-usb-3.1-camera-and-bus-errors/ 
+
+
 # Coding Standards
 For **C++** code, we follow the ROS coding guidelines. There is a `.clang_format` file that can automatically format your C++ code in the correct style.
 

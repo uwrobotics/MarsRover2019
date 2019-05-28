@@ -32,7 +32,7 @@ ids_to_topics: {"0x500": "/can/arm_joints/turntable",
                 "0x520": "/can/science/ultrasonic_left",
                 "0x521": "/can/science/ultrasonic_right",
                 "0x530": "/can/safety/current_sensor_1",
-                "0x531": "/can/safety/current_sensor_2"}
+                "0x531": "/can/safety/current_sensor_2",
                 "0x532": "/can/safety/current_sensor_3"}
 
 #can_ids:          {"301": "shoulderEncoder",
