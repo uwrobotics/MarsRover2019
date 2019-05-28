@@ -1,0 +1,11 @@
+<launch>
+
+	<node pkg="autonomy" type="autonomy_master_node" name="autonomy_master_node" output="screen">
+	</node>
+    <include file="$(find local_planner)/launch/local_planner_stand_alone.launch" />
+    <include file="$(find tennis_ball_follower)/launch/tennis_ball_follower.launch" />
+    <include file="$(find tennis_ball_tracker)/launch/tennis_ball_tracker.launch" />
+    <include file="$(find spiral)/launch/spiral.launch" />
+
+
+</launch>

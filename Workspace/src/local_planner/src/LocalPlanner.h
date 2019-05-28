@@ -16,6 +16,9 @@
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/NavSatFix.h>
 #include <std_msgs/Bool.h>
+#include <local_planner/SetGoal.h>
+#include <local_planner/StatusRequest.h>
+#include <std_srvs/SetBool.h>
 
 #include <geometry_msgs/Point.h>
 #include <mutex>
@@ -30,12 +33,18 @@ public:
 
 private:
   // Subscriber callbacks
-  void GoalGPSCallback(geometry_msgs::Pose2DConstPtr pGoalMsg);
+  //void GoalGPSCallback(geometry_msgs::Pose2DConstPtr pGoalMsg);
   void CurPoseCallback(geometry_msgs::Pose2DConstPtr pCurUtmMsg);
   // void OccupancyCallback(occupancy_grid::OccupancyGrid::ConstPtr grid);
   void OdometryCallback(nav_msgs::Odometry::ConstPtr odemetry);
   // void OdometryCallback(sensor_msgs::Imu::ConstPtr odometry);
-  void EnableCallback(std_msgs::BoolConstPtr pEnableMsg);
+  //void EnableCallback(std_msgs::BoolConstPtr pEnableMsg);
+
+  // Service callbacks
+  bool SetGoalSrvCallback(local_planner::SetGoalRequest &req, local_planner::SetGoalResponse& resp);
+  bool StatusRequestSrvCallback(local_planner::StatusRequestRequest& req, local_planner::StatusRequestResponse& resp);
+  bool SetEnabledSrvCallback(std_srvs::SetBoolRequest& req, std_srvs::SetBoolResponse& resp);
+
   // publisher thread
   void VelocityPublisher();
 
@@ -50,12 +59,17 @@ private:
   ros::Subscriber *m_pPoseSub;     // For current pose
   ros::Subscriber *m_pEnableSub;   // For enable command
   ros::Publisher *m_pVelPub;       // For publishing cmd_vel
-  ros::Publisher *m_pStatusPub;    // For publishing status
+  // ros::Publisher *m_pStatusPub;    // For publishing status
+
+  ros::ServiceServer m_goalSrv;
+  ros::ServiceServer m_statusReqSrv;
+  ros::ServiceServer m_setEnabledSrv;
 
   // status
   geometry_msgs::Twist m_curVel;               // Current velocity
   geometry_msgs::Pose2DConstPtr m_pCurPoseUtm; // Current pose
-  geometry_msgs::Pose2DConstPtr m_pGoalUtm;    // Goal pose
+  bool m_bHasGoal;
+  geometry_msgs::Pose2D m_goalUtm;    // Goal pose
   double m_orientationToGoal; // Counter clockwise angle to face the goal, in
                               // range [-pi, pi]
 

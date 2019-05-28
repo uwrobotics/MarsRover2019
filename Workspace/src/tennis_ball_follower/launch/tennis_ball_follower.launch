@@ -1,0 +1,5 @@
+<launch>
+	<node pkg="tennis_ball_follower" type="tennis_ball_follower" name="tennis_ball_follower" output="screen">
+		<rosparam command="load" file="$(find tennis_ball_follower)/cfg/tennis_ball_follower_cfg.yaml"/>
+	</node>
+</launch>
