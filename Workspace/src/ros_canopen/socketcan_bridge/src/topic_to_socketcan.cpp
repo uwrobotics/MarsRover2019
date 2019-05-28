@@ -70,6 +70,7 @@ namespace socketcan_bridge
       if (!res)
       {
         ROS_ERROR("Failed to send message: %s.", can::tostring(f, true).c_str());
+        ros::shutdown();
       }
     };
 

@@ -139,6 +139,7 @@ namespace socketcan_bridge
       else
       {
         ROS_ERROR("Error: %s, asio: %s", err.c_str(), s.error_code.message().c_str());
+        ros::shutdown();
       }
     };
 };  // namespace socketcan_bridge
