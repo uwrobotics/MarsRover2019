@@ -1,15 +1,28 @@
-/science_interface/centrifuge_pos_names: ["pos 0",
-                                          "pos 1",
-                                          "pos 2",
-                                          "pos 3",
-                                          "pos 4",
-                                          "pos 5",
-                                          "pos 6",
-                                          "pos 7",
-                                          "pos 8",
-                                          "pos 9",
-                                          "pos 10",
-                                          "pos 11"]
+/science_interface/centrifuge_pos_names: ["1.  Ninhydrin Negative",
+                                          "2.  Ninhydrin Positive",
+                                          "3.  Station 1 Ninhydrin",
+                                          "4.  Station 1 pH",
+                                          "5.  Station 1 Nitrogen",
+                                          "6.  Station 2 Ninhydrin",
+                                          "7.  Station 2 pH",
+                                          "8.  Station 2 Nitrogen",
+                                          "9.  Station 3 Ninhydrin",
+                                          "10. Station 3 pH",
+                                          "11. Station 4 Ninhydrin",
+                                          "12. Station 4 pH"]
+
+
+                                          # "pos 1",
+                                          # "pos 2",
+                                          # "pos 3",
+                                          # "pos 4",
+                                          # "pos 5",
+                                          # "pos 6",
+                                          # "pos 7",
+                                          # "pos 8",
+                                          # "pos 9",
+                                          # "pos 10",
+                                          # "pos 11"]
 
 /science_interface/auger_min: 0
 /science_interface/auger_max: 20 # TODO: configure

@@ -29,10 +29,15 @@ private Q_SLOTS:
   void on_funnelToggle_toggled(bool checked);
   void on_sensorMountToggle_toggled(bool checked);
   void on_centrifugeComboBox_currentIndexChanged(int index);
+  void on_elevatorUpButton_pressed();
+  void on_elevatorDownButton_pressed();
+  void on_elevatorUpButton_released();
+  void on_elevatorDownButton_released();
 
 
 private:
   void ScienceStatusCallback(science_interface::science_statusConstPtr status);
+  void SendElevatorPWM(float pwm);
   Ui::ScienceControlsWidget *ui;
   std::vector<std::string> mCentrifugePosNames;
 
@@ -46,6 +51,8 @@ private:
   ros::ServiceClient mCentrifugePosClient;
   ros::ServiceClient mFunnelClient;
   ros::ServiceClient mSensorMountClient;
+
+  ros::Publisher mElevatorPwmPub;
 
   // status
   science_interface::science_statusConstPtr mLastStatus;
