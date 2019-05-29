@@ -9,14 +9,22 @@
 #include <rover_msgs/SetDouble.h>
 #include <rover_msgs/SetFloat.h>
 #include <std_srvs/SetBool.h>
+#include <std_msgs/Float32.h>
+
+#define CAN_ELEVATOR_MODE_ID       0x200
+#define CAN_AUGER_HEIGHT_ID        0x201
+#define CAN_AUGER_SPEED_ID         0x202
+#define CAN_CENTRIFUGE_SPINNING_ID 0x205
+#define CAN_CENTRIFUGE_POS_ID      0x206
+#define CAN_FUNNEL_OPEN_ID         0x207
+#define CAN_SENSOR_MOUNT_DEPLOY_ID 0x208
 
 
-#define CAN_AUGER_HEIGHT_ID        0x200
-#define CAN_AUGER_SPEED_ID         0x201
-#define CAN_CENTRIFUGE_SPINNING_ID 0x202
-#define CAN_CENTRIFUGE_POS_ID      0x203
-#define CAN_FUNNEL_OPEN_ID         0x204
-#define CAN_SENSOR_MOUNT_DEPLOY_ID 0x205
+enum elevatorMode {
+  NONE,
+  PWM,
+  POS
+};
 
 
 class ScienceInterface {
@@ -83,6 +91,14 @@ private:
   // GUI service calls callbacks
   bool SrvSetAugerHeight_Callback(rover_msgs::SetFloat::Request &req, rover_msgs::SetFloat::Response &resp)
   {
+    if (mCurElevatorMode != elevatorMode::POS) {
+      can_msgs::Frame modeFrame;
+      modeFrame.dlc = 4;
+      *(float *)(modeFrame.data.data()) = 1;
+      mCANPub.publish(modeFrame);
+      mCurElevatorMode = elevatorMode::POS;
+    }
+
     can_msgs::Frame frame;
     frame.id = CAN_AUGER_HEIGHT_ID;
     frame.dlc = 4;
@@ -137,6 +153,22 @@ private:
     return true;
   }
 
+  void ElevatorPWMCallback(std_msgs::Float32ConstPtr msg) {
+    if (mCurElevatorMode != elevatorMode::PWM) {
+      can_msgs::Frame modeFrame;
+      modeFrame.dlc = 4;
+      *(float *)(modeFrame.data.data()) = 0;
+      mCANPub.publish(modeFrame);
+      mCurElevatorMode = elevatorMode::PWM;
+    }
+
+    can_msgs::Frame frame;
+    frame.id = CAN_AUGER_HEIGHT_ID;
+    frame.dlc = 4;
+    *(float *)(frame.data.data()) = msg->data;
+    mCANPub.publish(frame);
+  }
+
   science_interface::science_status mCurrentStatus;
 
   // CAN subscribers
@@ -149,6 +181,8 @@ private:
   ros::Subscriber mCANSensorMountSub;
   ros::Subscriber mCANTemperatureSub;
   ros::Subscriber mCANMoistureSub;
+
+  ros::Subscriber mElevatorPWMSub;
 
   // Services
   ros::ServiceServer mAugerHeightServer;
@@ -167,10 +201,12 @@ private:
   int mSpinRate;
   int mPublishingRate;
 
+  elevatorMode mCurElevatorMode;
+
 };
 
 ScienceInterface::ScienceInterface(ros::NodeHandle &nh)
-: mSpinRate(100), mPublishingRate(10)
+: mSpinRate(100), mPublishingRate(10), mCurElevatorMode(elevatorMode::NONE)
 {
 // Subscribe
   mCANAugerHeightSub = nh.subscribe("/can/science/auger_height", 1, &ScienceInterface::CAN_AugerHeight_Callback, this);
@@ -182,6 +218,8 @@ ScienceInterface::ScienceInterface(ros::NodeHandle &nh)
   mCANSensorMountSub = nh.subscribe("/can/science/sensor_mount", 1, &ScienceInterface::CAN_SensorMountStatus_Callback, this);
   mCANTemperatureSub = nh.subscribe("/can/science/temperature", 1, &ScienceInterface::CAN_Temperature_Callback, this);
   mCANMoistureSub = nh.subscribe("/can/science/moisture", 1, &ScienceInterface::CAN_Moisture_Callback, this);
+
+  mElevatorPWMSub = nh.subscribe("/science_interface/elevator_pwm", 1, &ScienceInterface::CAN_Moisture_Callback, this);
 
   // Advertise
   mScienceStatusPub = nh.advertise<science_interface::science_status>("/science_interface/status", 1);

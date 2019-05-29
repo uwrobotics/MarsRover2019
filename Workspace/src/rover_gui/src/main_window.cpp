@@ -29,7 +29,9 @@ MainWindow::MainWindow(int argc, char **argv, ros::NodeHandle &nh,
   ui.mapWidget->Init(mNh);
   ui.autonomyControlsWidget->Init(mNh);
   ui.scienceControlsWidget->Init(mNh);
-  ui.fovViewWidget->subscribe(mNh, "/tennis_ball_tracker/image");
+  ui.zedViewWidget->subscribe(mNh, "/tennis_ball_tracker/image");
+  ui.rightViewWidget->subscribe(mNh, "/right_camera/image");
+  ui.leftViewWidget->subscribe(mNh, "/left_camera/image");
   ui.drillCamViewWidget->subscribe(mNh, "/usb_cam1/image_raw");
   ui.clearanceCamView->subscribe(mNh, "/usb_cam2/image_raw");
   ui.depthViewWidget->subscribe(mNh, "/zed/depth/depth_registered", true);

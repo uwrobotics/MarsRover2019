@@ -260,6 +260,9 @@
       </item>
       <item row="1" column="3" rowspan="3">
        <widget class="QSlider" name="augerSpeedSlider">
+        <property name="minimum">
+         <number>-10</number>
+        </property>
         <property name="maximum">
          <number>10</number>
         </property>
@@ -276,7 +279,7 @@
          <enum>Qt::Vertical</enum>
         </property>
         <property name="tickPosition">
-         <enum>QSlider::TicksAbove</enum>
+         <enum>QSlider::TicksBelow</enum>
         </property>
         <property name="tickInterval">
          <number>10</number>
@@ -286,7 +289,7 @@
       <item row="3" column="4">
        <widget class="QLabel" name="label_18">
         <property name="text">
-         <string>0%</string>
+         <string>-100%</string>
         </property>
        </widget>
       </item>

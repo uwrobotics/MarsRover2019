@@ -4,6 +4,7 @@
 #include <rover_msgs/SetDouble.h>
 #include <rover_msgs/SetFloat.h>
 #include <std_srvs/SetBool.h>
+#include <std_msgs/Float32.h>
 
 ScienceControlsWidget::ScienceControlsWidget(QWidget *parent) :
     QWidget(parent),
@@ -50,6 +51,8 @@ bool ScienceControlsWidget::Init(ros::NodeHandle& nh)
   mCentrifugePosClient = nh.serviceClient<rover_msgs::SetInt>("/science_interface/set_centrifuge_pos");
   mFunnelClient = nh.serviceClient<std_srvs::SetBool>("/science_interface/set_funnel_open");
   mSensorMountClient = nh.serviceClient<std_srvs::SetBool>("/science_interface/set_sensor_mount_deployed");
+
+  mElevatorPwmPub = nh.advertise<std_msgs::Float32>("/science_interface/elevator_pwm", 1);
 }
 
 void ScienceControlsWidget::on_augerHeightSlider_valueChanged()
@@ -126,6 +129,26 @@ req.data = ui->centrifugeComboBox->currentIndex();
     ROS_ERROR("Failed to contact service");
   }
 }
+
+void ScienceControlsWidget::SendElevatorPWM(float pwm) {
+  std_msgs::Float32 msg;
+  msg.data = pwm;
+  mElevatorPwmPub.publish(msg);
+}
+
+void ScienceControlsWidget::on_elevatorUpButton_pressed() {
+  SendElevatorPWM(50);
+}
+void ScienceControlsWidget::on_elevatorDownButton_pressed() {
+  SendElevatorPWM(-50);
+}
+void ScienceControlsWidget::on_elevatorUpButton_released() {
+  SendElevatorPWM(0);
+}
+void ScienceControlsWidget::on_elevatorDownButton_released() {
+  SendElevatorPWM(0);
+}
+
 
 void ScienceControlsWidget::ScienceStatusCallback(science_interface::science_statusConstPtr status)
 {
