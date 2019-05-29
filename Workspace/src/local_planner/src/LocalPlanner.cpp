@@ -7,6 +7,7 @@
 #include "std_msgs/String.h"
 #include <cmath>
 #include <string>
+#include "DWAPlanner.h"
 
 CLocalPlanner::CLocalPlanner(ros::NodeHandle *pNh,
                              const RobotParams_t &robotParams)
@@ -78,7 +79,13 @@ CLocalPlanner::CLocalPlanner(ros::NodeHandle *pNh,
   // thread to continuously publish the desired velocity
   m_pVelPubThread = new std::thread(&CLocalPlanner::VelocityPublisher, this);
 
-  m_pPlanningAlgo = new CPlanningAlgoBase(&m_robotParams, m_pNh);
+  std::string planner_type = "gps";
+  ros::param::get("/local_planner/planner_type", planner_type);
+  if (planner_type == "gps") {
+    m_pPlanningAlgo = new CPlanningAlgoBase(&m_robotParams, m_pNh);
+  } else {
+    m_pPlanningAlgo = new DWAPlanner(&m_robotParams, m_pNh);
+  }
 }
 
 // Callback for when a new goal gps coord is received.

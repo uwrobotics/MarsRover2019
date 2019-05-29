@@ -15,6 +15,8 @@ find_package(catkin REQUIRED COMPONENTS
     tf2_ros
     tf
     tf2
+    cv_bridge
+    cost_map
 )
 
 ## System dependencies are found with CMake's conventions
@@ -134,7 +136,7 @@ include_directories(
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/local_planner.cpp
 # )
-add_library(PlanningAlgoLib src/PlanningAlgoBase.cpp)
+add_library(PlanningAlgoLib src/PlanningAlgoBase.cpp src/CostMap.cpp src/DWAPlanner.cpp)
 
 add_dependencies(PlanningAlgoLib local_planner_generate_messages_cpp ${catkin_EXPORTED_TARGETS})
 ## Add cmake target dependencies of the library

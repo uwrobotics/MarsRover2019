@@ -426,11 +426,19 @@ void CAutonomyMasterLogic::StopMsgCallback(std_msgs::EmptyConstPtr msg) {
 /////////////////
 
 void CAutonomyMasterLogic::Start() {
-  ros::Rate looprate(2);
+  int velRate = 10;
+  int runRate = 2;
+  int runFreq = velRate/runRate;
+  ros::Rate looprate(velRate);
+  int loopNum = 0;
   while (ros::ok()) {
     ros::spinOnce();
-    //UpdateState();
-    RunState();
+    loopNum++;
+    if (loopNum == runFreq) {
+      //UpdateState();
+      RunState();
+      loopNum = 0;
+    }
     // twistmux
     m_pTwistMux->Arbitrate(m_state);
     looprate.sleep();

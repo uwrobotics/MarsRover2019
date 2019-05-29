@@ -24,4 +24,7 @@ local_planner/height_thresh: 100
 local_planner/dwa/heading_weight: 1.7
 local_planner/dwa/distance_weight: 0.8
 local_planner/dwa/velocity_weight: 0.2
+local_planner/planner: dwa
+
+local_planner/costmap_thresh: 0.7
 
