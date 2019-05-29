@@ -1,5 +1,6 @@
 <launch>
 	<arg name="node_respawn" default ="true" />
+	<arg name="frame_rate" default="15"/>
 
 	<node name="enable_can_script" pkg="socketcan_bridge" type="enable_jetson_tx2_can.sh"/>
 
@@ -18,6 +19,12 @@
         <include file="$(find uwrt_bringup)/launch/depth_camera.launch">
                 <arg name="respawn" value="$(arg node_respawn)" />
         </include>
+
+	<include file="$(find uwrt_bringup)/launch/flir_cameras.launch">
+		<arg name="respawn" value="$(arg node_respawn)" />
+         	<arg name="frame_rate" value="$(arg frame_rate)">
+
+	</include> 
 
 	<node name="direction_overlay" pkg="direction_overlay" type="direction_overlay" output="screen" respawn="$(arg node_respawn)"/>
 
