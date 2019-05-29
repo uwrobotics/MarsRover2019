@@ -15,6 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
   console_message
   sensor_msgs
   can_msgs
+  robot_localization
 )
 
 ## System dependencies are found with CMake's conventions
@@ -138,6 +139,7 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(autonomy_master_node src/autonomy_master_node.cpp src/autonomy_master_logic.cpp src/autonomy_twist_mux.cpp)
+add_executable(autonomy_goal_pub_node src/autonomy_goal_pub_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -148,9 +150,13 @@ add_executable(autonomy_master_node src/autonomy_master_node.cpp src/autonomy_ma
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 add_dependencies(autonomy_master_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(autonomy_goal_pub_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(autonomy_master_node
+  ${catkin_LIBRARIES}
+)
+target_link_libraries(autonomy_goal_pub_node
   ${catkin_LIBRARIES}
 )
 

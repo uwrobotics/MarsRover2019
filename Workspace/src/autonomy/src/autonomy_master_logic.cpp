@@ -27,6 +27,9 @@ CAutonomyMasterLogic::CAutonomyMasterLogic(ros::NodeHandle &nh)
       strGoalGpsTopic, 1, &CAutonomyMasterLogic::GoalGpsCallback, this));
   m_stopSub = nh.subscribe("/autonomy/stop", 1, &CAutonomyMasterLogic::StopMsgCallback, this);
 
+  m_canPub = nh.advertise<can_msgs::Frame>("/CAN_transmitter", 1);
+  m_successPub = nh.advertise<std_msgs::Bool>("/autonomy/success", 1);
+
 //  // Local Planner Status Subscriber
 //  std::string strLocalPlannerStatusTopic = "/local_planner/status";
 //  ros::param::get("/autonomy/local_plan_status_topic",
@@ -301,6 +304,9 @@ void CAutonomyMasterLogic::RunState() {
     if (EnableAndCheckTBFollow()) {
       LEDSendStatus(eAutonomyLEDStatus::SUCCESS);
       ConsoleMessage::SendMessage("Goal Reached!!! Fuck yeah!!!");
+      std_msgs::Bool msg;
+      msg.data = true;
+      m_successPub.publish(msg);
       StateTransition(eAutonomyState::IDLE);
     } else if (!EnableAndCheckTBTracker()) {
       ConsoleMessage::SendMessage("Ball detection lost -- going back to search");
