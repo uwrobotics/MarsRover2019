@@ -26,11 +26,11 @@
 
 
 dr_axis_linear: 1  # Left thumb stick vertical
-dr_scale_linear: 0.7
-dr_scale_linear_turbo: 1.5
+dr_scale_linear: 1.5
+dr_scale_linear_turbo: 3.0
 
 dr_axis_angular: 0  # Left thumb stick horizontal
-dr_scale_angular: 3.0
+dr_scale_angular: 3.5
 
 dr_enable_turbo_button: 5 # Right bumper button
 
