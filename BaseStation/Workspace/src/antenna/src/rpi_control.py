@@ -3,8 +3,6 @@
 import serial
 import rospy
 import time
-from gpiozero import DigitalOutputDevice
-from gpiozero import PWMOutputDevice
 from std_msgs.msg import Int32
 from std_msgs.msg import Float32
 
@@ -21,18 +19,18 @@ ser.flushInput()
 class Directions:
     CW, CCW = range(2)
 
-# get angle from antenna encoder... change as necessary and return angle in degrees
-def read_serial():
-    DATA_ENABLE.on()
-    data = ser.readline()
-    rospy.loginfo("serial data: %s", data)
-    try:
-        data = float(data)/1024*360 # 10 bit analog signal
-    except:
-        rospy.loginfo("cannot convert exception")
-        data = 0
-    DATA_ENABLE.off()
-    return data
+# # get angle from antenna encoder... change as necessary and return angle in degrees
+# def read_serial():
+#     DATA_ENABLE.on()
+#     data = ser.readline()
+#     rospy.loginfo("serial data: %s", data)
+#     try:
+#         data = float(data)/1024*360 # 10 bit analog signal
+#     except:
+#         rospy.loginfo("cannot convert exception")
+#         data = 0
+#     DATA_ENABLE.off()
+#     return data
 
 def update_angle(msg):
     global target_angle
