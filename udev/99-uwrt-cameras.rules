@@ -1,0 +1,2 @@
+SUBSYSTEMS=="usb", ATTRS{idVendor}=="041e", ATTRS{idProduct}=="4080", SYMLINK+="uwrt-science-drill_cam", MODE:="0666"
+SUBSYSTEMS=="usb", ATTRS{idVendor}=="041e", ATTRS{idProduct}=="4095", SYMLINK+="uwrt-science-test-tube-cam", MODE:="0666"
