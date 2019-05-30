@@ -9,7 +9,7 @@
   <arg name="kp" default="1,5" />
   <arg name="ki" default="1.5" />
   <arg name="kd" default="0" />
-  <arg name="open_loop" default="false" /> 
+  <arg name="open_loop" default="true" /> 
 
 <node pkg="roboteq_diff_driver" type="driver" name="roboteq_diff_driver" output="screen" respawn="$(arg respawn)">
     <!-- enable broadcast of odom tf -->

@@ -60,7 +60,7 @@ private:
   }
   void CAN_CentrifugeSpinning_Callback(can_msgs::FrameConstPtr frame)
   {
-    mCurrentStatus.centrifuge_on = (bool)(*(int32_t*)(&frame->data[0]));
+    mCurrentStatus.centrifuge_on = (bool)(frame->data[0]);
   }
   void CAN_CentrifugeSpeed_Callback(can_msgs::FrameConstPtr frame)
   {
@@ -72,11 +72,11 @@ private:
   }
   void CAN_FunnelStatus_Callback(can_msgs::FrameConstPtr frame)
   {
-    mCurrentStatus.funnel_open = (bool)(*(int32_t*)(&frame->data[0]));
+    mCurrentStatus.funnel_open = (bool)(frame->data[0]);
   }
   void CAN_SensorMountStatus_Callback(can_msgs::FrameConstPtr frame)
   {
-    mCurrentStatus.sensors_mount_deployed = (bool)(*(int32_t*)(&frame->data[0]));
+    mCurrentStatus.sensors_mount_deployed = (bool)(frame->data[0]);
   }
   void CAN_Temperature_Callback(can_msgs::FrameConstPtr frame)
   {
@@ -94,7 +94,9 @@ private:
     if (mCurElevatorMode != elevatorMode::POS) {
       can_msgs::Frame modeFrame;
       modeFrame.dlc = 4;
-      *(int *)(modeFrame.data.data()) = 1;
+      modeFrame.id = CAN_ELEVATOR_MODE_ID;
+      //*(int *)(modeFrame.data.data()) = 1;
+      modeFrame.data[0] = 1;
       mCANPub.publish(modeFrame);
       mCurElevatorMode = elevatorMode::POS;
     }
@@ -157,7 +159,9 @@ private:
     if (mCurElevatorMode != elevatorMode::PWM) {
       can_msgs::Frame modeFrame;
       modeFrame.dlc = 4;
-      *(int *)(modeFrame.data.data()) = 0;
+      modeFrame.id = CAN_ELEVATOR_MODE_ID;
+      //*(int *)(modeFrame.data.data()) = 0;
+      modeFrame.data[0] = 0;
       mCANPub.publish(modeFrame);
       mCurElevatorMode = elevatorMode::PWM;
     }
