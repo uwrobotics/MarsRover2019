@@ -137,10 +137,10 @@ void ScienceControlsWidget::SendElevatorPWM(float pwm) {
 }
 
 void ScienceControlsWidget::on_elevatorUpButton_pressed() {
-  SendElevatorPWM(50);
+  SendElevatorPWM(-0.5);
 }
 void ScienceControlsWidget::on_elevatorDownButton_pressed() {
-  SendElevatorPWM(-50);
+  SendElevatorPWM(0.5);
 }
 void ScienceControlsWidget::on_elevatorUpButton_released() {
   SendElevatorPWM(0);
@@ -156,7 +156,7 @@ void ScienceControlsWidget::ScienceStatusCallback(science_interface::science_sta
   ui->labelAugerSpeed->setText(QString("%1 rpm").arg(status->auger_speed));
   ui->labelCentrifugeSpin->setText(QString((status->centrifuge_on)?"On":"Off"));
   ui->labelCentrifugeSpeed->setText(QString("%1 rpm").arg(status->centrifuge_speed));
-  ui->labelCentrifugeSpeed->setText(QString::fromStdString(mCentrifugePosNames[status->centrifuge_pos]));
+  ui->labelCentrifugePos->setText(QString::fromStdString(mCentrifugePosNames[status->centrifuge_pos]));
   ui->labelFunnel->setText(QString((status->funnel_open)?"Open":"Closed"));
   ui->labelSensorMount->setText(QString((status->sensors_mount_deployed)?"Deployed":"Retracted"));
   ui->labelTemperature->setText(QString("%1 C").arg(status->temperature));
