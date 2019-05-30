@@ -94,7 +94,7 @@ private:
     if (mCurElevatorMode != elevatorMode::POS) {
       can_msgs::Frame modeFrame;
       modeFrame.dlc = 4;
-      *(float *)(modeFrame.data.data()) = 1;
+      *(int *)(modeFrame.data.data()) = 1;
       mCANPub.publish(modeFrame);
       mCurElevatorMode = elevatorMode::POS;
     }
@@ -157,7 +157,7 @@ private:
     if (mCurElevatorMode != elevatorMode::PWM) {
       can_msgs::Frame modeFrame;
       modeFrame.dlc = 4;
-      *(float *)(modeFrame.data.data()) = 0;
+      *(int *)(modeFrame.data.data()) = 0;
       mCANPub.publish(modeFrame);
       mCurElevatorMode = elevatorMode::PWM;
     }
@@ -219,7 +219,7 @@ ScienceInterface::ScienceInterface(ros::NodeHandle &nh)
   mCANTemperatureSub = nh.subscribe("/can/science/temperature", 1, &ScienceInterface::CAN_Temperature_Callback, this);
   mCANMoistureSub = nh.subscribe("/can/science/moisture", 1, &ScienceInterface::CAN_Moisture_Callback, this);
 
-  mElevatorPWMSub = nh.subscribe("/science_interface/elevator_pwm", 1, &ScienceInterface::CAN_Moisture_Callback, this);
+  mElevatorPWMSub = nh.subscribe("/science_interface/elevator_pwm", 1, &ScienceInterface::ElevatorPWMCallback, this);
 
   // Advertise
   mScienceStatusPub = nh.advertise<science_interface::science_status>("/science_interface/status", 1);
