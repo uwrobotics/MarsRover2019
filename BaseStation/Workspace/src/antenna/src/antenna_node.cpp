@@ -80,7 +80,7 @@ int main (int argc, char *argv[]) {
   ros::Publisher antenna_heading_pub = nh.advertise<std_msgs::Float64>("heading", 1000);
 
   //setup serial
-  serial::Serial arduinoSerial("/dev/ttyACM0", 115200, serial::Timeout::simpleTimeout(1000));
+  serial::Serial arduinoSerial("/dev/arduino", 115200, serial::Timeout::simpleTimeout(1000));
 
   //setup GPIO
   wiringPiSetupGpio();

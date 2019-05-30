@@ -1,0 +1,1 @@
+SUBSYSTEMS=="usb", ATTRS{product}=="Arduino Mega 2560", ATTRS{manufacturer}=="Arduino (www.arduino.cc)", NAME="ttyACM%n", SYMLINK+="arduino"
