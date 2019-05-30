@@ -58,13 +58,16 @@ void writeMotorPositionCommand(double currentHeading, double headingSetpoint) {
     digitalWrite(ENABLE_A_PIN, HIGH);
     digitalWrite(ENABLE_B_PIN, LOW);
     digitalWrite(MOTOR_PWM_PIN, HIGH);
+    ROS_DEBUG("Positive Rotation");
   } else if (currentHeading > headingSetpoint) {
     digitalWrite(ENABLE_A_PIN, LOW);
     digitalWrite(ENABLE_B_PIN, HIGH);
     digitalWrite(MOTOR_PWM_PIN, HIGH);
+    ROS_DEBUG("Negative Rotation");
   } else {
     digitalWrite(ENABLE_A_PIN, LOW);
-    digitalWrite(ENABLE_B_PIN, LOW);
+    digitalWrite(ENABLE_B_PIN, LOW)i;
+    ROS_DEBUG("No Rotation");
   }
 }
 
