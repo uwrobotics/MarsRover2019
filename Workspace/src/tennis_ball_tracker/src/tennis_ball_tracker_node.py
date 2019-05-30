@@ -118,7 +118,7 @@ def detectTennisBall(imageMsg):
 if __name__ == '__main__':
     rospy.init_node('tennis_ball_tracker', anonymous=True)
 
-    rospy.Subscriber("/zed/rgb/image_raw_color", Image, detectTennisBall)
+    rospy.Subscriber("/zed_node/rgb/image_rect_color", Image, detectTennisBall)
     img_pub = rospy.Publisher("/tennis_ball_tracker/image", Image, queue_size=1)
     detection_pub = rospy.Publisher("/tennis_ball_tracker/detection", TennisBallTracker, queue_size=1)
     enabled_srv = rospy.Service("/tennis_ball_tracker/set_enabled", SetBool, enableAndCheckSrvCallback)
