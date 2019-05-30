@@ -189,8 +189,6 @@ add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catk
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
 
-add_executable(calc_angle_node src/calc_angle.cpp)
-target_link_libraries(calc_angle_node ${catkin_LIBRARIES})
 
-add_executable(sim_control_node src/sim_control.cpp)
-target_link_libraries(sim_control_node ${catkin_LIBRARIES})
+
+
