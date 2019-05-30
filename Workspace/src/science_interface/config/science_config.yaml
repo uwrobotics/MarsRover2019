@@ -25,5 +25,5 @@
                                           # "pos 11"]
 
 /science_interface/auger_min: 0
-/science_interface/auger_max: 20 # TODO: configure
+/science_interface/auger_max: 16 # TODO: configure
 
