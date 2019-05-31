@@ -9,6 +9,8 @@
 #include <geometry_msgs/Pose2D.h>
 #include <ros/ros.h>
 #include <sensor_msgs/NavSatFix.h>
+#include <std_msgs/Float64.h>
+#include <std_msgs/Bool.h>
 #endif
 
 namespace Ui {
@@ -28,9 +30,12 @@ public:
 
   void SetLatLon(double lat, double lon);
 
+private Q_SLOTS:
+  void on_baseCalibrateButton_pressed();
 private:
   void PoseCallback(geometry_msgs::Pose2DConstPtr receivedMsg);
   void GoalCallback(geometry_msgs::Pose2DConstPtr receivedMsg);
+  void BaseAngleCallback(std_msgs::Float64ConstPtr msg);
 
   Ui::MapWidget *ui;
 
@@ -51,6 +56,11 @@ private:
   // subscribers
   ros::Subscriber mPoseSub;
   ros::Subscriber mGoalSub;
+  ros::Subscriber mBaseAngleSub;
+
+  // Publishers
+  ros::Publisher mBaseCalibratePub;
+
 
 private Q_SLOTS:
   void ZoomOut();
