@@ -3,6 +3,7 @@
     <include file="$(find simulation)/launch/simulation.launch"/>
     <include file="$(find simulation)/launch/localization.launch"/>
     <node pkg="localization_converter" type="localization_converter_node" name="localization_converter_node">
+      <remap from="/rover/fix" to="/navsat/fix"/>
     </node>
 
 </launch>
