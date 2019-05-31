@@ -11,16 +11,15 @@ CameraViewWidget::CameraViewWidget(QWidget *parent)
 
 CameraViewWidget::~CameraViewWidget() { delete ui; }
 
-void CameraViewWidget::subscribe(ros::NodeHandle &guiHandle,
+void CameraViewWidget::subscribe(ros::NodeHandle &nodeHandle,
                                  std::string cameraTopic, bool bDepthImg,
                                  bool bCostmap) {
+  image_transport::ImageTransport imagetransportHandle(nodeHandle);
   if (!bCostmap) {
-    sub = guiHandle.subscribe(cameraTopic, 1, &CameraViewWidget::imageCallback,
-                              this);
-  } else {
-    sub = guiHandle.subscribe(cameraTopic, 1,
-                              &CameraViewWidget::costmapCallback, this);
-  }
+    cameraSub = imagetransportHandle.subscribe<CameraViewWidget>(cameraTopic, 1, &CameraViewWidget::imageCallback, this, image_transport::TransportHints("compressed"));  
+    } else {
+    sub = nodeHandle.subscribe(cameraTopic, 1, &CameraViewWidget::costmapCallback, this);
+    }
   mbDepthImg = bDepthImg;
   mbCostmap = bCostmap;
 }

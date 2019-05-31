@@ -7,6 +7,7 @@
 #include <QWidget>
 #include <cost_map/Costmap.h>
 #include <ros/ros.h>
+#include <image_transport/image_transport.h>
 
 #endif
 namespace Ui {
@@ -26,6 +27,7 @@ public:
 
 private:
   Ui::CameraViewWidget *ui;
+  image_transport::Subscriber cameraSub;
   ros::Subscriber sub;
   bool mbDepthImg;
   bool mbCostmap;
