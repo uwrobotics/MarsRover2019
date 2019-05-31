@@ -13,7 +13,7 @@
 
 <node pkg="roboteq_diff_driver" type="driver" name="roboteq_diff_driver" output="screen" respawn="$(arg respawn)">
     <!-- enable broadcast of odom tf -->
-    <param name="pub_odom_tf" value="true" />
+    <param name="pub_odom_tf" value="false" />
     <!-- specify odom frame -->
     <param name="odom_frame" value="odom" />
     <!-- specify odom topic -->

@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
 
   tf2_ros::TransformListener tfListener(tfBuffer);
 
-  ros::Subscriber navSatSub = nh.subscribe("/navsat/fix", 1, NavSatCallback);
+  ros::Subscriber navSatSub = nh.subscribe("/rover/fix", 1, NavSatCallback);
 
   ros::Publisher utmPub =
       nh.advertise<geometry_msgs::Pose2D>("/localization/pose_utm", 1);
@@ -72,7 +72,9 @@ int main(int argc, char **argv) {
   if (!ros::ok()) {
     return -1;
   }
-
+  ROS_INFO("waiting before setting datum");
+  ros::Duration(5).sleep();
+  ROS_INFO("attempting to set datum");
   // Set the datum
   ros::ServiceClient datumClient =
       nh.serviceClient<robot_localization::SetDatum>("/datum");

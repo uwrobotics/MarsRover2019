@@ -1,7 +1,9 @@
 <?xml version="1.0"?>
 <launch>
   <arg name="respawn" default ="false" />	
-  
+  <node pkg="tf" type="static_transform_publisher" name="imu_link_broadcaster" args="0 0 0 0 0 0 base_link base_imu_link 30" />  
+  <node pkg="tf" type="static_transform_publisher" name="gps_link_broadcaster" args="0 0 0 0 0 0 base_link gps 30" />  
+
   <include file="$(find localization)/launch/imu.launch">
     <arg name="respawn" value="$(arg respawn)" />
   </include>
@@ -10,13 +12,13 @@
     <arg name="respawn" value="$(arg respawn)" />
   </include>
 
-  <node pkg="robot_localization" type="ekf_localization_node" name="rover_odom_localization" respawn="$(arg respawn)">
-    <rosparam command="load" file="$(find simulation)/config/rover_odom_localization.yaml" />
+  <node pkg="robot_localization" type="ekf_localization_node" name="rover_odom_localization" respawn="$(arg respawn)" output="screen">
+    <rosparam command="load" file="$(find localization)/config/rover_odom_localization.yaml" />
     <remap from="/odometry/filtered" to="/odometry/rover_odom" />  
   </node>
 
-  <node pkg="robot_localization" type="ekf_localization_node" name="rover_gps_odom_localization" respawn="$(arg respawn)">
-    <rosparam command="load" file="$(find simulation)/config/rover_gps_odom_localization.yaml" />
+  <node pkg="robot_localization" type="ekf_localization_node" name="rover_gps_odom_localization" respawn="$(arg respawn)" output="screen">
+    <rosparam command="load" file="$(find localization)/config/rover_gps_odom_localization.yaml" />
     <remap from="/odometry/filtered" to="/odometry/rover_gps_odom" />
   </node>
 
@@ -43,6 +45,10 @@
     <!--remap from="odom" to="map" /-->
 
   </node>
+
+    <node pkg="localization_converter" type="localization_converter_node" name="localization_converter_node" output="screen">
+    </node>
+
 
 </launch>
 
