@@ -11,6 +11,8 @@ void loop() {
   static double oldEncoderReading = 0;
   static double encoderReading = 0;
 
+  static long lastWriteTime = 0;
+
   encoderReading = analogRead(ABSOLUTE_ENCODER_PIN) * 360.0 / 1024.0;
   
   if(fabs(encoderReading - oldEncoderReading) < 180) { 
@@ -23,7 +25,10 @@ void loop() {
     position += (encoderReading - oldEncoderReading - 360)/GEAR_REDUCTION;
   }
 
-  Serial.println(position);
+  if (millis() - lastWriteTime > 100) {
+    Serial.println(position);
+    lastWriteTime = millis();
+  }
   
   oldEncoderReading = encoderReading;
 }
