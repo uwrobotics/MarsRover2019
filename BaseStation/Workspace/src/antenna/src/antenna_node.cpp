@@ -1,31 +1,33 @@
 #include <ros/ros.h>
 #include <sensor_msgs/NavSatFix.h>
-#include <std_msgs/Bool.h>
-#include <std_msgs/Float64.h>
-#include <serial/serial.h>
-#include <string>
-#include <algorithm>
-#include <wiringPi.h>
+#include <std_msgs/Bool.h> 
+#include <std_msgs/Float64.h> 
+#include <serial/serial.h> 
+#include <string> 
+#include <algorithm> 
+#include <wiringPi.h> 
+#include <softPwm.h>
 
-const uint8_t ENABLE_A_PIN = 15;
-const uint8_t ENABLE_B_PIN = 7;
-const uint8_t MOTOR_PWM_PIN = 9;
+const uint8_t IN_A_PIN = 6;
+const uint8_t IN_B_PIN = 3;
+const uint8_t MOTOR_PWM_PIN = 2; 
 
-const uint16_t NUM_SAMPLES = 50;
+const uint16_t NUM_SAMPLES = 3;
 const uint16_t GEAR_REDUCTION = 40; //40:1 reduction 
-const double MIN_ANGLE = -360; //CW
-const double MAX_ANGLE = 360; //CCW
+const double MIN_ANGLE = -180; //CW
+const double MAX_ANGLE = 180; //CCW
+const double ANGLE_TOL = 1;
 
 sensor_msgs::NavSatFix avgBasestationFix;
 sensor_msgs::NavSatFix avgRoverFix;
-std_msgs::Bool calibrated;
+:std_msgs::Bool calibrated;
 
 void rover_gps_callback(const sensor_msgs::NavSatFixConstPtr newRoverFix) {
   avgRoverFix.longitude -= avgRoverFix.longitude/NUM_SAMPLES;
   avgRoverFix.longitude += newRoverFix->longitude/NUM_SAMPLES;
 
   avgRoverFix.latitude -= avgRoverFix.latitude/NUM_SAMPLES;
-  avgRoverFix.latitude -= newRoverFix->latitude/NUM_SAMPLES;
+  avgRoverFix.latitude += newRoverFix->latitude/NUM_SAMPLES;
 }
 
 void basestation_gps_callback(const sensor_msgs::NavSatFixConstPtr newBasestationFix) {
@@ -33,7 +35,7 @@ void basestation_gps_callback(const sensor_msgs::NavSatFixConstPtr newBasestatio
   avgBasestationFix.longitude += newBasestationFix->longitude/NUM_SAMPLES;
 
   avgBasestationFix.latitude -= avgBasestationFix.latitude/NUM_SAMPLES;
-  avgBasestationFix.latitude -= newBasestationFix->latitude/NUM_SAMPLES;
+  avgBasestationFix.latitude += newBasestationFix->latitude/NUM_SAMPLES;
 }
 
 void calibrated_callback(const std_msgs::Bool calibrationFlag) {
@@ -45,30 +47,36 @@ double readAbsoluteEncoder (serial::Serial &serialConnection) {
     ROS_ERROR("No Serial Connection to Arduino");
     return -1;
   }
+  serialConnection.flush();
   std::string arduinoStr = serialConnection.readline();
-  return std::stod(arduinoStr);
+ // ROS_INFO_STREAM("serial reading" << arduinoStr);
+  try {
+    return std::stod(arduinoStr);
+  } catch (std::exception e) {
+    return -1;
+  }
 }
 
-void writeMotorPositionCommand(double currentHeading, double headingSetpoint) {
-  headingSetpoint = std::max(MIN_ANGLE, headingSetpoint);
-  headingSetpoint = std::min(MAX_ANGLE, headingSetpoint);
+void writeMotorPositionCommand(double currentAngle, double angleSetpoint) {
+  angleSetpoint = std::max(MIN_ANGLE, angleSetpoint);
+  angleSetpoint = std::min(MAX_ANGLE, angleSetpoint);
 
-  digitalWrite(MOTOR_PWM_PIN, LOW);
-  if (currentHeading < headingSetpoint){
-    digitalWrite(ENABLE_A_PIN, HIGH);
-    digitalWrite(ENABLE_B_PIN, LOW);
-    digitalWrite(MOTOR_PWM_PIN, HIGH);
-    ROS_DEBUG("Positive Rotation");
-  } else if (currentHeading > headingSetpoint) {
-    digitalWrite(ENABLE_A_PIN, LOW);
-    digitalWrite(ENABLE_B_PIN, HIGH);
-    digitalWrite(MOTOR_PWM_PIN, HIGH);
-    ROS_DEBUG("Negative Rotation");
-  } else {
-    digitalWrite(ENABLE_A_PIN, LOW);
-    digitalWrite(ENABLE_B_PIN, LOW)i;
-    ROS_DEBUG("No Rotation");
-  }
+  if (abs(currentAngle - angleSetpoint) < ANGLE_TOL) {
+    digitalWrite(IN_A_PIN, LOW);
+    digitalWrite(IN_B_PIN, LOW);
+    softPwmWrite(MOTOR_PWM_PIN, 0);
+    ROS_INFO("No Rotation");
+  } else if (currentAngle < angleSetpoint){
+    digitalWrite(IN_A_PIN, LOW );
+    digitalWrite(IN_B_PIN, HIGH);
+    softPwmWrite(MOTOR_PWM_PIN, 1000);
+    ROS_INFO("Positive Rotation");
+  } else if (currentAngle > angleSetpoint) {
+    digitalWrite(IN_A_PIN, HIGH);
+    digitalWrite(IN_B_PIN, LOW);
+    softPwmWrite(MOTOR_PWM_PIN, 1000);
+    ROS_INFO("Negative Rotation");
+  } 
 }
 
 int main (int argc, char *argv[]) {
@@ -80,50 +88,74 @@ int main (int argc, char *argv[]) {
   ros::Subscriber rover_gps_sub = nh.subscribe("/rover/fix", 10, rover_gps_callback);
   ros::Subscriber basestation_gps_sub = nh.subscribe("fix", 10, basestation_gps_callback);
 
-  ros::Publisher antenna_heading_pub = nh.advertise<std_msgs::Float64>("heading", 1000);
+  ros::Publisher antenna_heading_pub = nh.advertise<std_msgs::Float64>("antenna_angle", 1000);
 
   //setup serial
   serial::Serial arduinoSerial("/dev/arduino", 115200, serial::Timeout::simpleTimeout(1000));
 
   //setup GPIO
-  wiringPiSetupGpio();
-  pinMode(ENABLE_A_PIN, OUTPUT);
-  pinMode(ENABLE_B_PIN, OUTPUT);
-  pinMode(MOTOR_PWM_PIN, OUTPUT);
+  wiringPiSetup();
+  pinMode(IN_A_PIN, OUTPUT);
+  pinMode(IN_B_PIN, OUTPUT);
+ // pinMode(MOTOR_PWM_PIN, OUTPUT) ;
+  // digitalWrite(IN_A_PIN, LOW);
+  softPwmCreate(MOTOR_PWM_PIN, 0, 1000);
+  digitalWrite(IN_B_PIN, LOW);
+  digitalWrite(MOTOR_PWM_PIN, LOW);
 
   ros::Rate anglePublishRate(50); 
   std_msgs::Float64 antenna_heading;
+  double desired_angle = 0;
   while (ros::ok()) {
-    //get antenna angle from east 
-    double reading = readAbsoluteEncoder(arduinoSerial);
-    if (reading = -1) {
-      continue;
-    }
-    antenna_heading.data = reading;
-    antenna_heading_pub.publish(antenna_heading);
+    try {
+      //get antenna angle from east 
+      double reading = readAbsoluteEncoder(arduinoSerial);
+      if (reading == -1) {
+	writeMotorPositionCommand(antenna_heading.data, desired_angle);
+	anglePublishRate.sleep();
+        continue;
+      }
+      antenna_heading.data = reading;
+      antenna_heading_pub.publish(antenna_heading);
 
-    //read gps coords of rover and basestation
-    ros::spinOnce();
+      //read gps coords of rover and basestation
+      ros::spinOnce();
     
-    if (!calibrated.data) {
-      //rotate to east
-      writeMotorPositionCommand(antenna_heading.data, 0);
-      ROS_INFO_THROTTLE(2, "Antenna Base Station not calibrated. Sending antenna to 0 degrees from East. Currently at %f degrees. Please face the antenna east and press calibrate on the gui!", antenna_heading.data);
-      continue;
-    }
+      if (!calibrated.data) {
+        //rotate to east
+        writeMotorPositionCommand(antenna_heading.data, 0);
+        ROS_INFO_THROTTLE(2, "Antenna Base Station not calibrated. Sending antenna to 0 degrees from East. Currently at %f degrees. Please face the antenna east and press calibrate on the gui!", antenna_heading.data);
 
-    double diff_longitude = avgRoverFix.longitude - avgBasestationFix.longitude;
-    double diff_latitude = avgRoverFix.latitude - avgBasestationFix.latitude;
-    double desired_angle = atan2(diff_latitude, diff_longitude);
+        continue;
+      }
 
-    ROS_INFO ("Rover_long: %f,        Rover_lat: %f", avgRoverFix.longitude, avgRoverFix.latitude);
-    ROS_INFO ("Base_long: %f,         Base_lat: %f", avgBasestationFix.longitude, avgBasestationFix.latitude);
-    ROS_INFO ("Diff_longitude: %f,    Diff_latitude: %f", diff_longitude, diff_latitude); 
-    ROS_INFO ("Desired Angle: %f      Current Angle: %f\n", desired_angle, antenna_heading.data);
+      double long1Rad = avgBasestationFix.longitude * M_PI /180;
+      double long2Rad  = avgRoverFix.longitude * M_PI / 180;
+      double lat1Rad = avgBasestationFix.latitude * M_PI / 180;
+      double lat2Rad = avgRoverFix.latitude * M_PI / 180;
+      
+      double y = sin(long2Rad-long1Rad) * cos(lat2Rad);
+      double x = cos(lat1Rad) * sin(lat2Rad) - sin(lat1Rad) * cos(lat2Rad) * cos(long2Rad-long1Rad);
+      desired_angle = atan2(y, x)*180 /M_PI;
+      desired_angle =-1*( desired_angle-90);
+      if(desired_angle > 180){
+      	desired_angle -= 360;
+      } else if(desired_angle < -180) {
+        desired_angle += 360;
+      }
 
-    writeMotorPositionCommand(antenna_heading.data, desired_angle);
-    
-    anglePublishRate.sleep();
-  }
+      ROS_INFO ("Desired Angle: %f      Current Angle: %f\n", desired_angle, antenna_heading.data);
 
+      writeMotorPositionCommand(antenna_heading.data, desired_angle);
+      anglePublishRate.sleep();
+    } catch(std::exception e) {
+      softPwmWrite(MOTOR_PWM_PIN, 0);
+    } 
+ }
+ 
+ //Cleanup Wiringpi GPIO
+  softPwmWrite(MOTOR_PWM_PIN, 0);
+  digitalWrite(IN_A_PIN, LOW);
+  digitalWrite(IN_B_PIN, LOW);
 }
+
