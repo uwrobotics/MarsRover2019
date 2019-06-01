@@ -44,7 +44,8 @@ protected:
 
     arrowHead.clear();
     arrowHead << line().p2() << arrowP1 << arrowP2;
-    painter->drawLine(line());
+    painter->drawLine(line());  void BaseAngleCallback(std_msgs::Float64ConstPtr msg);
+
     painter->drawPolygon(arrowHead);
     if (isSelected()) {
       painter->setPen(QPen(mColor, 1, Qt::DashLine));
@@ -93,6 +94,8 @@ bool MapWidget::Init(ros::NodeHandle &nh) {
   mpNh = &nh;
   mPoseSub = nh.subscribe(UTM_POSE_TOPIC, 1, &MapWidget::PoseCallback, this);
   mGoalSub = nh.subscribe("/goal/utm", 1, &MapWidget::GoalCallback, this);
+  mBaseAngleSub = nh.subscribe("/basestation/antenna_angle", 1, &MapWidget::BaseAngleCallback, this);
+  mBaseCalibratePub = nh.advertise<std_msgs::Bool>("/basestation/calibrated", 1);
 }
 
 void MapWidget::PoseCallback(geometry_msgs::Pose2DConstPtr receivedMsg) {
@@ -123,6 +126,11 @@ void MapWidget::GoalCallback(geometry_msgs::Pose2DConstPtr receivedMsg) {
   mGoalItem->setPos(receivedMsg->x, -receivedMsg->y);
 }
 
+void MapWidget::BaseAngleCallback(std_msgs::Float64ConstPtr msg) {
+  mBaseStationArrowItem->SetTheta(msg->data * M_PI/180.0);
+}
+
+
 void MapWidget::SetLatLon(double lat, double lon) {
   longitude = lon;
   latitude = lat;
@@ -141,6 +149,7 @@ void MapWidget::SetLatLon(double lat, double lon) {
   // ROS_INFO(" easting %f northing %f", easting_utm, northing_utm);
 }
 
+
 void MapWidget::ZoomIn() {
   mScale *= 2;
   // ui->mapGraphicsView->scale(2, 2);
@@ -149,4 +158,11 @@ void MapWidget::ZoomIn() {
 void MapWidget::ZoomOut() {
   mScale *= 0.5;
   // ui->mapGraphicsView->scale(0.5, 0.5);
+}
+
+
+void MapWidget::on_baseCalibrateButton_pressed() {
+  std_msgs::Bool msg;
+  msg.data = true;
+  mBaseCalibratePub.publish(msg);
 }
