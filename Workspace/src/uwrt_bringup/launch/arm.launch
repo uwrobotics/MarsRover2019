@@ -1,0 +1,3 @@
+<launch>
+	<node name="armstuff" pkg="arm_interface" type="arm_interface_node" respawn="true"/>
+</launch>

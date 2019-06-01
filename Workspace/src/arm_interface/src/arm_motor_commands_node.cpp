@@ -50,6 +50,10 @@ int main(int argc, char **argv) {
   ros::Rate rate(freq);
 
   // loop that publishes info until the node is shut down
+  arm_interface::arm_mode::Request req;
+  arm_interface::arm_mode::Response resp;
+  req.mode=arm_interface::arm_modeRequest::OPEN_LOOP;
+  armCtrlInterface.SetMode(req, resp);
   while (ros::ok()) {
     ros::spinOnce();
 
