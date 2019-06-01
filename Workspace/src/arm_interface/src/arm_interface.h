@@ -47,7 +47,7 @@ public:
     // ROS_INFO("Received Can Cmd msg");
     size_t jointId = msg->id - s_jointIdBase;
     m_jointsReady[jointId] = true;
-    m_actualJointPos[jointId] = *(double *)(msg->data.data());
+    m_actualJointPos[jointId] = *(float *)(msg->data.data());
 
     // Check if received initial position for all
     if (!m_isReady) {
@@ -73,6 +73,13 @@ public:
       m_canPublisher->publish(canMsg);
     }
 
+
+    for (int i = 0; i < s_numJoints; i++) {
+      m_canCmds[0] = 0;
+      m_fkArmCmdVels[0] = 0;         // commands
+      m_ikArmCmdVels[0] = 0;         // commands
+
+    }
     // Reset positions if mode changed back to ik position
     if (m_currentMode == arm_interface::arm_modeRequest::IK_POS) {
       InitializePositions();
@@ -366,7 +373,7 @@ private:
 
     for (int i = 0; i < s_numJoints; i++) {
       canMsg.id = s_ctrlCanIds[i];
-      *(double *)(canMsg.data.data()) = m_canCmds[i];
+      *(float *)(canMsg.data.data()) = m_canCmds[i];
       m_canPublisher->publish(canMsg);
     }
   }

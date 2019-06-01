@@ -1,0 +1,12 @@
+<launch>
+	<arg name="node_respawn" default ="true" />
+	<arg name="frame_rate" default="15"/>
+
+        <include file="$(find uwrt_bringup)/launch/depth_camera.launch">
+                <arg name="respawn" value="$(arg node_respawn)" />
+        </include>
+
+	<node name="direction_overlay" pkg="direction_overlay" type="direction_overlay" output="screen" respawn="$(arg node_respawn)"/>
+        <node name="safety" pkg="safety" type="safety_node" respawn="$(arg node_respawn)"/>
+
+</launch>

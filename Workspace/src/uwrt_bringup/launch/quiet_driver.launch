@@ -1,0 +1,50 @@
+<launch>
+  <!-- subscribes to cmd_vel topic -->
+  <!-- publishes odom topic with base_link frame -->
+  <!-- broadcasts odom->base_link transform -->
+  <arg name="param" default="value" />
+  
+  <arg name="respawn" default="false" />    
+
+  <arg name="kp" default="1,5" />
+  <arg name="ki" default="1.5" />
+  <arg name="kd" default="0" />
+  <arg name="open_loop" default="true" /> 
+
+<node pkg="roboteq_diff_driver" type="driver" name="roboteq_diff_driver" respawn="$(arg respawn)">
+    <!-- enable broadcast of odom tf -->
+    <param name="pub_odom_tf" value="false" />
+    <!-- specify odom frame -->
+    <param name="odom_frame" value="odom" />
+    <!-- specify odom topic -->
+    <param name="odom_topic" value="/roboteq/odom" />
+    <!-- specify base frame -->
+    <param name="base_frame" value="base_link" />
+    <!-- specify cmd_vel topic -->
+    <param name="cmdvel_topic" value="cmd_vel" />
+    <!-- specify port for roboteq controller -->
+    <param name="port_back" value="/dev/uwrt-roboteq-back" />
+    <!-- specify port for roboteq controller -->
+    <param name="port_right" value="/dev/uwrt-roboteq-right" />
+    <!-- specify port for roboteq controller -->
+    <param name="port_left" value="/dev/uwrt-roboteq-left" />
+    <!-- specify baud for roboteq controller -->
+    <param name="baud" value="115200" />
+    <!-- specify whether to use open-loop motor speed control (as opposed to closed-loop)-->
+    <param name="open_loop" value="$(arg open_loop)"/>
+    <!-- specify robot wheel circumference in meters  -->
+    <param name="wheel_circumference" value="0.750062" />
+    <!-- specify robot track width in meters  -->
+    <param name="track_width" value="0.7747" />
+    <!-- specify pulse-per-revolution for motor encoders  -->
+    <param name="encoder_ppr" value="2048" />
+    <!-- specify counts-per-revolution for motor encoders (ppr*4 for quadrature encoders)  -->
+    <param name="encoder_cpr" value="124928" />
+    <param name="gear_ratio" value="15.25" />	
+    	
+    <param name="kp" value="$(arg kp)" />
+    <param name="ki" value="$(arg ki)" /> 
+    <param name="kd" value="$(arg kd)" />
+
+ </node>
+</launch>
