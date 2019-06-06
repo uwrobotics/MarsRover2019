@@ -2,6 +2,10 @@
 #define MAINCONTROLSWIDGET_H
 
 #include <QWidget>
+#ifndef Q_MOC_RUN
+#include <ros/ros.h>
+#include <can_msgs/Frame.h>
+#endif
 
 namespace Ui {
 class MainControlsWidget;
@@ -13,6 +17,11 @@ class MainControlsWidget : public QWidget {
 public:
   explicit MainControlsWidget(QWidget *parent = nullptr);
   ~MainControlsWidget();
+  void Init(ros::NodeHandle &nh);
+
+void current100Callback(can_msgs::FrameConstPtr frame);
+
+
 private Q_SLOTS:
   void on_Automatic_clicked();
   void on_Arm_clicked();
@@ -24,6 +33,7 @@ private Q_SLOTS:
 
 private:
   Ui::MainControlsWidget *ui;
+  ros::Subscriber mCurSub;
 };
 
 #endif // MAINCONTROLSWIDGET_H

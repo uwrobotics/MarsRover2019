@@ -31,9 +31,10 @@ ids_to_topics: {"0x500": "/can/arm_joints/turntable",
                 "0x518": "/can/science/moisture",
                 "0x520": "/can/science/ultrasonic_left",
                 "0x521": "/can/science/ultrasonic_right",
-                "0x530": "/can/safety/current_sensor_1",
-                "0x531": "/can/safety/current_sensor_2",
-                "0x532": "/can/safety/current_sensor_3"}
+                "0x531": "/can/safety/current_sensor_100A",
+                "0x532": "/can/safety/current_sensor_30A",
+                "0x533": "/can/safety/battery_voltage",
+                "0x534": "/can/safety/ebox_temp"}
 
 #can_ids:          {"301": "shoulderEncoder",
 #                         "302": "elbowEncoder",

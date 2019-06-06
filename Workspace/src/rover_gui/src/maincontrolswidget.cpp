@@ -23,3 +23,17 @@ void MainControlsWidget::on_stop_all_clicked() {
 }
 void MainControlsWidget::on_manual_toggled() { ui->state->setText("manual"); }
 void MainControlsWidget::on_auto_2_toggled() { ui->state->setText("auto"); }
+
+void MainControlsWidget::current100Callback(can_msgs::FrameConstPtr frame) {
+    double current = frame->data[0]/5.0;
+
+    std::stringstream strStream;
+    strStream << "CURRENT_100A: " << current/5.0;
+    ui->current->setText(QString::fromStdString(strStream.str()));
+    //outFile << strStream.str() << std::endl;
+    //ROS_DEBUG_STREAM_NAMED("SAFETY", strStream.str().c_str());
+}
+
+void MainControlsWidget::Init(ros::NodeHandle &nh) {
+  mCurSub = nh.subscribe("/can/safety/current_sensor_100A", 1, &MainControlsWidget::current100Callback, this);
+}
