@@ -36,6 +36,8 @@ MainWindow::MainWindow(int argc, char **argv, ros::NodeHandle &nh,
   ui.clearanceCamView->subscribe(mNh, "/usb_cam2/image_raw");
   ui.depthViewWidget->subscribe(mNh, "/zed/depth/depth_registered", true);
   ui.consoleWidget->Init(mNh);
+  ui.widget_3->Init(mNh);
+  ui.gimbalWidget->Init(mNh);
   ui.armviz->Init(mNh);
   ui.armControlsWidget->Init(mNh);
   ui.costmapWidget->subscribe(mNh, "/autonomy/cost_map", false, true);

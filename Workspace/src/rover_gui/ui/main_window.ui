@@ -480,7 +480,7 @@ color: rgb(138, 226, 52);</string>
            <number>0</number>
           </property>
           <item>
-           <widget class="GimbalWidget" name="widget_2" native="true">
+           <widget class="GimbalWidget" name="gimbalWidget" native="true">
             <property name="sizePolicy">
              <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
               <horstretch>0</horstretch>
